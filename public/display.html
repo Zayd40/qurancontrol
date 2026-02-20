@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qur'an Display</title>
+    <link rel="stylesheet" href="/display.css" />
+  </head>
+  <body>
+    <div class="screen" id="screenRoot">
+      <header class="topbar">
+        <div class="brand" id="brandContainer">
+          <img id="brandLogo" class="brand-logo hidden" alt="Logo" />
+          <span id="brandText">Al Zahraa Centre</span>
+        </div>
+        <div class="surah-meta" id="surahMeta">Surah 1 - Ayah 1</div>
+        <div class="clock" id="clock">00:00</div>
+      </header>
+
+      <main class="content" id="contentArea">
+        <section class="text-block arabic-block">
+          <p id="arabicText" class="fit-text arabic" data-min="30" data-max="125"></p>
+        </section>
+
+        <section class="text-block translation-block">
+          <p id="translationText" class="fit-text translation" data-min="20" data-max="58"></p>
+        </section>
+
+        <section class="text-block transliteration-block">
+          <p
+            id="transliterationText"
+            class="fit-text transliteration"
+            data-min="16"
+            data-max="44"
+          ></p>
+        </section>
+      </main>
+
+      <div class="status-pill" id="connectionLabel">Awaiting controller</div>
+
+      <aside class="qr-overlay" id="qrOverlay">
+        <img id="qrImage" alt="Control QR" />
+        <p>Scan to control</p>
+      </aside>
+    </div>
+
+    <script src="/display.js"></script>
+  </body>
+</html>

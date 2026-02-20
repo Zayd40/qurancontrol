@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qur'an Control</title>
+    <link rel="stylesheet" href="/control.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="top">
+        <p class="brand" id="brandText">Al Zahraa Centre</p>
+        <h1>Recitation Controller</h1>
+        <p id="currentRef" class="current-ref">Surah 1 - Ayah 1</p>
+        <p id="lockMessage" class="lock-message">Connecting...</p>
+      </header>
+
+      <section class="panel">
+        <label for="surahSelect">Surah</label>
+        <select id="surahSelect"></select>
+
+        <label for="ayahInput">Ayah</label>
+        <div class="ayah-row">
+          <input id="ayahInput" type="number" min="1" value="1" inputmode="numeric" />
+          <button id="jumpBtn" class="secondary">Jump</button>
+        </div>
+
+        <p id="boundsHint" class="hint">Max ayah: 1</p>
+      </section>
+
+      <section class="controls">
+        <button id="prevBtn" class="nav-btn">Previous Ayah</button>
+        <button id="nextBtn" class="nav-btn primary">Next Ayah</button>
+      </section>
+    </main>
+
+    <script src="/control.js"></script>
+  </body>
+</html>

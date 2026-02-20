@@ -1,0 +1,142 @@
+:root {
+  --bg: #f5f5f2;
+  --text: #141414;
+  --muted: #505050;
+  --accent: #5f7a69;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: linear-gradient(160deg, #fefefe 0%, var(--bg) 65%, #ecece7 100%);
+  color: var(--text);
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.app {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 20px 16px 28px;
+  display: grid;
+  gap: 16px;
+}
+
+.top {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.brand {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  color: #2b2b2b;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(20px, 5vw, 34px);
+  line-height: 1.2;
+}
+
+.current-ref {
+  margin: 10px 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.lock-message {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.panel {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+select,
+input,
+button {
+  font: inherit;
+}
+
+select,
+input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  background: #fff;
+}
+
+.ayah-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+button {
+  border-radius: 10px;
+  border: 1px solid transparent;
+  padding: 11px 14px;
+  background: #f2f2ef;
+  color: var(--text);
+}
+
+button:disabled,
+select:disabled,
+input:disabled {
+  opacity: 0.55;
+}
+
+button.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+button.secondary {
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.controls {
+  display: grid;
+  gap: 10px;
+}
+
+.nav-btn {
+  width: 100%;
+  min-height: 62px;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (min-width: 720px) {
+  .controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

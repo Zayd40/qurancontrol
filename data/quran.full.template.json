@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "type": "full",
+    "description": "Full offline Qur'an dataset (Arabic + English + transliteration)."
+  },
+  "surahs": [
+    {
+      "number": 1,
+      "nameEnglish": "Al-Fatihah",
+      "nameArabic": "الفاتحة",
+      "ayahs": [
+        {
+          "number": 1,
+          "arabic": "...",
+          "translation": "...",
+          "transliteration": "..."
+        }
+      ]
+    }
+  ]
+}
