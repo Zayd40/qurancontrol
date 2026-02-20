@@ -11,26 +11,44 @@
       <header class="top">
         <p class="brand" id="brandText">Al Zahraa Centre</p>
         <h1>Recitation Controller</h1>
-        <p id="currentRef" class="current-ref">Surah 1 - Ayah 1</p>
+        <p id="currentRef" class="current-ref">Al-Fatihah (1) · Ayah 1</p>
         <p id="lockMessage" class="lock-message">Connecting...</p>
       </header>
 
-      <section class="panel">
+      <section class="mode-switch" aria-label="Mode toggle">
+        <button id="modeQuranBtn" class="mode-btn active" type="button">Qur'an</button>
+        <button id="modeDuaBtn" class="mode-btn" type="button">Duʿāʾ</button>
+      </section>
+
+      <section class="panel mode-panel" id="quranPanel">
         <label for="surahSelect">Surah</label>
         <select id="surahSelect"></select>
 
         <label for="ayahInput">Ayah</label>
-        <div class="ayah-row">
+        <div class="row-input">
           <input id="ayahInput" type="number" min="1" value="1" inputmode="numeric" />
-          <button id="jumpBtn" class="secondary">Jump</button>
+          <button id="jumpBtn" class="secondary" type="button">Go</button>
         </div>
 
         <p id="boundsHint" class="hint">Max ayah: 1</p>
       </section>
 
+      <section class="panel mode-panel hidden" id="duaPanel">
+        <label for="duaSelect">Duʿāʾ</label>
+        <select id="duaSelect"></select>
+
+        <label for="lineInput">Line</label>
+        <div class="row-input">
+          <input id="lineInput" type="number" min="1" value="1" inputmode="numeric" />
+          <button id="lineJumpBtn" class="secondary" type="button">Go</button>
+        </div>
+
+        <p id="lineHint" class="hint">Line 1 / 1</p>
+      </section>
+
       <section class="controls">
-        <button id="prevBtn" class="nav-btn">Previous Ayah</button>
-        <button id="nextBtn" class="nav-btn primary">Next Ayah</button>
+        <button id="prevBtn" class="nav-btn" type="button">Previous Ayah</button>
+        <button id="nextBtn" class="nav-btn primary" type="button">Next Ayah</button>
       </section>
     </main>
 

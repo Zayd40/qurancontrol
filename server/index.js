@@ -12,6 +12,7 @@ dotenv.config();
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DATA_DIR = path.join(ROOT_DIR, 'data');
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
+const DUA_DIR = path.join(DATA_DIR, 'duas');
 
 const PORT = Number(process.env.PORT || 5173);
 const CONTROLLER_TIMEOUT_MS = Number(process.env.CONTROLLER_TIMEOUT_MS || 30000);
@@ -110,6 +111,71 @@ for (const surah of quranData.surahs || []) {
   ayahDataBySurah.set(surahNumber, ayahMap);
 }
 
+function loadDuas(duaDirPath) {
+  const duaMap = new Map();
+
+  if (!fs.existsSync(duaDirPath)) {
+    console.warn(`[warn] Dua directory not found at ${duaDirPath}`);
+    return duaMap;
+  }
+
+  let files = [];
+  try {
+    files = fs.readdirSync(duaDirPath);
+  } catch (error) {
+    console.warn(`[warn] Failed to read dua directory: ${error.message}`);
+    return duaMap;
+  }
+
+  for (const fileName of files) {
+    if (!fileName.endsWith('.json')) {
+      continue;
+    }
+
+    const filePath = path.join(duaDirPath, fileName);
+    const parsed = readJsonFile(filePath, null);
+    if (!parsed) {
+      continue;
+    }
+
+    const id = String(parsed.id || path.basename(fileName, '.json')).trim().toLowerCase();
+    const title = String(parsed.title || id).trim();
+    const lines = Array.isArray(parsed.lines)
+      ? parsed.lines.map((line) => ({
+          arabic: String(line?.arabic || '').trim(),
+          transliteration: String(line?.transliteration || '').trim(),
+          english: String(line?.english || '').trim()
+        }))
+      : [];
+
+    if (!id || !title || lines.length === 0) {
+      console.warn(`[warn] Skipping invalid dua file ${fileName} (missing id/title/lines)`);
+      continue;
+    }
+
+    duaMap.set(id, { id, title, lines });
+  }
+
+  return duaMap;
+}
+
+const duaDataById = loadDuas(DUA_DIR);
+if (duaDataById.size === 0) {
+  // Keep app functional even before first import.
+  duaDataById.set('iftitah', {
+    id: 'iftitah',
+    title: 'Duʿāʾ al-Iftitāḥ',
+    lines: [
+      {
+        arabic: 'أَضِفْ نَصَّ الدُّعَاءِ فِي data/duas/iftitah.raw.txt',
+        transliteration: 'Add the dua raw text in data/duas/iftitah.raw.txt',
+        english: 'Run npm run format:iftitah, then restart server.'
+      }
+    ]
+  });
+  console.warn('[warn] No dua JSON files loaded. Using in-memory placeholder for iftitah.');
+}
+
 function getMaxAyahForSurah(surahNumber) {
   const fromMeta = surahMetaByNumber.get(surahNumber)?.ayahCount;
   if (Number.isFinite(fromMeta) && fromMeta > 0) {
@@ -124,13 +190,76 @@ function getMaxAyahForSurah(surahNumber) {
   return Math.max(...fromData.keys());
 }
 
-function clampState(nextSurah, nextAyah) {
+function clampQuranState(nextSurah, nextAyah) {
   const totalSurahs = metadata.surahs?.length || 114;
   const surahNumber = Math.max(1, Math.min(totalSurahs, Number(nextSurah) || 1));
   const maxAyah = getMaxAyahForSurah(surahNumber);
   const ayahNumber = Math.max(1, Math.min(maxAyah, Number(nextAyah) || 1));
 
   return { surahNumber, ayahNumber };
+}
+
+function listDuas() {
+  return [...duaDataById.values()]
+    .map((dua) => ({
+      id: dua.id,
+      title: dua.title,
+      totalLines: dua.lines.length
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
+
+function getDefaultDuaId() {
+  if (duaDataById.has('iftitah')) {
+    return 'iftitah';
+  }
+
+  const firstDua = [...duaDataById.values()][0];
+  return firstDua?.id || '';
+}
+
+function clampDuaState(candidateDua) {
+  const defaultId = getDefaultDuaId();
+  const requestedId = String(candidateDua?.duaId || defaultId).trim().toLowerCase();
+  const dua = duaDataById.get(requestedId) || duaDataById.get(defaultId);
+
+  if (!dua) {
+    return {
+      duaId: '',
+      lineIndex: 1
+    };
+  }
+
+  const maxLine = dua.lines.length || 1;
+  const lineIndex = Math.max(1, Math.min(maxLine, Number(candidateDua?.lineIndex) || 1));
+
+  return {
+    duaId: dua.id,
+    lineIndex
+  };
+}
+
+function clampMode(mode) {
+  return mode === 'dua' ? 'dua' : 'quran';
+}
+
+function clampAppState(candidateState) {
+  const quran = clampQuranState(
+    candidateState?.quran?.surahNumber ?? candidateState?.surahNumber,
+    candidateState?.quran?.ayahNumber ?? candidateState?.ayahNumber
+  );
+  const dua = clampDuaState(candidateState?.dua || {});
+
+  let mode = clampMode(candidateState?.mode);
+  if (mode === 'dua' && !dua.duaId) {
+    mode = 'quran';
+  }
+
+  return {
+    mode,
+    quran,
+    dua
+  };
 }
 
 function getAyahPayload(surahNumber, ayahNumber) {
@@ -172,6 +301,129 @@ function getAyahPayload(surahNumber, ayahNumber) {
   };
 }
 
+function getQuranContentPayload(state) {
+  const ayah = getAyahPayload(state.quran.surahNumber, state.quran.ayahNumber);
+
+  return {
+    mode: 'quran',
+    header: `${ayah.surahNameEnglish} (${ayah.surahNumber}) · Ayah ${ayah.ayahNumber}`,
+    arabic: ayah.arabic,
+    translation: ayah.translation,
+    transliteration: ayah.transliteration,
+    quran: {
+      surahNumber: ayah.surahNumber,
+      ayahNumber: ayah.ayahNumber,
+      surahNameEnglish: ayah.surahNameEnglish,
+      surahNameArabic: ayah.surahNameArabic,
+      ayahCount: ayah.ayahCount
+    },
+    missing: ayah.missing
+  };
+}
+
+function getDuaContentPayload(state) {
+  const dua = duaDataById.get(state.dua.duaId);
+
+  if (!dua) {
+    return {
+      mode: 'dua',
+      header: 'Duʿāʾ · Line 1',
+      arabic: '—',
+      translation: 'No dua is currently loaded.',
+      transliteration: 'Add a file in data/duas and restart server.',
+      dua: {
+        duaId: '',
+        title: 'Duʿāʾ',
+        lineIndex: 1,
+        totalLines: 1
+      },
+      missing: true
+    };
+  }
+
+  const maxLine = dua.lines.length || 1;
+  const lineIndex = Math.max(1, Math.min(maxLine, state.dua.lineIndex));
+  const line = dua.lines[lineIndex - 1] || { arabic: '—', transliteration: '', english: '' };
+
+  return {
+    mode: 'dua',
+    header: `${dua.title} · Line ${lineIndex}`,
+    arabic: line.arabic || '—',
+    translation: line.english || '',
+    transliteration: line.transliteration || '',
+    dua: {
+      duaId: dua.id,
+      title: dua.title,
+      lineIndex,
+      totalLines: maxLine
+    },
+    missing: false
+  };
+}
+
+function getCurrentContentPayload(state) {
+  return state.mode === 'dua' ? getDuaContentPayload(state) : getQuranContentPayload(state);
+}
+
+function getSteppedQuranState(quranState, direction) {
+  const step = direction === 'prev' ? -1 : 1;
+  const totalSurahs = metadata.surahs?.length || 114;
+
+  let surahNumber = quranState.surahNumber;
+  let ayahNumber = quranState.ayahNumber + step;
+
+  const maxAyah = getMaxAyahForSurah(surahNumber);
+  if (ayahNumber > maxAyah) {
+    if (surahNumber < totalSurahs) {
+      surahNumber += 1;
+      ayahNumber = 1;
+    } else {
+      ayahNumber = maxAyah;
+    }
+  }
+
+  if (ayahNumber < 1) {
+    if (surahNumber > 1) {
+      surahNumber -= 1;
+      ayahNumber = getMaxAyahForSurah(surahNumber);
+    } else {
+      ayahNumber = 1;
+    }
+  }
+
+  return clampQuranState(surahNumber, ayahNumber);
+}
+
+function getSteppedDuaState(duaState, direction) {
+  const step = direction === 'prev' ? -1 : 1;
+  const clamped = clampDuaState(duaState);
+  const dua = duaDataById.get(clamped.duaId);
+  const totalLines = dua?.lines.length || 1;
+
+  return {
+    duaId: clamped.duaId,
+    lineIndex: Math.max(1, Math.min(totalLines, clamped.lineIndex + step))
+  };
+}
+
+function statesEqual(a, b) {
+  return (
+    a.mode === b.mode &&
+    a.quran.surahNumber === b.quran.surahNumber &&
+    a.quran.ayahNumber === b.quran.ayahNumber &&
+    a.dua.duaId === b.dua.duaId &&
+    a.dua.lineIndex === b.dua.lineIndex
+  );
+}
+
+function stateSummary(state) {
+  if (state.mode === 'dua') {
+    return `dua:${state.dua.duaId}#${state.dua.lineIndex}`;
+  }
+
+  return `quran:${state.quran.surahNumber}:${state.quran.ayahNumber}`;
+}
+
 const app = express();
 app.disable('x-powered-by');
 app.use(express.json({ limit: '100kb' }));
@@ -181,7 +433,11 @@ const lanIp = getLanIPv4();
 const controlUrl = `http://${lanIp}:${PORT}/control`;
 let qrCodeDataUrl = '';
 
-let currentState = clampState(1, 1);
+let currentState = clampAppState({
+  mode: 'quran',
+  quran: { surahNumber: 1, ayahNumber: 1 },
+  dua: { duaId: getDefaultDuaId(), lineIndex: 1 }
+});
 
 const socketInfoByWs = new Map();
 let socketIdCounter = 1;
@@ -235,8 +491,9 @@ function getBootstrapPayload(socketInfo) {
   return {
     type: 'bootstrap',
     state: currentState,
-    ayah: getAyahPayload(currentState.surahNumber, currentState.ayahNumber),
+    content: getCurrentContentPayload(currentState),
     surahs: metadata.surahs || [],
+    duas: listDuas(),
     config,
     dataset: {
       path: path.relative(ROOT_DIR, quranDataPath),
@@ -263,7 +520,7 @@ function broadcastStateUpdate() {
   const payload = {
     type: 'state_update',
     state: currentState,
-    ayah: getAyahPayload(currentState.surahNumber, currentState.ayahNumber)
+    content: getCurrentContentPayload(currentState)
   };
   broadcast(payload);
 }
@@ -291,20 +548,70 @@ function broadcastControllerStatus() {
   }
 }
 
-function setState(nextSurah, nextAyah, sourceLabel) {
-  const nextState = clampState(nextSurah, nextAyah);
-  if (
-    nextState.surahNumber === currentState.surahNumber &&
-    nextState.ayahNumber === currentState.ayahNumber
-  ) {
+function setCurrentState(nextState, sourceLabel) {
+  const clamped = clampAppState(nextState);
+  if (statesEqual(clamped, currentState)) {
     return;
   }
 
-  currentState = nextState;
-  console.log(
-    `[state] ${sourceLabel} -> Surah ${currentState.surahNumber}, Ayah ${currentState.ayahNumber}`
-  );
+  currentState = clamped;
+  console.log(`[state] ${sourceLabel} -> ${stateSummary(currentState)}`);
   broadcastStateUpdate();
+}
+
+function setMode(nextMode, sourceLabel) {
+  setCurrentState(
+    {
+      ...currentState,
+      mode: clampMode(nextMode)
+    },
+    sourceLabel
+  );
+}
+
+function setQuran(nextSurah, nextAyah, sourceLabel) {
+  setCurrentState(
+    {
+      ...currentState,
+      quran: clampQuranState(nextSurah, nextAyah)
+    },
+    sourceLabel
+  );
+}
+
+function setDua(nextDuaId, nextLineIndex, sourceLabel) {
+  setCurrentState(
+    {
+      ...currentState,
+      dua: clampDuaState({ duaId: nextDuaId, lineIndex: nextLineIndex })
+    },
+    sourceLabel
+  );
+}
+
+function stepActive(direction, sourceLabel) {
+  if (direction !== 'next' && direction !== 'prev') {
+    return;
+  }
+
+  if (currentState.mode === 'dua') {
+    setCurrentState(
+      {
+        ...currentState,
+        dua: getSteppedDuaState(currentState.dua, direction)
+      },
+      sourceLabel
+    );
+    return;
+  }
+
+  setCurrentState(
+    {
+      ...currentState,
+      quran: getSteppedQuranState(currentState.quran, direction)
+    },
+    sourceLabel
+  );
 }
 
 function releaseActiveController(reason, excludedControllerId = null) {
@@ -315,6 +622,7 @@ function releaseActiveController(reason, excludedControllerId = null) {
   const releasedId = activeControllerId;
   activeControllerId = null;
   console.log(`[controller] Released controller #${releasedId} (${reason})`);
+
   for (const [ws, info] of socketInfoByWs.entries()) {
     if (info.role !== 'control' || ws.readyState !== WebSocket.OPEN) {
       continue;
@@ -348,6 +656,31 @@ function claimController(ws) {
   broadcastControllerStatus();
 }
 
+function rejectIfNotActiveController(ws, socketInfo) {
+  if (socketInfo.role !== 'control') {
+    sendMessage(ws, {
+      type: 'error',
+      message: 'Only control clients can update state.'
+    });
+    return true;
+  }
+
+  if (socketInfo.id !== activeControllerId) {
+    sendMessage(ws, {
+      type: 'error',
+      message: 'Controller lock active on another device.'
+    });
+    sendMessage(ws, {
+      type: 'control_lock',
+      controllerConnected: isControllerConnected(),
+      ...getControllerFlags(socketInfo)
+    });
+    return true;
+  }
+
+  return false;
+}
+
 app.get('/', (_req, res) => {
   res.redirect('/display');
 });
@@ -370,11 +703,15 @@ app.get('/api/surahs', (_req, res) => {
   res.json({ surahs: metadata.surahs || [] });
 });
 
+app.get('/api/duas', (_req, res) => {
+  res.json({ duas: listDuas() });
+});
+
 app.get('/api/ayah', (req, res) => {
-  const surahNumber = Number(req.query.surah || currentState.surahNumber);
-  const ayahNumber = Number(req.query.ayah || currentState.ayahNumber);
-  const next = clampState(surahNumber, ayahNumber);
-  res.json({ ayah: getAyahPayload(next.surahNumber, next.ayahNumber) });
+  const surahNumber = Number(req.query.surah || currentState.quran.surahNumber);
+  const ayahNumber = Number(req.query.ayah || currentState.quran.ayahNumber);
+  const quran = clampQuranState(surahNumber, ayahNumber);
+  res.json({ ayah: getAyahPayload(quran.surahNumber, quran.ayahNumber) });
 });
 
 const server = http.createServer(app);
@@ -431,31 +768,48 @@ wss.on('connection', (ws) => {
       return;
     }
 
-    if (message.type === 'set_state') {
-      if (socketInfo.role !== 'control') {
-        sendMessage(ws, {
-          type: 'error',
-          message: 'Only control clients can update state.'
-        });
-        return;
-      }
-
-      if (socketInfo.id !== activeControllerId) {
-        sendMessage(ws, {
-          type: 'error',
-          message: 'Controller lock active on another device.'
-        });
-        sendMessage(ws, {
-          type: 'control_lock',
-          controllerConnected: isControllerConnected(),
-          ...getControllerFlags(socketInfo)
-        });
+    if (
+      message.type === 'setMode' ||
+      message.type === 'set_mode' ||
+      message.type === 'setQuran' ||
+      message.type === 'set_quran' ||
+      message.type === 'setDua' ||
+      message.type === 'set_dua' ||
+      message.type === 'next' ||
+      message.type === 'prev' ||
+      message.type === 'step' ||
+      message.type === 'set_state'
+    ) {
+      if (rejectIfNotActiveController(ws, socketInfo)) {
         return;
       }
 
       socketInfo.lastHeartbeatAt = Date.now();
-      setState(message.surahNumber, message.ayahNumber, `controller #${socketInfo.id}`);
-      return;
+
+      if (message.type === 'setMode' || message.type === 'set_mode') {
+        setMode(message.mode, `controller #${socketInfo.id}`);
+        return;
+      }
+
+      if (message.type === 'setQuran' || message.type === 'set_quran' || message.type === 'set_state') {
+        setQuran(message.surahNumber, message.ayahNumber, `controller #${socketInfo.id}`);
+        return;
+      }
+
+      if (message.type === 'setDua' || message.type === 'set_dua') {
+        setDua(message.duaId, message.lineIndex, `controller #${socketInfo.id}`);
+        return;
+      }
+
+      if (message.type === 'next' || message.type === 'prev') {
+        stepActive(message.type, `controller #${socketInfo.id}`);
+        return;
+      }
+
+      if (message.type === 'step') {
+        const direction = message.direction === 'prev' ? 'prev' : 'next';
+        stepActive(direction, `controller #${socketInfo.id}`);
+      }
     }
   });
 
@@ -515,6 +869,7 @@ async function start() {
     console.log(`[startup] Control URL (phone): ${controlUrl}`);
     console.log(`[startup] WebSocket endpoint: ws://${lanIp}:${PORT}/ws`);
     console.log(`[startup] Data file: ${path.relative(ROOT_DIR, quranDataPath)}`);
+    console.log(`[startup] Dua files loaded: ${listDuas().length}`);
   });
 }
 

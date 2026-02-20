@@ -2,7 +2,7 @@ const els = {
   brandContainer: document.getElementById('brandContainer'),
   brandLogo: document.getElementById('brandLogo'),
   brandText: document.getElementById('brandText'),
-  surahMeta: document.getElementById('surahMeta'),
+  contentMeta: document.getElementById('contentMeta'),
   clock: document.getElementById('clock'),
   arabicText: document.getElementById('arabicText'),
   translationText: document.getElementById('translationText'),
@@ -15,7 +15,7 @@ const els = {
 
 const fitTargets = [els.arabicText, els.translationText, els.transliterationText];
 
-let currentAyahKey = '';
+let currentContentKey = '';
 let controllerConnected = false;
 let reconnectTimer = null;
 let ws = null;
@@ -115,23 +115,39 @@ function setConnectionState(isConnected) {
   }
 }
 
-function renderAyah(ayahPayload, animate = true) {
-  if (!ayahPayload) {
+function getContentKey(contentPayload) {
+  if (!contentPayload) {
+    return '';
+  }
+
+  if (contentPayload.mode === 'quran' && contentPayload.quran) {
+    return `quran:${contentPayload.quran.surahNumber}:${contentPayload.quran.ayahNumber}`;
+  }
+
+  if (contentPayload.mode === 'dua' && contentPayload.dua) {
+    return `dua:${contentPayload.dua.duaId}:${contentPayload.dua.lineIndex}`;
+  }
+
+  return `${contentPayload.mode || 'unknown'}:${contentPayload.header || ''}`;
+}
+
+function renderContent(contentPayload, animate = true) {
+  if (!contentPayload) {
     return;
   }
 
-  const key = `${ayahPayload.surahNumber}:${ayahPayload.ayahNumber}`;
-  if (key === currentAyahKey && !ayahPayload.forceRefresh) {
+  const key = getContentKey(contentPayload);
+  if (key === currentContentKey && !contentPayload.forceRefresh) {
     return;
   }
 
-  currentAyahKey = key;
-  els.surahMeta.textContent = `${ayahPayload.surahNameEnglish} (${ayahPayload.surahNumber}) - Ayah ${ayahPayload.ayahNumber}`;
+  currentContentKey = key;
+  els.contentMeta.textContent = contentPayload.header || 'Awaiting content...';
 
   const updateText = () => {
-    els.arabicText.textContent = ayahPayload.arabic || '—';
-    els.translationText.textContent = ayahPayload.translation || '';
-    els.transliterationText.textContent = ayahPayload.transliteration || '';
+    els.arabicText.textContent = contentPayload.arabic || '—';
+    els.translationText.textContent = contentPayload.translation || '';
+    els.transliterationText.textContent = contentPayload.transliteration || '';
     debouncedFitAll();
   };
 
@@ -155,7 +171,7 @@ function applyBootstrap(payload) {
     els.qrImage.src = payload.connection.qrCodeDataUrl;
   }
 
-  renderAyah(payload.ayah, false);
+  renderContent(payload.content, false);
   setConnectionState(payload.connection?.controllerConnected);
 }
 
@@ -181,7 +197,7 @@ function handleSocketMessage(message) {
       applyBootstrap(message);
       break;
     case 'state_update':
-      renderAyah(message.ayah, true);
+      renderContent(message.content, true);
       break;
     case 'controller_status':
       setConnectionState(message.controllerConnected);

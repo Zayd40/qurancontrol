@@ -5,7 +5,9 @@ A local web app for mosque recitation sessions: one screen (`/display`) is captu
 ## What This Project Does
 
 - Shows Arabic, English translation, and transliteration on a clean fullscreen display page.
-- Lets one phone control Surah/Ayah with Previous, Next, and Jump.
+- Lets one phone control either:
+  - Qur'an mode (Surah/Ayah)
+  - Duʿāʾ mode (line-by-line)
 - Hides QR code while a controller is connected, shows QR code again when no controller is connected or controller times out.
 - Uses WebSockets for instant state sync.
 
@@ -36,6 +38,9 @@ A local web app for mosque recitation sessions: one screen (`/display`) is captu
 3. Open these URLs:
    - On the OBS PC: `http://localhost:5173/display`
    - On the phone: `http://<LAN_IP>:5173/control`
+4. On phone `/control`, choose mode with the top toggle:
+   - `Qur'an`
+   - `Duʿāʾ`
 
 ## Add to OBS (Browser Source)
 
@@ -86,8 +91,28 @@ Example logo setup:
 
 - Full dataset (already included): `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.full.json`
 - Fallback seed dataset: `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.json`
+- Duʿāʾ files folder: `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas/`
 - Surah metadata (all 114 surahs + ayah counts):
   - `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/surah-metadata.json`
+
+## Adding Duʿāʾ al-Iftitāḥ
+
+1. Open this file and paste the dua in triplets:
+   - `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas/iftitah.raw.txt`
+2. Format it into JSON:
+   - `npm run format:iftitah`
+3. Restart the server:
+   - stop with `Ctrl + C`
+   - start again with `npm run start`
+4. On phone `/control`, switch to `Duʿāʾ` mode.
+
+Triplet format per slide:
+
+1. Arabic line
+2. Transliteration line
+3. English line
+4. Optional blank line
+5. Repeat
 
 ### Replace/Update Full Offline Dataset
 
@@ -159,6 +184,7 @@ at login/startup using:
 ## Scripts
 
 - `npm install`
+- `npm run format:iftitah`
 - `npm run start`
 - `npm run dev`
 

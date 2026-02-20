@@ -53,7 +53,7 @@ body {
   object-fit: contain;
 }
 
-.surah-meta {
+.content-meta {
   text-align: center;
   font-size: clamp(16px, 2.1vw, 35px);
   font-weight: 600;
