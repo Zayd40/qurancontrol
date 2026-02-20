@@ -1,0 +1,27 @@
+:root {
+  --bg-primary: #0f1115;
+  --bg-surface: #151922;
+  --bg-surface-strong: #1a1f29;
+  --text-primary: #f2f4f6;
+  --text-secondary: #a7afb9;
+  --accent: #6f8f7f;
+  --divider: #252c37;
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --safe-margin: 4vw;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  font-family: "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.hidden {
+  display: none !important;
+}

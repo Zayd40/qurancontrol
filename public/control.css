@@ -1,21 +1,8 @@
-:root {
-  --bg: #f5f5f2;
-  --text: #141414;
-  --muted: #505050;
-  --accent: #5f7a69;
-}
-
-* {
-  box-sizing: border-box;
-}
-
 html,
 body {
-  margin: 0;
   min-height: 100%;
-  background: linear-gradient(160deg, #fefefe 0%, var(--bg) 65%, #ecece7 100%);
-  color: var(--text);
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .app {
@@ -29,15 +16,16 @@ body {
 .top {
   padding: 16px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--bg-surface);
+  border: 1px solid var(--divider);
+  box-shadow: var(--shadow-soft);
 }
 
 .brand {
   margin: 0 0 8px;
   font-size: 13px;
   letter-spacing: 0.4px;
-  color: #2b2b2b;
+  color: var(--text-secondary);
 }
 
 h1 {
@@ -50,12 +38,13 @@ h1 {
   margin: 10px 0 8px;
   font-size: 16px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .lock-message {
   margin: 0;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .mode-switch {
@@ -66,15 +55,16 @@ h1 {
 
 .mode-btn {
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.8);
-  min-height: 48px;
+  border: 1px solid var(--divider);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  min-height: 50px;
   font-weight: 700;
 }
 
 .mode-btn.active {
   background: var(--accent);
-  color: #fff;
+  color: var(--text-primary);
   border-color: var(--accent);
 }
 
@@ -83,8 +73,9 @@ h1 {
   gap: 8px;
   padding: 16px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--bg-surface);
+  border: 1px solid var(--divider);
+  box-shadow: var(--shadow-soft);
 }
 
 .mode-panel.hidden {
@@ -94,6 +85,7 @@ h1 {
 label {
   font-size: 14px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 select,
@@ -106,9 +98,10 @@ select,
 input {
   width: 100%;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--divider);
   padding: 12px;
-  background: #fff;
+  color: var(--text-primary);
+  background: var(--bg-surface-strong);
 }
 
 .row-input {
@@ -121,8 +114,8 @@ button {
   border-radius: 10px;
   border: 1px solid transparent;
   padding: 11px 14px;
-  background: #f2f2ef;
-  color: var(--text);
+  background: var(--bg-surface-strong);
+  color: var(--text-primary);
 }
 
 button:disabled,
@@ -133,12 +126,13 @@ input:disabled {
 
 button.primary {
   background: var(--accent);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 button.secondary {
-  background: #1f1f1f;
-  color: #fff;
+  background: var(--bg-surface-strong);
+  border-color: var(--divider);
+  color: var(--text-primary);
 }
 
 .controls {
@@ -148,14 +142,14 @@ button.secondary {
 
 .nav-btn {
   width: 100%;
-  min-height: 62px;
+  min-height: 64px;
   font-size: 21px;
   font-weight: 700;
 }
 
 .hint {
   margin: 0;
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 13px;
 }
 

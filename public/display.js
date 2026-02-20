@@ -104,9 +104,7 @@ const debouncedFitAll = debounce(() => {
 function setConnectionState(isConnected) {
   controllerConnected = Boolean(isConnected);
   els.connectionLabel.textContent = controllerConnected ? 'Connected' : 'Awaiting controller';
-  els.connectionLabel.style.borderColor = controllerConnected
-    ? 'rgba(95, 122, 105, 0.45)'
-    : 'rgba(0, 0, 0, 0.08)';
+  els.connectionLabel.classList.toggle('connected', controllerConnected);
 
   if (!controllerConnected && els.qrImage.getAttribute('src')) {
     els.qrOverlay.classList.remove('hidden');

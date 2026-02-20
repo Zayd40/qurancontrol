@@ -854,8 +854,8 @@ async function start() {
       margin: 1,
       width: 220,
       color: {
-        dark: '#1f1f1f',
-        light: '#FFFFFF'
+        dark: '#F2F4F6',
+        light: '#0F1115'
       }
     });
   } catch (error) {
