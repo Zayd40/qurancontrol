@@ -3,9 +3,1184 @@
   "title": "Duʿāʾ al-Iftitāḥ",
   "lines": [
     {
-      "arabic": "[Paste Arabic line 1 here]",
-      "transliteration": "[Paste transliteration line 1 here]",
-      "english": "[Paste English line 1 here]"
+      "arabic": "اَللَّهُمَّ إِنِّي أَفْتَتِحُ ٱلثَّنَاءَ بِحَمْدِكَ",
+      "transliteration": "allahumma inni aftatihu alththana'a bihamdika",
+      "english": "O Allah, I begin the glorification of You with praising You"
+    },
+    {
+      "arabic": "وَأَنْتَ مُسَدِّدٌ لِلصَّوَابِ بِمَنِّكَ",
+      "transliteration": "wa anta musaddidun lillssawabi bimannika",
+      "english": "and You always guide us to the right out of Your favors upon us."
+    },
+    {
+      "arabic": "وَأَيْقَنْتُ أَنَّكَ أَنْتَ أَرْحَمُ ٱلرَّاحِمِينَ",
+      "transliteration": "wa ayqantu annaka anta arhamu alrrahimina",
+      "english": "I am certain that You are the most Merciful of all those who show mercy"
+    },
+    {
+      "arabic": "فِي مَوْضِعِ ٱلْعَفْوِ وَٱلرَّحْمَةِ",
+      "transliteration": "fi mawdi`i al`afwi wallrrahmati",
+      "english": "in situations of pardon and mercy,"
+    },
+    {
+      "arabic": "وَأَشَدُّ ٱلْمُعَاقِبِينَ",
+      "transliteration": "wa ashaddu almu`aqibina",
+      "english": "the harshest in punishments"
+    },
+    {
+      "arabic": "فِي مَوْضِعِ ٱلنَّكَالِ وَٱلنَّقِمَةِ",
+      "transliteration": "fi mawdi`i alnnakali walnnaqimati",
+      "english": "in situations of giving exemplary punishment and chastisement (to the wrongdoers),"
+    },
+    {
+      "arabic": "وَأَعْظَمُ ٱلْمُتَجَبِّرِينَ",
+      "transliteration": "wa a`zamu almutajabbirina",
+      "english": "and the greatest Omnipotent"
+    },
+    {
+      "arabic": "فِي مَوْضِعِ ٱلْكِبْرِيَاءِ وَٱلْعَظَمَةِ",
+      "transliteration": "fi mawdi`i alkibriya'i wal`azamati",
+      "english": "in the domain of absolute power and might."
+    },
+    {
+      "arabic": "اَللَّهُمَّ أَذِنْتَ لِي فِي دُعَائِكَ وَمَسْأَلَتِكَ",
+      "transliteration": "allahumma adhinta li fi du`a'ika wa mas'alatika",
+      "english": "O Allah, You have permitted me to pray and beseech You."
+    },
+    {
+      "arabic": "فَٱسْمَعْ يَا سَمِيعُ مِدْحَتِي",
+      "transliteration": "fasma` ya sami`u midhati",
+      "english": "So, listen, O All-hearer, to my words of praise,"
+    },
+    {
+      "arabic": "وَأَجِبْ يَا رَحِيمُ دَعْوَتِي",
+      "transliteration": "wa ajib ya rahimu da`wati",
+      "english": "reply my prayer, O All-merciful,"
+    },
+    {
+      "arabic": "وَأَقِلْ يَا غَفُورُ عَثْرَتِي",
+      "transliteration": "wa aqil ya ghafuru `athrati",
+      "english": "and overlook my slips, O Oft-Forgiving."
+    },
+    {
+      "arabic": "فَكَمْ يَا إِلٰهِي مِنْ كُرْبَةٍ قَدْ فَرَّجْتَهَا",
+      "transliteration": "fakam ya ilahi min kurbatin qad farrajtaha",
+      "english": "You, O my God, have relieved so many of my grievances,"
+    },
+    {
+      "arabic": "وَهُمُومٍ قَدْ كَشَفْتَهَا",
+      "transliteration": "wa humumin qad kashaftaha",
+      "english": "dispelled so many of my sorrows,"
+    },
+    {
+      "arabic": "وَعَثْرَةٍ قَدْ أَقَلْتَهَا",
+      "transliteration": "wa `athratin qad aqaltaha",
+      "english": "overlooked so many of my slips,"
+    },
+    {
+      "arabic": "وَرَحْمَةٍ قَدْ نَشَرْتَهَا",
+      "transliteration": "wa rahmatin qad nashartaha",
+      "english": "spread over me many of Your mercies,"
+    },
+    {
+      "arabic": "وَحَلْقَةِ بَلاءٍ قَدْ فَكَكْتَهَا",
+      "transliteration": "wa halaqati bala'in qad fakaktaha",
+      "english": "and unlocked so many rings of misfortunes (in which I was detained)."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي لَمْ يَتَّخِذْ صَاحِبَةً وَلاَ وَلَداً",
+      "transliteration": "alhamdu lillahi alladhi lam yattakhidh sahibatan wa la waladan",
+      "english": "All praise be to Allah Who has not betaken wife or son,"
+    },
+    {
+      "arabic": "وَلَمْ يَكُنْ لَهُ شَرِيكٌ فِي ٱلْمُلْكِ",
+      "transliteration": "wa lam yakun lahu sharikun fi almulki",
+      "english": "Who has no partner in the sovereignty"
+    },
+    {
+      "arabic": "وَلَمْ يَكُنْ لَهُ وَلِيٌّ مِنَ ٱلذُّلِّ",
+      "transliteration": "wa lam yakun lahu waliyyun min aldhdhulli",
+      "english": "nor does He have any protecting friend through dependence."
+    },
+    {
+      "arabic": "وَكَبِّرْهُ تَكْبِيراً",
+      "transliteration": "wa kabbirhu takbiran",
+      "english": "And Magnify Him with all magnificence."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ بِجَمِيعِ مَحَامِدِهِ كُلِّهَا",
+      "transliteration": "alhamdu lillahi bijami`i mahamidihi kulliha",
+      "english": "All praise be to Allah with full gratitude"
+    },
+    {
+      "arabic": "عَلَىٰ جَمِيعِ نِعَمِهِ كُلِّهَا",
+      "transliteration": "`ala jami`i ni`amihi kulliha",
+      "english": "for all His bounties."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي لاَ مُضَادَّ لَهُ فِي مُلْكِهِ",
+      "transliteration": "alhamdu lillahi alladhi la mudadda lahu fi mulkihi",
+      "english": "All praise be to Allah Who has no opposition in His rule"
+    },
+    {
+      "arabic": "وَلاَ مُنَازِعَ لَهُ فِي أَمْرِهِ",
+      "transliteration": "wa la munazi`a lahu fi amrihi",
+      "english": "nor there is any challenge to His commands."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي لاَ شَرِيكَ لَهُ فِي خَلْقِهِ",
+      "transliteration": "alhamdu lillahi alladhi la sharika lahu fi khalqihi",
+      "english": "All praise be to Allah Who has no counsel to meddle with His operation of creation"
+    },
+    {
+      "arabic": "وَلاَ شَبِيهَ لَهُ فِي عَظَمَتِهِ",
+      "transliteration": "wa la shabiha lahu fi `azamatihi",
+      "english": "nor there is anything similar to Him in His greatness."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلْفَاشِي فِي ٱلْخَلْقِ أَمْرُهُ وَحَمْدُهُ",
+      "transliteration": "alhamdu lillahi alfashi fi alkhalqi amruhu wa hamduhu",
+      "english": "All praise be to Allah Whose commandments and praise are active in the creation,"
+    },
+    {
+      "arabic": "ٱلظَّاهِرِ بِٱلْكَرَمِ مَجْدُهُ",
+      "transliteration": "alzzahiri bilkarami majduhu",
+      "english": "His glory is evident through His kindness,"
+    },
+    {
+      "arabic": "ٱلْبَاسِطِ بِٱلْجُودِ يَدَهُ",
+      "transliteration": "albasiti biljudi yadahu",
+      "english": "His distinct overflowing generosity is freely available,"
+    },
+    {
+      "arabic": "ٱلَّذِي لاَ تَنْقُصُ خَزَائِنُهُ",
+      "transliteration": "alladhi la tanqusu khaza'inuhu",
+      "english": "His unlimited bestowals do not exhaust,"
+    },
+    {
+      "arabic": "وَلاَ تَزِيدُهُ كَثْرَةُ ٱلْعَطَاءِ إِلاَّ جُوداً وَكَرَماً",
+      "transliteration": "wa la taziduhu kathratu al`ata'i illa judan wa karaman",
+      "english": "and Whose opulent bestowals increase Him nothing but magnanimity and generosity."
+    },
+    {
+      "arabic": "إِنَّهُ هُوَ ٱلْعَزِيزُ ٱلْوَهَّابُ",
+      "transliteration": "innahu huwa al`azizu alwahhabu",
+      "english": "Verily He is Mighty, Abundantly Giver."
+    },
+    {
+      "arabic": "اَللَّهُمَّ إِنِّي أَسْأَلُكَ قَلِيلاً مِنْ كَثِيرٍ",
+      "transliteration": "allahumma inni as'aluka qalilan min kathirin",
+      "english": "O Allah, I beseech You for little from the much,"
+    },
+    {
+      "arabic": "مَعَ حَاجَةٍ بِي إِلَيْهِ عَظِيمَةٍ",
+      "transliteration": "ma`a hajatin bi ilayhi `azimatun",
+      "english": "along with my great need for it"
+    },
+    {
+      "arabic": "وَغِنَاكَ عَنْهُ قَدِيمٌ",
+      "transliteration": "wa ghinaka `anhu qadimun",
+      "english": "and Your needlessness for it is since eternity."
+    },
+    {
+      "arabic": "وَهُوَ عِنْدِي كَثِيرٌ",
+      "transliteration": "wa huwa `indi kathirun",
+      "english": "For me, it is so big"
+    },
+    {
+      "arabic": "وَهُوَ عَلَيْكَ سَهْلٌ يَسِيرٌ",
+      "transliteration": "wa huwa `alayka sahlun yasirun",
+      "english": "but for You, it is effortless and easy."
+    },
+    {
+      "arabic": "اَللَّهُمَّ إِنَّ عَفْوَكَ عَنْ ذَنْبِي",
+      "transliteration": "allahumma inna `afwaka `an dhanbi",
+      "english": "O Allah, as You pardon my sins,"
+    },
+    {
+      "arabic": "وَتَجَاوُزَكَ عَنْ خَطِيئَتِي",
+      "transliteration": "wa tajawuzaka `an khati'ati",
+      "english": "overlook my mistakes,"
+    },
+    {
+      "arabic": "وَصَفْحَكَ عَنْ ظُلْمِي",
+      "transliteration": "wa safhaka `an zulmi",
+      "english": "take a lenient view of my disorderly conduct,"
+    },
+    {
+      "arabic": "وَسِتْرَكَ عَلَىٰ قَبِيحِ عَمَلِي",
+      "transliteration": "wa sitraka `ala qabihi `amali",
+      "english": "cover up my hideous actions,"
+    },
+    {
+      "arabic": "وَحِلْمَكَ عَنْ كَثِيرِ جُرْمِي",
+      "transliteration": "wa hilmaka `an kathiri jurmi",
+      "english": "and treat my numerous offenses with forbearance,"
+    },
+    {
+      "arabic": "عِنْدَ مَا كَانَ مِنْ خَطَإِي وَعَمْدِي",
+      "transliteration": "`inda ma kana min khata'i wa `amdi",
+      "english": "which I have committed mistakenly and willfully—"
+    },
+    {
+      "arabic": "أَطْمَعَنِي فِي أَنْ أَسْأَلَكَ مَا لاَ أَسْتَوْجِبُهُ مِنْكَ",
+      "transliteration": "atma`ani fi an as'alaka ma la astawjibuhu minka",
+      "english": "all that tempted me to ask for that which I do not deserve from You,"
+    },
+    {
+      "arabic": "ٱلَّذِي رَزَقْتَنِي مِنْ رَحْمَتِكَ",
+      "transliteration": "alladhi razaqtani min rahmatika",
+      "english": "that is You may grant me part of Your mercy,"
+    },
+    {
+      "arabic": "وَأَرَيْتَنِي مِنْ قُدْرَتِكَ",
+      "transliteration": "wa araytani min qudratika",
+      "english": "show me part of Your all-powerfulness,"
+    },
+    {
+      "arabic": "وَعَرَّفْتَنِي مِنْ إِجَابَتِكَ",
+      "transliteration": "wa `arraftani min ijabatika",
+      "english": "and show me signals of Your response to me."
+    },
+    {
+      "arabic": "فَصِرْتُ أَدْعُوكَ آمِناً",
+      "transliteration": "fasirtun ad`uka aminan",
+      "english": "So, I am now supplicating You with security"
+    },
+    {
+      "arabic": "وَأَسْأَلُكَ مُسْتَأْنِساً",
+      "transliteration": "wa as'aluka musta'nisan",
+      "english": "and beseeching You with entertainment"
+    },
+    {
+      "arabic": "لاَ خَائِفاً وَلاَ وَجِلاً",
+      "transliteration": "la kha'ifan wa la wajilan",
+      "english": "neither afraid nor fearful,"
+    },
+    {
+      "arabic": "مُدِلاًّ عَلَيْكَ فِيمَا قَصَدْتُ فِيهِ إِلَيْكَ",
+      "transliteration": "mudillan `alayka fi ma qasadtu fihi ilayka",
+      "english": "insisting on You in that which I face to You."
+    },
+    {
+      "arabic": "فَإِنْ أَبْطَأَ عَنِّي عَتَبْتُ بِجَهْلِي عَلَيْكَ",
+      "transliteration": "fa'in abta'a `anni `atabtu bijahli `alayka",
+      "english": "But when Your response delayed, I, out of my ignorance, would blame You"
+    },
+    {
+      "arabic": "وَلَعَلَّ ٱلَّذِي أَبْطَأَ عَنِّي هُوَ خَيْرٌ لِي",
+      "transliteration": "wa la`alla alladhi abta'a `anni huwa khayrun li",
+      "english": "although perhaps slowing down may be a blessing in disguise,"
+    },
+    {
+      "arabic": "لِعِلْمِكَ بِعَاقِبَةِ ٱلأُمُورِ",
+      "transliteration": "li`ilmika bi`aqibati al-umuri",
+      "english": "because You alone know the consequences of all matters."
+    },
+    {
+      "arabic": "فَلَمْ أَرَ مَوْلَىً كَرِيماً",
+      "transliteration": "falam ara mawlan kariman",
+      "english": "So, I have never seen such a noble Master"
+    },
+    {
+      "arabic": "أَصْبَرَ عَلَىٰ عَبْدٍ لَئِيمٍ مِنْكَ عَلَيَّ",
+      "transliteration": "asbara `ala `abdin la'imin minka `alayya",
+      "english": "more accommodating to such a dissatisfied servant than You are to me."
+    },
+    {
+      "arabic": "يَا رَبِّ إِنَّكَ تَدْعُونِي فَأُوَلِّي عَنْكَ",
+      "transliteration": "ya rabbi innaka tad`uni fa'uwalliya `anka",
+      "english": "O Lord! You give an invitation but I turn down,"
+    },
+    {
+      "arabic": "وَتَتَحَبَّبُ إِلَيَّ فَأَتَبَغَّضُ إِلَيْكَ",
+      "transliteration": "wa tatahabbabu ilayya fa'atabaghghadu ilayka",
+      "english": "You become familiar with me but I do not care for You,"
+    },
+    {
+      "arabic": "وَتَتَوَدَّدُ إِلَيَّ فَلاَ أَقْبَلُ مِنْكَ",
+      "transliteration": "wa tatawaddadu ilayya fala aqbalu minka",
+      "english": "and You show affection to me but I do not correspond to You,"
+    },
+    {
+      "arabic": "كَأَنَّ لِيَ ٱلتَّطَوُّلَ عَلَيْكَ",
+      "transliteration": "ka'anna liya alttatawwula `alayka",
+      "english": "as if You are overreaching me!"
+    },
+    {
+      "arabic": "فَلَمْ يَمْنَعْكَ ذٰلِكَ مِنَ ٱلرَّحْمَةِ لِي",
+      "transliteration": "falam yamna`ka dhalika min alrrahmati li",
+      "english": "Yet, all that have not stopped You from having mercy upon me,"
+    },
+    {
+      "arabic": "وَٱلإِحْسَانِ إِلَيَّ",
+      "transliteration": "wal-ihsani ilayya",
+      "english": "doing favors to me,"
+    },
+    {
+      "arabic": "وَٱلتَّفَضُّلِ عَلَيَّ بِجُودِكَ وَكَرَمِكَ",
+      "transliteration": "walttafadduli `alayya bijudika wa karamika",
+      "english": "and blessing me out of Your magnanimity and generosity."
+    },
+    {
+      "arabic": "فَٱرْحَمْ عَبْدَكَ ٱلْجَاهِلَ",
+      "transliteration": "farham `abdaka aljahila",
+      "english": "So, (please) have mercy on Your ignorant servant"
+    },
+    {
+      "arabic": "وَجُدْ عَلَيْهِ بِفَضْلِ إِحْسَانِكَ",
+      "transliteration": "wajud `alayhi bifadli ihsanika",
+      "english": "and bestow upon him with the favors of Your beneficence."
+    },
+    {
+      "arabic": "إِنَّكَ جَوَادٌ كَرِيمٌ",
+      "transliteration": "innaka jawadun karimun",
+      "english": "Verily, You are All-magnanimous and All-generous."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ مَالِكِ ٱلْمُلْكِ",
+      "transliteration": "alhamdu lillahi maliki almulki",
+      "english": "All praise be to Allah: the Lord of the sovereignty,"
+    },
+    {
+      "arabic": "مُجْرِي ٱلْفُلْكِ",
+      "transliteration": "mujri alfulki",
+      "english": "Who allows arks to flow [on seas],"
+    },
+    {
+      "arabic": "مُسَخِّرِ ٱلرِّيَاحِ",
+      "transliteration": "musakhkhiri alrriyahi",
+      "english": "Who controls the winds,"
+    },
+    {
+      "arabic": "فَالِقِ ٱلإِصْبَاحِ",
+      "transliteration": "faliqi al-isbahi",
+      "english": "Who causes the day to break,"
+    },
+    {
+      "arabic": "دَيَّانِ ٱلدِّينِ",
+      "transliteration": "dayyani alddini",
+      "english": "Who administers the authority,"
+    },
+    {
+      "arabic": "رَبِّ ٱلْعَالَمِينَ",
+      "transliteration": "rabbi al`alamina",
+      "english": "and Who is the Lord of the worlds."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ عَلَىٰ حِلْمِهِ بَعْدَ عِلْمِهِ",
+      "transliteration": "alhamdu lillahi `ala hilmihi ba`da `ilmihi",
+      "english": "All praise be to Allah for His indulgence although He has full acquaintance with all things."
+    },
+    {
+      "arabic": "وَٱلْحَمْدُ لِلَّهِ عَلَىٰ عَفْوِهِ بَعْدَ قُدْرَتِهِ",
+      "transliteration": "walhamdu lillahi `ala `afwihi ba`da qudratihi",
+      "english": "All praise be to Allah for His amnesty although He has full power over all things."
+    },
+    {
+      "arabic": "وَٱلْحَمْدُ لِلَّهِ عَلَىٰ طُولِ أَنَاتِهِ فِي غَضَبِهِ",
+      "transliteration": "walhamdu lillahi `ala tuli anatihi fi ghadabihi",
+      "english": "All praise be to Allah for the respite that He allows in spite of provocation."
+    },
+    {
+      "arabic": "وَهُوَ قَادِرٌ عَلَىٰ مَا يُرِيدُ",
+      "transliteration": "wa huwa qadirn `ala ma yuridu",
+      "english": "He is able to do whatever He wills."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ خَالِقِ ٱلْخَلْقِ",
+      "transliteration": "alhamdu lillahi khaliqi alkhalqi",
+      "english": "All praise be to Allah, the Creator of all created beings,"
+    },
+    {
+      "arabic": "بَاسِطِ ٱلرِّزْقِ",
+      "transliteration": "basiti alrrizqi",
+      "english": "Who makes sustenance freely available,"
+    },
+    {
+      "arabic": "فَالِقِ ٱلإِصْبَاحِ",
+      "transliteration": "faliqi al-isbahi",
+      "english": "Who starts the day,"
+    },
+    {
+      "arabic": "ذِي ٱلْجَلالِ وَٱلإِكْرَامِ",
+      "transliteration": "dhi aljalali wal-ikrami",
+      "english": "Who is the Owner of glory, might,"
+    },
+    {
+      "arabic": "وَٱلْفَضْلِ وَٱلْإِنْعَامِ",
+      "transliteration": "walfadli wal-in`ami",
+      "english": "favors and bounties;"
+    },
+    {
+      "arabic": "ٱلَّذِي بَعُدَ فَلاَ يُرَىٰ",
+      "transliteration": "alladhi ba`uda fala yura",
+      "english": "and Who is so far away that none can ever see Him"
+    },
+    {
+      "arabic": "وَقَرُبَ فَشَهِدَ النَّجْوَىٰ",
+      "transliteration": "wa qaruba fashahida alnnajwa",
+      "english": "and, in the same time, He is so nigh that He is fully aware of even the whispering secrets."
+    },
+    {
+      "arabic": "تَبَارَكَ وَتَعَالَىٰ",
+      "transliteration": "tabaraka wa ta`ala",
+      "english": "Blessed and Exalted be He."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي لَيْسَ لَهُ مُنَازِعٌ يُعَادِلُهُ",
+      "transliteration": "alhamdu lillahi alladhi laysa lahu munazi`un yu`adiluhu",
+      "english": "All praise be to Allah Who has no equal to challenge Him,"
+    },
+    {
+      "arabic": "وَلاَ شَبِيهٌ يُشَاكِلُهُ",
+      "transliteration": "wa la shabihun yushakiluhu",
+      "english": "nor is there an image comparable to Him,"
+    },
+    {
+      "arabic": "وَلاَ ظَهِيرٌ يُعَاضِدُهُ",
+      "transliteration": "wa la zahirun yu`adiduhu",
+      "english": "nor is there a helper to assist Him."
+    },
+    {
+      "arabic": "قَهَرَ بِعِزَّتِهِ ٱلأَعِزَّاءَ",
+      "transliteration": "qahara bi`izzatihi al-a`izza'a",
+      "english": "He tames the powerful by His force,"
+    },
+    {
+      "arabic": "وَتَوَاضَعَ لِعَظَمَتِهِ ٱلْعُظَمَاءُ",
+      "transliteration": "wa tawada`a li`azamatihi al`uzama'u",
+      "english": "and disgraced are the great ones before His Greatness."
+    },
+    {
+      "arabic": "فَبَلَغَ بِقُدْرَتِهِ مَا يَشَاءُ",
+      "transliteration": "fabalagha biqudratihi ma yasha'u",
+      "english": "So, He, through His power, fulfills that which He wills."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي يُجِيبُنِي حِينَ أُنَادِيهِ",
+      "transliteration": "alhamdu lillahi alladhi yujibuni hina unadihi",
+      "english": "All praise be to Allah Who gives answer to me whenever I call Him,"
+    },
+    {
+      "arabic": "وَيَسْتُرُ عَلَيَّ كُلَّ عَوْرَةٍ وَأَنَا أَعْصِيهِ",
+      "transliteration": "wa yasturu `alayya kulla `awratin wa ana a`sihi",
+      "english": "covers up my shortcomings, yet I disobey Him,"
+    },
+    {
+      "arabic": "وَيُعَظِّمُ ٱلنِّعْمَةَ عَلَيَّ فَلاَ أُجَازِيهِ",
+      "transliteration": "wa yu`azzimu alnni`mata `alayya fala ujazihi",
+      "english": "and gives me the largest part of bounties, yet I do not show him gratitude."
+    },
+    {
+      "arabic": "فَكَمْ مِنْ مَوْهِبَةٍ هَنِيئَةٍ قَدْ أَعْطَانِي",
+      "transliteration": "fakam min mawhibatin hani'atin qad a`tani",
+      "english": "Many an auspicious favor had He given me,"
+    },
+    {
+      "arabic": "وَعَظِيمَةٍ مَخُوفَةٍ قَدْ كَفَانِي",
+      "transliteration": "wa `azimatin makhufatin qad kafani",
+      "english": "many a terrible danger had He turned off,"
+    },
+    {
+      "arabic": "وَبَهْجَةٍ مُونِقَةٍ قَدْ أَرَانِي",
+      "transliteration": "wa bahjatin muniqatin qad arani",
+      "english": "and many a blossoming joy had He made available for me."
+    },
+    {
+      "arabic": "فَأُثْنِي عَلَيْهِ حَامِداً",
+      "transliteration": "fa uthni `alayhi hamidan",
+      "english": "Therefore, I praise Him with thankfulness"
+    },
+    {
+      "arabic": "وَأَذْكُرُهُ مُسَبِّحاً",
+      "transliteration": "wa adhkuruhu musabbihan",
+      "english": "and mention Him with exaltation."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي لاَ يُهْتَكُ حِجَابُهُ",
+      "transliteration": "alhamdu lillahi alladhi la yuhtaku hijabuhu",
+      "english": "All praise be to Allah Whose screen cannot be penetrated,"
+    },
+    {
+      "arabic": "وَلاَ يُغْلَقُ بَابُهُ",
+      "transliteration": "wa la yughlaqu babuhu",
+      "english": "Whose door is not blocked,"
+    },
+    {
+      "arabic": "وَلاَ يُرَدُّ سَائِلُهُ",
+      "transliteration": "wa la yuraddu sa'iluhu",
+      "english": "Whose beseecher is not rejected,"
+    },
+    {
+      "arabic": "وَلاَ يُخَيَّبُ آمِلُهُ",
+      "transliteration": "wa la yukhayyabu amiluhu",
+      "english": "and one who hopes Him is not disappointed."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي يُؤْمِنُ ٱلْخَائِفِينَ",
+      "transliteration": "alhamdu lillahi alladhi yu'minu alkha'ifina",
+      "english": "All praise be to Allah Who secures the frightened ones,"
+    },
+    {
+      "arabic": "وَيُنَجِّي ٱلصَّالِحِينَ",
+      "transliteration": "wa yunajji alssalihina",
+      "english": "comes to the help of the upright ones,"
+    },
+    {
+      "arabic": "وَيَرْفَعُ ٱلْمُسْتَضْعَفِينَ",
+      "transliteration": "wa yarfa`u almustad`afina",
+      "english": "promotes the cause of the weak ones,"
+    },
+    {
+      "arabic": "وَيَضَعُ ٱلْمُسْتَكْبِرِينَ",
+      "transliteration": "wa yada`u almustakbirina",
+      "english": "annihilates the autocrats,"
+    },
+    {
+      "arabic": "وَيُهْلِكُ مُلُوكاً وَيَسْتَخْلِفُ آخَرِينَ",
+      "transliteration": "wa yuhliku mulukan wa yastakhlifu akharina",
+      "english": "destroys rulers, and appoints others instead."
+    },
+    {
+      "arabic": "وَٱلْحَمْدُ لِلَّهِ قَاصِمِ ٱلْجَبَّارِينَ",
+      "transliteration": "walhamdu lillahi qasimi aljabbarina",
+      "english": "All praise be to Allah; the Eradicator of the tyrants,"
+    },
+    {
+      "arabic": "مُبِيرِ ٱلظَّالِمِينَ",
+      "transliteration": "mubiri alzzalimina",
+      "english": "the Terminator of the unjust ones,"
+    },
+    {
+      "arabic": "مُدْرِكِ ٱلْهَارِبِينَ",
+      "transliteration": "mudriki alharibina",
+      "english": "the Catcher of the fugitives,"
+    },
+    {
+      "arabic": "نَكَالِ ٱلظَّالِمِينَ",
+      "transliteration": "nakali alzzalimina",
+      "english": "the Punisher of the unjust ones,"
+    },
+    {
+      "arabic": "صَرِيخِ ٱلْمُسْتَصْرِخِينَ",
+      "transliteration": "sarikhi almustasrikhina",
+      "english": "the Aide of the aid-seekers,"
+    },
+    {
+      "arabic": "مَوْضِعِ حَاجَاتِ ٱلطَّالِبِينَ",
+      "transliteration": "mawdi`i hajati alttalibina",
+      "english": "the Settler of the needs of the beseechers,"
+    },
+    {
+      "arabic": "مُعْتَمَدِ ٱلْمُؤْمِنِينَ",
+      "transliteration": "mu`tamadi almu'minina",
+      "english": "and the support of the faithful believers."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي مِنْ خَشْيَتِهِ تَرْعُدُ ٱلسَّمَاءُ وَسُكَّانُهَا",
+      "transliteration": "alhamdu lillahi alladhi min khashyatihi tar`udu alssama'u wa sukkanuha",
+      "english": "All praise be to Allah! In His awe-inspiring fear the heavens and its dwellers tremble and shiver,"
+    },
+    {
+      "arabic": "وَتَرْجُفُ ٱلأَرْضُ وَعُمَّارُهَا",
+      "transliteration": "wa tarjufu al-ardu wa `ummaruha",
+      "english": "the earth and its inhabitants shake and quiver,"
+    },
+    {
+      "arabic": "وَتَمُوجُ ٱلْبِحَارُ وَمَنْ يَسْبَحُ فِي غَمَرَاتِهَا",
+      "transliteration": "wa tamuju albiharu wa man yasbahu fi ghamaratiha",
+      "english": "and the oceans and all that which float and swim in their waters flow together in excitement and tumult."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي هَدَانَا لِهٰذَا",
+      "transliteration": "alhamdu lillahi alladhi hadana lihadha",
+      "english": "All praise be to Allah Who has guided us to this."
+    },
+    {
+      "arabic": "وَمَا كُنَّا لِنَهْتَدِيَ لَوْلاَ أَنْ هَدَانَا ٱللَّهُ",
+      "transliteration": "wa ma kunna linahtadiya lawla an hadana allahu",
+      "english": "We could not truly have been led aright if Allah had not guided us."
+    },
+    {
+      "arabic": "الْحَمْدُ لِلَّهِ ٱلَّذِي يَخْلُقُ وَلَمْ يُخْلَقْ",
+      "transliteration": "alhamdu lillahi alladhi yakhluqu wa lam yukhlaq",
+      "english": "All praise be to Allah Who creates but He is not created,"
+    },
+    {
+      "arabic": "وَيَرْزُقُ وَلاَ يُرْزَقُ",
+      "transliteration": "wa yarzuqu wa la yurzaqu",
+      "english": "gives subsistence but He needs no provisions,"
+    },
+    {
+      "arabic": "وَيُطْعِمُ وَلاَ يُطْعَمُ",
+      "transliteration": "wa yut`imu wa la yut`amu",
+      "english": "feeds but He takes no nourishment,"
+    },
+    {
+      "arabic": "وَيُمِيتُ ٱلأَحْيَاءَ",
+      "transliteration": "wa yumitu al-ahya'a",
+      "english": "causes the living to die,"
+    },
+    {
+      "arabic": "وَيُحْيِي ٱلْمَوْتَىٰ",
+      "transliteration": "wa yuhyi almawta",
+      "english": "and brings the dead to life,"
+    },
+    {
+      "arabic": "وَهُوَ حَيٌّ لاَ يَمُوتُ",
+      "transliteration": "wa huwa hayyun la yamutu",
+      "english": "but He is the Ever-living Who never dies."
+    },
+    {
+      "arabic": "بِيَدِهِ ٱلْخَيْرُ",
+      "transliteration": "biyadihi alkhayru",
+      "english": "In His hands is all the good"
+    },
+    {
+      "arabic": "وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+      "transliteration": "wa huwa `ala kulli shay`in qadirun",
+      "english": "and He is able to do all things."
+    },
+    {
+      "arabic": "اَللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ عَبْدِكَ وَرَسُولِكَ",
+      "transliteration": "allahumma salli `ala muhammadin `abdika wa rasulika",
+      "english": "O Allah, (please do) send blessings to Muhammad; Your servant, Messenger,"
+    },
+    {
+      "arabic": "وَأَمِينِكَ وَصَفِيِّكَ وَحَبِيبِكَ",
+      "transliteration": "wa aminika wa safiyyika wa habibika",
+      "english": "confidant, friend, beloved intimate,"
+    },
+    {
+      "arabic": "وَخِيَرَتِكَ مِنْ خَلْقِكَ",
+      "transliteration": "wa khiyaratika min khalqika",
+      "english": "the choicest of Your created beings,"
+    },
+    {
+      "arabic": "وَحَافِظِ سِرِّكَ",
+      "transliteration": "wa hafizi sirrika",
+      "english": "the bearer of Your sacraments,"
+    },
+    {
+      "arabic": "وَمُبَلِّغِ رِسَالاَتِكَ",
+      "transliteration": "wa muballighi risalatika",
+      "english": "and the conveyor of Your messages,"
+    },
+    {
+      "arabic": "أَفْضَلَ وَأَحْسَنَ وَأَجْمَلَ",
+      "transliteration": "afdala wa ahsana wa ajmala",
+      "english": "with the most superior, the most exquisite, the most handsomer,"
+    },
+    {
+      "arabic": "وَأَكْمَلَ وَأَزْكَىٰ وَأَنْمَىٰ",
+      "transliteration": "wa akmala wa azka wa anma",
+      "english": "the most perfect, the most upright, the most prospering,"
+    },
+    {
+      "arabic": "وَأَطْيَبَ وَأَطْهَرَ وَأَسْنَىٰ",
+      "transliteration": "wa atyaba wa athara wa asna",
+      "english": "the most pleasant, the most thoroughly purified, the most sublime,"
+    },
+    {
+      "arabic": "وَأَكْثَرَ مَا صَلَّيْتَ وَبَارَكْتَ",
+      "transliteration": "wa akthara ma sallayta wa barakta",
+      "english": "the most and the best blessings, advantages,"
+    },
+    {
+      "arabic": "وَتَرَحَّمْتَ وَتَحَنَّنْتَ",
+      "transliteration": "wa tarahhamta wa tahannanta",
+      "english": "mercies, affections,"
+    },
+    {
+      "arabic": "وَسَلَّمْتَ عَلَىٰ أَحَدٍ مِنْ عِبَادِكَ وَأَنْبِيَائِكَ",
+      "transliteration": "wa sallamta `ala ahadin min `ibadika wa anbiya'ika",
+      "english": "and salutations that You have ever bestowed upon anyone of Your servants, Prophets,"
+    },
+    {
+      "arabic": "وَرُسُلِكَ وَصِفْوَتِكَ",
+      "transliteration": "wa rusulika wa safwatika",
+      "english": "Messengers, choicest people,"
+    },
+    {
+      "arabic": "وَأَهْلِ ٱلْكَرَامَةِ عَلَيْكَ مِنْ خَلْقِكَ",
+      "transliteration": "wa ahli alkaramati `alayka min khalqika",
+      "english": "and those honored by You from among Your created beings."
+    },
+    {
+      "arabic": "اَللَّهُمَّ وَصَلِّ عَلَىٰ عَلِيٍّ أَمِيرِ ٱلْمُؤْمِنِينَ",
+      "transliteration": "allahumma wa salli `ala `aliyyin amiri almu'minina",
+      "english": "O Allah, (please do) send blessings to `Ali; the Commander of the Believers,"
+    },
+    {
+      "arabic": "وَوَصِيِّ رَسُولِ رَبِّ ٱلْعَالَمِينَ",
+      "transliteration": "wa wasiyyi rasuli rabbi al`alamina",
+      "english": "the successor of the Messenger of the Lord of the worlds,"
+    },
+    {
+      "arabic": "عَبْدِكَ وَوَلِيِّكَ وَأَخِي رَسُولِكَ",
+      "transliteration": "`abdika wa waliyyika wa akhi rasulika",
+      "english": "Your servant, Your beloved representative, the brother of Your Messenger,"
+    },
+    {
+      "arabic": "وَحُجَّتِكَ عَلَىٰ خَلْقِكَ",
+      "transliteration": "wa hujjatika `ala khalqika",
+      "english": "Your decisive argument over the mankind,"
+    },
+    {
+      "arabic": "وَآيَتِكَ ٱلْكُبْرَىٰ",
+      "transliteration": "wa ayatika alkubra",
+      "english": "Your most important sign,"
+    },
+    {
+      "arabic": "وَٱلنَّبَإِ ٱلْعَظِيمِ",
+      "transliteration": "walnnaba'i al`azimi",
+      "english": "and the great news (from You)."
+    },
+    {
+      "arabic": "وَصَلِّ عَلَىٰ ٱلصِّدِّيقَةِ ٱلطَّاهِرَةِ",
+      "transliteration": "wa salli `ala alssiddiqati alttahirati",
+      "english": "(Please do) send blessings to the truthful and pure Lady,"
+    },
+    {
+      "arabic": "فَاطِمَةَ سَيِّدَةِ نِسَاءِ ٱلْعَالَمِينَ",
+      "transliteration": "fatimata sayyidati nisa'i al`alamina",
+      "english": "Fatimah; the Doyenne of the women of the world."
+    },
+    {
+      "arabic": "وَصَلِّ عَلَىٰ سِبْطَيِ ٱلرَّحْمَةِ",
+      "transliteration": "wa salli `ala sibtay alrrahmati",
+      "english": "(Please do) send blessings to the sons of ‘the mercy to the worlds’"
+    },
+    {
+      "arabic": "وَإِمَامَيِ ٱلْهُدَىٰ",
+      "transliteration": "wa imamay alhuda",
+      "english": "and the two leaders of true guidance;"
+    },
+    {
+      "arabic": "ٱلْحَسَنِ وَٱلْحُسَيْنِ",
+      "transliteration": "alhasani walhusayni",
+      "english": "al-Hasan and al-Husayn,"
+    },
+    {
+      "arabic": "سَيِّدَيْ شَبَابِ أَهْلِ ٱلْجَنَّةِ",
+      "transliteration": "sayyiday shababi ahli aljannati",
+      "english": "the two Chiefs of the dwellers of Paradise."
+    },
+    {
+      "arabic": "وَصَلِّ عَلَىٰ أَئِمَّةِ ٱلْمُسْلِمِينَ",
+      "transliteration": "wa salli `ala a'immati almuslimina",
+      "english": "(Please do) send blessings to the leaders of the Muslims;"
+    },
+    {
+      "arabic": "عَلِيِّ بْنِ ٱلْحُسَيْنِ",
+      "transliteration": "`aliyyi ibni alhusayni",
+      "english": "`Ali bin al-Husayn,"
+    },
+    {
+      "arabic": "وَمُحَمَّدِ بْنِ عَلِيٍّ",
+      "transliteration": "wa muhammadi ibni `aliyyin",
+      "english": "Muhammad bin `Ali,"
+    },
+    {
+      "arabic": "وَجَعْفَرِ بْنِ مُحَمَّدٍ",
+      "transliteration": "wa ja`fari ibni muhammadin",
+      "english": "Ja`far bin Muhammad,"
+    },
+    {
+      "arabic": "وَمُوسَىٰ بْنِ جَعْفَرٍ",
+      "transliteration": "wa musa ibni ja`farin",
+      "english": "Musa bin Ja`far,"
+    },
+    {
+      "arabic": "وَعَلِيِّ بْنِ مُوسَىٰ",
+      "transliteration": "wa `aliyyi ibni musa",
+      "english": "`Ali bin Musa,"
+    },
+    {
+      "arabic": "وَمُحَمَّدِ بْنِ عَلِيٍّ",
+      "transliteration": "wa muhammadi ibni `aliyyin",
+      "english": "Muhammad bin `Ali,"
+    },
+    {
+      "arabic": "وَعَلِيِّ بْنِ مُحَمَّدٍ",
+      "transliteration": "wa `aliyyi ibni muhammadin",
+      "english": "`Ali bin Muhammad,"
+    },
+    {
+      "arabic": "وَٱلْحَسَنِ بْنِ عَلِيٍّ",
+      "transliteration": "walhasani ibni `aliyyin",
+      "english": "al-Hasan bin `Ali,"
+    },
+    {
+      "arabic": "وَٱلْخَلَفِ ٱلْهَادِي ٱلْمَهْدِيِّ",
+      "transliteration": "walkhalafi alhadi almahdiyyi",
+      "english": "and the successor, the guide, and the rightly guided:"
+    },
+    {
+      "arabic": "حُجَجِكَ عَلَىٰ عِبَادِكَ",
+      "transliteration": "hujajika `ala `ibadika",
+      "english": "(Those Imams are) Your decisive arguments over Your servants"
+    },
+    {
+      "arabic": "وَأُمَنَائِكَ فِي بِلادِكَ",
+      "transliteration": "wa umana'ika fi biladika",
+      "english": "and Your trustworthy confidants in Your lands"
+    },
+    {
+      "arabic": "صَلاةً كَثِيرَةً دَائِمَةً",
+      "transliteration": "salatan kathiratan da'imatan",
+      "english": "with blessings that are numerous and non-stop."
+    },
+    {
+      "arabic": "اَللَّهُمَّ وَصَلِّ عَلَىٰ وَليِّ أَمْرِكَ",
+      "transliteration": "allahumma wa salli `ala waliyyi amrika",
+      "english": "O Allah, (please do) send blessings to the custodian of Your commandments,"
+    },
+    {
+      "arabic": "ٱلْقَائِمِ ٱلْمُؤَمَّلِ",
+      "transliteration": "alqa'imi almu'ammali",
+      "english": "the vigilant guardian, the reliable patron,"
+    },
+    {
+      "arabic": "وَٱلْعَدْلِ ٱلْمُنْتَظَرِ",
+      "transliteration": "wal`adli almuntazari",
+      "english": "and the awaited establisher of justice."
+    },
+    {
+      "arabic": "وَحُفَّهُ بِمَلائِكَتِكَ ٱلْمُقَرَّبِينَ",
+      "transliteration": "wa huffahu bimala'ikatika almuqarrabina",
+      "english": "And (please) surround him with Your favorite angels"
+    },
+    {
+      "arabic": "وَأَيِّدْهُ بِرُوحِ ٱلْقُدُسِ",
+      "transliteration": "wa ayyid-hu biruhi alqudusi",
+      "english": "and assist him with the Holy Spirit."
+    },
+    {
+      "arabic": "يَا رَبَّ ٱلْعَالَمِينَ",
+      "transliteration": "ya rabba al`alamina",
+      "english": "O Lord of the worlds!"
+    },
+    {
+      "arabic": "اَللَّهُمَّ ٱجْعَلْهُ ٱلدَّاعِيَ إِلَىٰ كِتَابِكَ",
+      "transliteration": "allahumma ij`alhu aldda`iya ila kitabika",
+      "english": "O Allah, (please) choose him to be the caller to Your Book"
+    },
+    {
+      "arabic": "وَٱلْقَائِمَ بِدِينِكَ",
+      "transliteration": "walqa'ima bidinika",
+      "english": "and the establisher of Your religion;"
+    },
+    {
+      "arabic": "ٱسْتَخْلِفْهُ فِي ٱلأَرْضِ",
+      "transliteration": "istakhlifhu fil-ardi",
+      "english": "make him succeed in the earth"
+    },
+    {
+      "arabic": "كَمَا ٱسْتَخْلَفْتَ ٱلَّذِينَ مِنْ قَبْلِهِ",
+      "transliteration": "kama istakhlafta alladhina min qablihi",
+      "english": "as You caused those who were before him to succeed,"
+    },
+    {
+      "arabic": "مَكِّنْ لَهُ دِينَهُ ٱلَّذِي ٱرْتَضَيْتَهُ لَهُ",
+      "transliteration": "makkin lahu dinahu alladhi irtadaytahu lahu",
+      "english": "establish for him his faith which You have approved for him,"
+    },
+    {
+      "arabic": "أَبْدِلْهُ مِنْ بَعْدِ خَوْفِهِ أَمْناً",
+      "transliteration": "abdilhu min ba`di khawfihi amnan",
+      "english": "and give him in exchange safety after the fear."
+    },
+    {
+      "arabic": "يَعْبُدُكَ لاَ يُشْرِكُ بِكَ شَيْئاً",
+      "transliteration": "ya`buduka ya yushriku bika shay'an",
+      "english": "He serves You. He ascribes nothing as partner to You."
+    },
+    {
+      "arabic": "اَللَّهُمَّ أَعِزَّهُ وَأَعْزِزْ بِهِ",
+      "transliteration": "allahumma a`izzahu wa a`ziz bihi",
+      "english": "O Allah, (please) grant him power, make him the source of power,"
+    },
+    {
+      "arabic": "وَٱنْصُرْهُ وَٱنْتَصِرْ بِهِ",
+      "transliteration": "wansurhu wantasir bihi",
+      "english": "grant him support, make him the means of Your victory,"
+    },
+    {
+      "arabic": "وَٱنْصُرْهُ نَصْراً عَزِيزاً",
+      "transliteration": "wansurhu nasran `azizan",
+      "english": "help him with a mighty help,"
+    },
+    {
+      "arabic": "وَٱفْتَحْ لَهُ فَتْحاً يَسِيراً",
+      "transliteration": "waftah lahu fathan yasiran",
+      "english": "make him prevail over all with easiness,"
+    },
+    {
+      "arabic": "وَٱجْعَلْ لَهُ مِنْ لَدُنْكَ سُلْطَاناً نَصِيراً",
+      "transliteration": "waj`al lahu min ladunka sultanan nasiran",
+      "english": "and delegate him Your controlling authority."
+    },
+    {
+      "arabic": "اَللَّهُمَّ أَظْهِرْ بِهِ دِينَكَ وَسُنَّةَ نَبِيِّكَ",
+      "transliteration": "allahumma azhir bihi dinaka wa sunnata nabiyyika",
+      "english": "O Allah, (please) make prevalent Your religion and the norms of Your Prophet through him"
+    },
+    {
+      "arabic": "حَتَّىٰ لاَ يَسْتَخْفِيَ بِشَيْءٍ مِنَ ٱلْحَقِّ",
+      "transliteration": "hatta la yastakhfiya bishay'in min alhaqqi",
+      "english": "so that he will not have to hide any item of truth"
+    },
+    {
+      "arabic": "مَخَافَةَ أَحَدٍ مِنَ ٱلْخَلْقِ",
+      "transliteration": "makhafata ahadin min alkhalqi",
+      "english": "for fear of any of the creatures."
+    },
+    {
+      "arabic": "اَللَّهُمَّ إِنَّا نَرْغَبُ إِلَيْكَ فِي دَوْلَةٍ كَرِيمَةٍ",
+      "transliteration": "allahumma inna narghabu ilayka fi dawlatin karimatin",
+      "english": "O Allah, we ardently desire that You confer upon us a respectful government"
+    },
+    {
+      "arabic": "تُعِزُّ بِهَا ٱلإِسْلاَمَ وَأَهْلَهُ",
+      "transliteration": "tu`izzu biha al-islama wa ahlahu",
+      "english": "through which You may give might to Islam and its followers,"
+    },
+    {
+      "arabic": "وَتُذِلُّ بِهَا ٱلنِّفَاقَ وَأَهْلَهُ",
+      "transliteration": "wa tudhillu biha alnnifaqa wa ahlahu",
+      "english": "humiliate hypocrisy and its people,"
+    },
+    {
+      "arabic": "وَتَجْعَلُنَا فِيهَا مِنَ ٱلدُّعَاةِ إِلَىٰ طَاعَتِكَ",
+      "transliteration": "wa taj`aluna fiha min alddu`ati ila ta`atika",
+      "english": "and include us among those who invite people to the obedience to You and"
+    },
+    {
+      "arabic": "وَٱلْقَادَةِ إِلَىٰ سَبِيلِكَ",
+      "transliteration": "walqadati ila sabilika",
+      "english": "and lead them to Your approved path."
+    },
+    {
+      "arabic": "وَتَرْزُقُنَا بِهَا كَرَامَةَ ٱلدُّنْيَا وَٱلآخِرَةِ",
+      "transliteration": "wa tarzuquna biha karamata alddunya wal-akhirati",
+      "english": "Give us the good of this world and the world to come."
+    },
+    {
+      "arabic": "اَللَّهُمَّ مَا عَرَّفْتَنَا مِنَ ٱلْحَقِّ فَحَمِّلْنَاهُ",
+      "transliteration": "allahumma ma `arraftana min alhaqqi fahammilnahu",
+      "english": "O Allah, let us bear out that which You make known to us as the truth"
+    },
+    {
+      "arabic": "وَمَا قَصُرْنَا عَنْهُ فَبَلِّغْنَاهُ",
+      "transliteration": "wa ma qasurna `anhu faballighnahu",
+      "english": "and let us attain that which we fall short to do."
+    },
+    {
+      "arabic": "اَللَّهُمَّ ٱلْمُمْ بِه شَعَثَنَا",
+      "transliteration": "allahumma ilmum bihi sha`athana",
+      "english": "O Allah, through him, set in order our disorder,"
+    },
+    {
+      "arabic": "وَٱشْعَبْ بِهِ صَدْعَنَا",
+      "transliteration": "wash`ib bihi sad`ana",
+      "english": "through him gather and unite our flock,"
+    },
+    {
+      "arabic": "وَٱرْتُقْ بِهِ فَتْقَنَا",
+      "transliteration": "wartuq bihi fatqana",
+      "english": "through him stitch together our ripped open separation,"
+    },
+    {
+      "arabic": "وَكَثِّرْ بِهِ قِلَّتَنَا",
+      "transliteration": "wa kaththir bihi qillatana",
+      "english": "through him increase our few numbers,"
+    },
+    {
+      "arabic": "وَأَعْزِزْ بِهِ ذِلَّتَنَا",
+      "transliteration": "wa a`ziz bihi dhillatana",
+      "english": "through him lift us up from our degradation,"
+    },
+    {
+      "arabic": "وَأَغْنِ بِهِ عَائِلَنَا",
+      "transliteration": "wa aghni bihi `a'ilana",
+      "english": "through him grant wealth to the needy among us,"
+    },
+    {
+      "arabic": "وَٱقْضِ بِهِ عَنْ مُغْرَمِنَا",
+      "transliteration": "waqdi bihi `an mughramina",
+      "english": "through him pull us out from our debts,"
+    },
+    {
+      "arabic": "وَٱجْبُرْ بِهِ فَقْرَنَا",
+      "transliteration": "wajbur bihi faqrana",
+      "english": "through him set up our poverty,"
+    },
+    {
+      "arabic": "وَسُدَّ بِهِ خَلَّتَنَا",
+      "transliteration": "wa sudda bihi khallatana",
+      "english": "through him fill the gap of confusion among us,"
+    },
+    {
+      "arabic": "وَيَسِّرْ بِهِ عُسْرَنَا",
+      "transliteration": "wa yassir bihi `usrana",
+      "english": "through him make easy all difficulties we may face,"
+    },
+    {
+      "arabic": "وَبَيِّضْ بِهِ وُجُوهَنَا",
+      "transliteration": "wa bayyid bihi wujuhana",
+      "english": "through him refine our substance and style,"
+    },
+    {
+      "arabic": "وَفُكَّ بِهِ أَسْرَنَا",
+      "transliteration": "wa fukka bihi asrana",
+      "english": "through him release us from captivity,"
+    },
+    {
+      "arabic": "وَأَنْجِحْ بِهِ طَلِبَتَنَا",
+      "transliteration": "wa anjih bihi talibatana",
+      "english": "through him make successful our applications,"
+    },
+    {
+      "arabic": "وَأَنْجِزْ بِهِ مَوَاعِيدَنَا",
+      "transliteration": "wa anjiz bihi mawa`idana",
+      "english": "through him fulfill Your promises to us,"
+    },
+    {
+      "arabic": "وَٱسْتَجِبْ بِهِ دَعْوَتَنَا",
+      "transliteration": "wastajib bihi da`watana",
+      "english": "through him give answer to our prayers,"
+    },
+    {
+      "arabic": "وَأَعْطِنَا بِهِ سُؤْلَنَا",
+      "transliteration": "wa a`tina bihi su'lana",
+      "english": "through him respond to our requests,"
+    },
+    {
+      "arabic": "وَبَلِّغْنَا بِهِ مِنَ ٱلدُّنْيَا وَٱلآخِرَةِ آمَالَنَا",
+      "transliteration": "wa ballighna bihi min alddunya wal-akhirati amalana",
+      "english": "through him make us attain our hopes in this world as well as the world to come,"
+    },
+    {
+      "arabic": "وَأَعْطِنَا بِهِ فَوْقَ رَغْبَتِنَا",
+      "transliteration": "wa a`tina bihi fawqa raghbatina",
+      "english": "and through him grant us beyond our wishes."
+    },
+    {
+      "arabic": "يَا خَيْرَ ٱلْمَسْؤُولِينَ",
+      "transliteration": "ya khayra almas'ulina",
+      "english": "O Most Favorable of all those whom may be besought"
+    },
+    {
+      "arabic": "وَأَوْسَعَ ٱلْمُعْطِينَ",
+      "transliteration": "wa awsa`a almu`tina",
+      "english": "and Most magnanimous of all those who may grant requests!"
+    },
+    {
+      "arabic": "ٱشْفِ بِهِ صُدُورَنَا",
+      "transliteration": "ishfi bihi sudurana",
+      "english": "Through him, heal our breasts,"
+    },
+    {
+      "arabic": "وَأَذْهِبْ بِهِ غَيْظَ قُلُوبِنَا",
+      "transliteration": "wa adhhib bihi ghayza qulubina",
+      "english": "Through him, remove the rage of our hearts,"
+    },
+    {
+      "arabic": "وَٱهْدِنَا بِهِ لِمَا ٱخْتُلِفَ فِيهِ مِنَ ٱلْحَقِّ بِإِذْنِكَ",
+      "transliteration": "wahdina bihi lima ukhtulifa fihi min alhaqqi bi'idhnika",
+      "english": "and in the event of dispute in the matter of truth, Through him, show us the right path."
+    },
+    {
+      "arabic": "إِنَّكَ تَهْدِي مَنْ تَشَاءُ إِلَىٰ صِرَاطٍ مُسْتَقِيمٍ",
+      "transliteration": "innaka tahdi man tasha'u ila siratin mustaqimin",
+      "english": "Verily, You guide whosoever You will to the Right Path."
+    },
+    {
+      "arabic": "وَٱنْصُرْنَا بِهِ عَلَىٰ عَدُوِّكَ وَعَدُوِّنَا",
+      "transliteration": "wansurna bihi `ala `aduwwina wa `aduwwika",
+      "english": "Grant us victory Through him, over Your and our enemy."
+    },
+    {
+      "arabic": "إِلٰهَ ٱلْحَقِّ آمِينَ",
+      "transliteration": "ilaha alhaqqi amina",
+      "english": "O God of Truth, respond to us!"
+    },
+    {
+      "arabic": "اَللَّهُمَّ إِنَّا نَشْكُو إِلَيْكَ",
+      "transliteration": "allahumma inna nashku ilayka",
+      "english": "O Allah, we complain to You"
+    },
+    {
+      "arabic": "فَقْدَ نَبِيِّنَا صَلَوَاتُكَ عَلَيْهِ وَآلِهِ",
+      "transliteration": "faqda nabiyyina salawatuka `alayhi wa alihi",
+      "english": "about the departure of our Prophet, Your blessings be on him and on his Household,"
+    },
+    {
+      "arabic": "وَغَيْبَةَ وَلِيِّنَا",
+      "transliteration": "wa ghaybata waliyyina",
+      "english": "the absence of our leader,"
+    },
+    {
+      "arabic": "وَكَثْرَةَ عَدُوِّنَا",
+      "transliteration": "wa kathrata `aduwwina",
+      "english": "the big numbers of our enemies,"
+    },
+    {
+      "arabic": "وَقِلَّةَ عَدَدِنَا",
+      "transliteration": "wa qillata `adadina",
+      "english": "the few number of us,"
+    },
+    {
+      "arabic": "وَشِدَّةَ ٱلْفِتَنِ بِنَا",
+      "transliteration": "wa shiddata alfitani bina",
+      "english": "widespread disorder,"
+    },
+    {
+      "arabic": "وَتَظَاهُرَ ٱلزَّمَانِ عَلَيْنَا",
+      "transliteration": "wa tazahura alzzamani `alayna",
+      "english": "and vicissitudes of time against us."
+    },
+    {
+      "arabic": "فَصَلِّ عَلَىٰ مُحَمَّدٍ وَآلِهِ",
+      "transliteration": "fasalli `ala muhammadin wa alihi",
+      "english": "So, (please do) send blessings to Muhammad and his Household"
+    },
+    {
+      "arabic": "وَأَعِنَّا عَلَىٰ ذٰلِكَ بِفَتْحٍ مِنْكَ تُعَجِّلُهُ",
+      "transliteration": "wa a`inna `ala dhalika bifathin minka tu`ajjiluhu",
+      "english": "and help us overcome all that through victory from You that You expedite,"
+    },
+    {
+      "arabic": "وَبِضُرٍّ تَكْشِفُهُ",
+      "transliteration": "wa bidurrin takshifuhu",
+      "english": "through relieving us from our injuries,"
+    },
+    {
+      "arabic": "وَنَصْرٍ تُعِزُّهُ",
+      "transliteration": "wa nasrin tu`izzuhu",
+      "english": "through Your help that You confirm,"
+    },
+    {
+      "arabic": "وَسُلْطَانِ حَقٍّ تُظْهِرُهُ",
+      "transliteration": "wa sultani haqqin tuzhiruhu",
+      "english": "through bringing in the rule of justice and fair-play,"
+    },
+    {
+      "arabic": "وَرَحْمَةٍ مِنْكَ تُجَلِّلُنَاهَا",
+      "transliteration": "wa rahmatin minka tujallilunaha",
+      "english": "through mercy that You expand over us,"
+    },
+    {
+      "arabic": "وَعَافِيَةٍ مِنْكَ تُلْبِسُنَاهَا",
+      "transliteration": "wa `afiyatin minka tulbisunaha",
+      "english": "and through good health that You cover us with,"
+    },
+    {
+      "arabic": "بِرَحْمَتِكَ يَا أَرْحَمَ ٱلرَّاحِمِينَ",
+      "transliteration": "birahmatika ya arhama alrrahimina",
+      "english": "in the name of Your mercy, O most Merciful of all those who show mercy!"
     }
   ]
 }
