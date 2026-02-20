@@ -153,6 +153,37 @@ button.secondary {
   font-size: 13px;
 }
 
+.preview-panel {
+  gap: 12px;
+}
+
+.preview-panel p {
+  margin: 0;
+}
+
+.preview-arabic {
+  direction: rtl;
+  text-align: center;
+  line-height: 1.8;
+  font-size: clamp(22px, 6vw, 34px);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", "Traditional Arabic", serif;
+}
+
+.preview-translation {
+  line-height: 1.6;
+  font-size: clamp(15px, 3.6vw, 20px);
+  color: var(--text-primary);
+}
+
+.preview-transliteration {
+  line-height: 1.5;
+  font-size: clamp(13px, 3.2vw, 17px);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 @media (min-width: 720px) {
   .controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));

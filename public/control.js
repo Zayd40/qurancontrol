@@ -15,7 +15,10 @@ const els = {
   lineJumpBtn: document.getElementById('lineJumpBtn'),
   lineHint: document.getElementById('lineHint'),
   prevBtn: document.getElementById('prevBtn'),
-  nextBtn: document.getElementById('nextBtn')
+  nextBtn: document.getElementById('nextBtn'),
+  previewArabic: document.getElementById('previewArabic'),
+  previewTranslation: document.getElementById('previewTranslation'),
+  previewTransliteration: document.getElementById('previewTransliteration')
 };
 
 let ws = null;
@@ -187,6 +190,16 @@ function renderCurrentRef(content) {
   els.currentRef.textContent = content.header || 'Awaiting state...';
 }
 
+function renderContentPreview(content) {
+  if (!content) {
+    return;
+  }
+
+  els.previewArabic.textContent = content.arabic || '—';
+  els.previewTranslation.textContent = content.translation || '';
+  els.previewTransliteration.textContent = content.transliteration || '';
+}
+
 function applyState(state, content) {
   if (!state) {
     return;
@@ -220,6 +233,7 @@ function applyState(state, content) {
 
   if (content) {
     renderCurrentRef(content);
+    renderContentPreview(content);
   }
 }
 
