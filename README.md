@@ -84,14 +84,12 @@ Example logo setup:
 
 ## Data Files (Offline)
 
-- Current bundled file: `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.json`
-- It is a **seed dataset** for immediate offline testing.
+- Full dataset (already included): `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.full.json`
+- Fallback seed dataset: `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.json`
 - Surah metadata (all 114 surahs + ayah counts):
   - `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/surah-metadata.json`
 
-### Add Full Offline Dataset (Recommended)
-
-To support full content for all Surah/Ayah:
+### Replace/Update Full Offline Dataset
 
 1. Create file:
    - `/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.full.json`
