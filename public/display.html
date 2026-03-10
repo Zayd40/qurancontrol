@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Qur'an Display</title>
+    <title>Al Zahraa Centre Display</title>
     <link rel="stylesheet" href="/theme.css" />
     <link rel="stylesheet" href="/display.css" />
   </head>
@@ -14,34 +14,38 @@
           <img id="brandLogo" class="brand-logo hidden" alt="Logo" />
           <span id="brandText">Al Zahraa Centre</span>
         </div>
-        <div class="content-meta" id="contentMeta">Al-Fatihah (1) · Ayah 1</div>
+
+        <div class="context-head">
+          <p id="modeContext" class="mode-context">Quran Mode</p>
+          <p id="contentMeta" class="content-meta">Al-Fatihah (1) · Ayah 1</p>
+        </div>
+
         <div class="clock" id="clock">00:00</div>
       </header>
 
-      <main class="content" id="contentArea">
-        <section class="text-block arabic-block">
-          <p id="arabicText" class="fit-text arabic" data-min="30" data-max="125"></p>
-        </section>
-
-        <section class="text-block translation-block">
-          <p id="translationText" class="fit-text translation" data-min="20" data-max="58"></p>
-        </section>
-
-        <section class="text-block transliteration-block">
-          <p
-            id="transliterationText"
-            class="fit-text transliteration"
-            data-min="16"
-            data-max="44"
-          ></p>
+      <main class="content-shell">
+        <section class="content-card">
+          <div class="content-viewport" id="contentViewport">
+            <div class="content-stack" id="contentStack">
+              <p id="slideTitle" class="content-field title hidden"></p>
+              <p id="slideInstruction" class="content-field instruction hidden"></p>
+              <p id="slideRepeat" class="content-field repeat hidden"></p>
+              <p id="slideReference" class="content-field reference hidden"></p>
+              <p id="slideArabic" class="content-field arabic hidden"></p>
+              <p id="slideTransliteration" class="content-field transliteration hidden"></p>
+              <p id="slideEnglish" class="content-field english hidden"></p>
+              <p id="slideNote" class="content-field note hidden"></p>
+            </div>
+          </div>
         </section>
       </main>
 
       <div class="status-pill" id="connectionLabel">Awaiting controller</div>
 
       <aside class="qr-overlay" id="qrOverlay">
-        <img id="qrImage" alt="Control QR" />
-        <p>Scan to control</p>
+        <img id="qrImage" alt="Controller QR code" />
+        <p class="qr-label">Scan to open the controller</p>
+        <p class="qr-url" id="qrUrl"></p>
       </aside>
     </div>
 

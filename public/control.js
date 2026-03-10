@@ -1,48 +1,46 @@
 const els = {
   brandText: document.getElementById('brandText'),
+  modeLabel: document.getElementById('modeLabel'),
   currentRef: document.getElementById('currentRef'),
   lockMessage: document.getElementById('lockMessage'),
-  modeQuranBtn: document.getElementById('modeQuranBtn'),
-  modeDuaBtn: document.getElementById('modeDuaBtn'),
+  lockedTitle: document.getElementById('lockedTitle'),
+  lockedDescription: document.getElementById('lockedDescription'),
   quranPanel: document.getElementById('quranPanel'),
-  duaPanel: document.getElementById('duaPanel'),
   surahSelect: document.getElementById('surahSelect'),
   ayahInput: document.getElementById('ayahInput'),
-  jumpBtn: document.getElementById('jumpBtn'),
-  boundsHint: document.getElementById('boundsHint'),
-  duaSelect: document.getElementById('duaSelect'),
+  ayahJumpBtn: document.getElementById('ayahJumpBtn'),
+  ayahHint: document.getElementById('ayahHint'),
+  duaPanel: document.getElementById('duaPanel'),
+  duaTitle: document.getElementById('duaTitle'),
   lineInput: document.getElementById('lineInput'),
   lineJumpBtn: document.getElementById('lineJumpBtn'),
   lineHint: document.getElementById('lineHint'),
+  guidedPanel: document.getElementById('guidedPanel'),
+  eventTitle: document.getElementById('eventTitle'),
+  sectionStatus: document.getElementById('sectionStatus'),
+  sectionButtons: document.getElementById('sectionButtons'),
   prevBtn: document.getElementById('prevBtn'),
   nextBtn: document.getElementById('nextBtn'),
-  previewArabic: document.getElementById('previewArabic'),
-  previewTranslation: document.getElementById('previewTranslation'),
-  previewTransliteration: document.getElementById('previewTransliteration')
+  preview: {
+    title: document.getElementById('previewTitle'),
+    instruction: document.getElementById('previewInstruction'),
+    repeat: document.getElementById('previewRepeat'),
+    reference: document.getElementById('previewReference'),
+    arabic: document.getElementById('previewArabic'),
+    transliteration: document.getElementById('previewTransliteration'),
+    english: document.getElementById('previewEnglish'),
+    note: document.getElementById('previewNote')
+  }
 };
 
 let ws = null;
 let reconnectTimer = null;
 let heartbeatTimer = null;
-
 let surahs = [];
 const surahByNumber = new Map();
 
-let duas = [];
-const duaById = new Map();
-
-let currentState = {
-  mode: 'quran',
-  quran: {
-    surahNumber: 1,
-    ayahNumber: 1
-  },
-  dua: {
-    duaId: '',
-    lineIndex: 1
-  }
-};
-
+let currentSession = null;
+let currentContent = null;
 let lockState = {
   isActiveController: false,
   lockedByAnother: false,
@@ -58,183 +56,224 @@ function controlsEnabled() {
   return lockState.isActiveController && ws && ws.readyState === WebSocket.OPEN;
 }
 
+function setFieldText(element, value) {
+  const text = String(value || '').trim();
+  element.textContent = text;
+  element.classList.toggle('hidden', text.length === 0);
+}
+
 function getAyahMax(surahNumber) {
   return surahByNumber.get(Number(surahNumber))?.ayahCount || 1;
 }
 
 function clampAyah(surahNumber, ayahNumber) {
   const max = getAyahMax(surahNumber);
-  const value = Number(ayahNumber) || 1;
-  return Math.max(1, Math.min(max, value));
+  const numericValue = Number(ayahNumber) || 1;
+  return Math.max(1, Math.min(max, numericValue));
 }
 
-function getDuaTotalLines(duaId) {
-  return duaById.get(String(duaId || '').toLowerCase())?.totalLines || 1;
+function syncAyahInput(surahNumber, ayahNumber) {
+  const max = getAyahMax(surahNumber);
+  const clamped = clampAyah(surahNumber, ayahNumber);
+  els.ayahInput.max = String(max);
+  els.ayahInput.value = String(clamped);
+  els.ayahHint.textContent = `Max ayah: ${max}`;
+  return clamped;
 }
 
-function clampLine(duaId, lineIndex) {
-  const max = getDuaTotalLines(duaId);
-  const value = Number(lineIndex) || 1;
-  return Math.max(1, Math.min(max, value));
+function syncLineInput(lineIndex, totalLines) {
+  const max = Math.max(1, Number(totalLines) || 1);
+  const clamped = Math.max(1, Math.min(max, Number(lineIndex) || 1));
+  els.lineInput.max = String(max);
+  els.lineInput.value = String(clamped);
+  els.lineHint.textContent = `Line ${clamped} / ${max}`;
+  return clamped;
 }
 
 function populateSurahSelect() {
-  const sorted = [...surahs].sort((a, b) => a.number - b.number);
-  const selected = Number(els.surahSelect.value || currentState.quran.surahNumber || 1);
-
+  const selected = String(currentSession?.quran?.surahNumber || 1);
   els.surahSelect.innerHTML = '';
-  for (const surah of sorted) {
+
+  surahs.forEach((surah) => {
     const option = document.createElement('option');
     option.value = String(surah.number);
     option.textContent = `${surah.number}. ${surah.nameEnglish}`;
     els.surahSelect.appendChild(option);
+  });
+
+  els.surahSelect.value = selected;
+}
+
+function renderGuidedSections() {
+  els.sectionButtons.innerHTML = '';
+
+  const sections = currentSession?.lockedEvent?.sections || [];
+  const currentIndex = Number(currentSession?.guidedEvent?.sectionIndex) || 0;
+
+  sections.forEach((section) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'section-btn';
+    button.textContent = `${section.index + 1}. ${section.title}`;
+    button.disabled = !controlsEnabled();
+    button.classList.toggle('active', section.index === currentIndex);
+    button.addEventListener('click', () => send({ type: 'jump_section', sectionIndex: section.index }));
+    els.sectionButtons.appendChild(button);
+  });
+}
+
+function renderSessionPanels() {
+  const sessionType = currentSession?.sessionType || 'quran';
+
+  els.quranPanel.classList.toggle('hidden', sessionType !== 'quran');
+  els.duaPanel.classList.toggle('hidden', sessionType !== 'dua');
+  els.guidedPanel.classList.toggle('hidden', sessionType !== 'guided_event');
+
+  if (sessionType === 'quran') {
+    els.prevBtn.textContent = 'Previous Ayah';
+    els.nextBtn.textContent = 'Next Ayah';
+    els.lockedTitle.textContent = 'Quran Mode';
+    els.lockedDescription.textContent = 'This phone can choose the surah, jump to an ayah, and move to the previous or next ayah only.';
+    return;
   }
 
-  els.surahSelect.value = String(selected);
-}
-
-function populateDuaSelect() {
-  const selected = String(els.duaSelect.value || currentState.dua.duaId || '').toLowerCase();
-
-  els.duaSelect.innerHTML = '';
-  for (const dua of duas) {
-    const option = document.createElement('option');
-    option.value = dua.id;
-    option.textContent = dua.title;
-    els.duaSelect.appendChild(option);
+  if (sessionType === 'dua') {
+    els.prevBtn.textContent = 'Previous Line';
+    els.nextBtn.textContent = 'Next Line';
+    els.lockedTitle.textContent = currentSession?.lockedDua?.title || 'Dua Mode';
+    els.lockedDescription.textContent = 'This phone can move through the selected dua line by line and jump directly to a line. Changing the dua is disabled.';
+    return;
   }
 
-  if (selected && duaById.has(selected)) {
-    els.duaSelect.value = selected;
-  } else if (duas.length > 0) {
-    els.duaSelect.value = duas[0].id;
+  els.prevBtn.textContent = 'Previous Slide';
+  els.nextBtn.textContent = 'Next Slide';
+  els.lockedTitle.textContent = currentSession?.lockedEvent?.title || 'Guided Event Mode';
+  els.lockedDescription.textContent = 'This phone can move through slides and jump to a section only. Changing the event is disabled.';
+}
+
+function renderPreview(content) {
+  if (!content) {
+    return;
   }
+
+  els.modeLabel.textContent = content.modeLabel || currentSession?.modeLabel || 'Presenter';
+  els.currentRef.textContent = content.header || '';
+  setFieldText(els.preview.title, content.title);
+  setFieldText(els.preview.instruction, content.instruction);
+  setFieldText(els.preview.repeat, content.repeat);
+  setFieldText(els.preview.reference, content.reference);
+  setFieldText(els.preview.arabic, content.arabic);
+  setFieldText(els.preview.transliteration, content.transliteration);
+  setFieldText(els.preview.english, content.english);
+  setFieldText(els.preview.note, content.note);
 }
 
-function syncAyahBounds(surahNumber, desiredAyah) {
-  const max = getAyahMax(surahNumber);
-  const ayahNumber = clampAyah(surahNumber, desiredAyah);
+function renderSessionState() {
+  if (!currentSession) {
+    return;
+  }
 
-  els.ayahInput.max = String(max);
-  els.ayahInput.value = String(ayahNumber);
-  els.boundsHint.textContent = `Max ayah: ${max}`;
+  renderSessionPanels();
 
-  return ayahNumber;
-}
+  if (currentSession.sessionType === 'quran') {
+    els.surahSelect.value = String(currentSession.quran?.surahNumber || 1);
+    syncAyahInput(currentSession.quran?.surahNumber || 1, currentSession.quran?.ayahNumber || 1);
+  }
 
-function syncDuaLineBounds(duaId, desiredLine) {
-  const max = getDuaTotalLines(duaId);
-  const lineIndex = clampLine(duaId, desiredLine);
+  if (currentSession.sessionType === 'dua') {
+    const lockedDua = currentSession.lockedDua;
+    els.duaTitle.textContent = lockedDua?.title || 'Dua';
+    syncLineInput(currentSession.dua?.lineIndex || 1, lockedDua?.totalLines || 1);
+  }
 
-  els.lineInput.max = String(max);
-  els.lineInput.value = String(lineIndex);
-  els.lineHint.textContent = `Line ${lineIndex} / ${max}`;
+  if (currentSession.sessionType === 'guided_event') {
+    const lockedEvent = currentSession.lockedEvent;
+    const guidedEvent = currentSession.guidedEvent || { sectionIndex: 0, slideIndex: 0 };
+    const currentSection = lockedEvent?.sections?.[guidedEvent.sectionIndex];
 
-  return lineIndex;
-}
-
-function applyModeUi(mode) {
-  const isDua = mode === 'dua';
-
-  els.modeQuranBtn.classList.toggle('active', !isDua);
-  els.modeDuaBtn.classList.toggle('active', isDua);
-  els.quranPanel.classList.toggle('hidden', isDua);
-  els.duaPanel.classList.toggle('hidden', !isDua);
-
-  els.prevBtn.textContent = isDua ? 'Previous Line' : 'Previous Ayah';
-  els.nextBtn.textContent = isDua ? 'Next Line' : 'Next Ayah';
+    els.eventTitle.textContent = lockedEvent?.title || 'Guided Event';
+    els.sectionStatus.textContent = `${currentSection?.title || 'Section'} · Slide ${(guidedEvent.slideIndex || 0) + 1} of ${currentContent?.guidedEvent?.totalSlides || currentSection?.totalSlides || 1}`;
+    renderGuidedSections();
+  }
 }
 
 function updateUiLockState() {
   const enabled = controlsEnabled();
+  const controlElements = [
+    els.surahSelect,
+    els.ayahInput,
+    els.ayahJumpBtn,
+    els.lineInput,
+    els.lineJumpBtn,
+    els.prevBtn,
+    els.nextBtn
+  ];
 
-  els.modeQuranBtn.disabled = !enabled;
-  els.modeDuaBtn.disabled = !enabled;
-  els.surahSelect.disabled = !enabled;
-  els.ayahInput.disabled = !enabled;
-  els.jumpBtn.disabled = !enabled;
-  els.duaSelect.disabled = !enabled;
-  els.lineInput.disabled = !enabled;
-  els.lineJumpBtn.disabled = !enabled;
-  els.prevBtn.disabled = !enabled;
-  els.nextBtn.disabled = !enabled;
+  controlElements.forEach((element) => {
+    element.disabled = !enabled;
+  });
+
+  const sectionButtons = els.sectionButtons.querySelectorAll('button');
+  sectionButtons.forEach((button) => {
+    button.disabled = !enabled;
+  });
 
   if (lockState.isActiveController) {
-    els.lockMessage.textContent = 'Connected: this phone controls the display.';
+    els.lockMessage.textContent = 'Connected: this phone can navigate the locked session.';
     return;
   }
 
   if (lockState.lockedByAnother) {
-    els.lockMessage.textContent = 'Controller already active on another phone (read-only).';
+    els.lockMessage.textContent = 'Controller already active on another phone. This page is read-only.';
     return;
   }
 
-  els.lockMessage.textContent = 'Awaiting controller lock...';
+  els.lockMessage.textContent = 'No active controller is claimed. Refresh this page to claim control.';
 }
 
-function renderCurrentRef(content) {
-  if (!content) {
-    return;
+function applyBootstrap(message) {
+  if (message.config?.brandText) {
+    els.brandText.textContent = message.config.brandText;
   }
 
-  if (content.mode === 'dua' && content.dua) {
-    els.currentRef.textContent = `${content.dua.title} · Line ${content.dua.lineIndex}`;
-    return;
+  if (message.config?.accentColor) {
+    document.documentElement.style.setProperty('--accent', message.config.accentColor);
   }
 
-  if (content.mode === 'quran' && content.quran) {
-    els.currentRef.textContent = `${content.quran.surahNameEnglish} (${content.quran.surahNumber}) · Ayah ${content.quran.ayahNumber}`;
-    return;
+  if (Array.isArray(message.surahs)) {
+    surahs = message.surahs.map((surah) => ({
+      number: Number(surah.number),
+      nameEnglish: String(surah.nameEnglish || `Surah ${surah.number}`),
+      ayahCount: Number(surah.ayahCount) || 1
+    }));
+
+    surahByNumber.clear();
+    surahs.forEach((surah) => {
+      surahByNumber.set(surah.number, surah);
+    });
+
+    populateSurahSelect();
   }
 
-  els.currentRef.textContent = content.header || 'Awaiting state...';
-}
-
-function renderContentPreview(content) {
-  if (!content) {
-    return;
-  }
-
-  els.previewArabic.textContent = content.arabic || '—';
-  els.previewTranslation.textContent = content.translation || '';
-  els.previewTransliteration.textContent = content.transliteration || '';
-}
-
-function applyState(state, content) {
-  if (!state) {
-    return;
-  }
-
-  currentState = {
-    mode: state.mode === 'dua' ? 'dua' : 'quran',
-    quran: {
-      surahNumber: Number(state.quran?.surahNumber) || 1,
-      ayahNumber: Number(state.quran?.ayahNumber) || 1
-    },
-    dua: {
-      duaId: String(state.dua?.duaId || '').toLowerCase(),
-      lineIndex: Number(state.dua?.lineIndex) || 1
-    }
+  currentSession = message.session || currentSession;
+  currentContent = message.content || currentContent;
+  lockState = {
+    isActiveController: Boolean(message.connection?.isActiveController),
+    lockedByAnother: Boolean(message.connection?.lockedByAnother),
+    controllerConnected: Boolean(message.connection?.controllerConnected)
   };
 
-  applyModeUi(currentState.mode);
+  renderSessionState();
+  renderPreview(currentContent);
+  updateUiLockState();
+}
 
-  els.surahSelect.value = String(currentState.quran.surahNumber);
-  currentState.quran.ayahNumber = syncAyahBounds(currentState.quran.surahNumber, currentState.quran.ayahNumber);
-
-  if (currentState.dua.duaId && duaById.has(currentState.dua.duaId)) {
-    els.duaSelect.value = currentState.dua.duaId;
-  } else if (duas.length > 0) {
-    currentState.dua.duaId = duas[0].id;
-    els.duaSelect.value = duas[0].id;
-  }
-
-  currentState.dua.lineIndex = syncDuaLineBounds(currentState.dua.duaId, currentState.dua.lineIndex);
-
-  if (content) {
-    renderCurrentRef(content);
-    renderContentPreview(content);
-  }
+function applyStateUpdate(message) {
+  currentSession = message.session || currentSession;
+  currentContent = message.content || currentContent;
+  renderSessionState();
+  renderPreview(currentContent);
+  updateUiLockState();
 }
 
 function send(payload) {
@@ -243,22 +282,6 @@ function send(payload) {
   }
 
   ws.send(JSON.stringify(payload));
-}
-
-function sendSetMode(mode) {
-  send({ type: 'setMode', mode });
-}
-
-function sendSetQuran(surahNumber, ayahNumber) {
-  send({ type: 'setQuran', surahNumber, ayahNumber });
-}
-
-function sendSetDua(duaId, lineIndex) {
-  send({ type: 'setDua', duaId, lineIndex });
-}
-
-function sendStep(direction) {
-  send({ type: 'step', direction });
 }
 
 function scheduleReconnect() {
@@ -294,72 +317,28 @@ function stopHeartbeat() {
 }
 
 function handleSocketMessage(message) {
-  switch (message.type) {
-    case 'bootstrap': {
-      if (message.config?.brandText) {
-        els.brandText.textContent = message.config.brandText;
-      }
+  if (message.type === 'bootstrap') {
+    applyBootstrap(message);
+    return;
+  }
 
-      if (message.config?.accentColor) {
-        document.documentElement.style.setProperty('--accent', message.config.accentColor);
-      }
+  if (message.type === 'state_update') {
+    applyStateUpdate(message);
+    return;
+  }
 
-      if (Array.isArray(message.surahs) && message.surahs.length > 0) {
-        surahs = message.surahs.map((surah) => ({
-          number: Number(surah.number),
-          nameEnglish: surah.nameEnglish,
-          ayahCount: Number(surah.ayahCount) || 1
-        }));
+  if (message.type === 'control_lock') {
+    lockState = {
+      isActiveController: Boolean(message.isActiveController),
+      lockedByAnother: Boolean(message.lockedByAnother),
+      controllerConnected: Boolean(message.controllerConnected)
+    };
+    updateUiLockState();
+    return;
+  }
 
-        surahByNumber.clear();
-        for (const surah of surahs) {
-          surahByNumber.set(surah.number, surah);
-        }
-
-        populateSurahSelect();
-      }
-
-      if (Array.isArray(message.duas) && message.duas.length > 0) {
-        duas = message.duas.map((dua) => ({
-          id: String(dua.id || '').toLowerCase(),
-          title: String(dua.title || ''),
-          totalLines: Number(dua.totalLines) || 1
-        }));
-
-        duaById.clear();
-        for (const dua of duas) {
-          duaById.set(dua.id, dua);
-        }
-
-        populateDuaSelect();
-      }
-
-      lockState = {
-        isActiveController: Boolean(message.connection?.isActiveController),
-        lockedByAnother: Boolean(message.connection?.lockedByAnother),
-        controllerConnected: Boolean(message.connection?.controllerConnected)
-      };
-
-      applyState(message.state, message.content);
-      updateUiLockState();
-      break;
-    }
-    case 'state_update':
-      applyState(message.state, message.content);
-      break;
-    case 'control_lock':
-      lockState = {
-        isActiveController: Boolean(message.isActiveController),
-        lockedByAnother: Boolean(message.lockedByAnother),
-        controllerConnected: Boolean(message.controllerConnected)
-      };
-      updateUiLockState();
-      break;
-    case 'error':
-      els.lockMessage.textContent = message.message || 'Action rejected by server.';
-      break;
-    default:
-      break;
+  if (message.type === 'error') {
+    els.lockMessage.textContent = message.message || 'Action rejected by server.';
   }
 }
 
@@ -367,22 +346,15 @@ function connectSocket() {
   ws = new WebSocket(wsUrl());
 
   ws.addEventListener('open', () => {
-    ws.send(
-      JSON.stringify({
-        type: 'hello',
-        role: 'control'
-      })
-    );
-
+    ws.send(JSON.stringify({ type: 'hello', role: 'control' }));
     startHeartbeat();
   });
 
   ws.addEventListener('message', (event) => {
     try {
-      const message = JSON.parse(event.data);
-      handleSocketMessage(message);
+      handleSocketMessage(JSON.parse(event.data));
     } catch (_error) {
-      // ignore malformed payloads
+      // ignore malformed messages
     }
   });
 
@@ -404,53 +376,36 @@ function connectSocket() {
 }
 
 function attachEvents() {
-  els.modeQuranBtn.addEventListener('click', () => {
-    if (currentState.mode !== 'quran') {
-      sendSetMode('quran');
-    }
-  });
-
-  els.modeDuaBtn.addEventListener('click', () => {
-    if (currentState.mode !== 'dua') {
-      sendSetMode('dua');
-    }
-  });
-
   els.surahSelect.addEventListener('change', () => {
     const surahNumber = Number(els.surahSelect.value || 1);
-    syncAyahBounds(surahNumber, 1);
-  });
-
-  els.jumpBtn.addEventListener('click', () => {
-    const surahNumber = Number(els.surahSelect.value || currentState.quran.surahNumber || 1);
-    const ayahNumber = clampAyah(surahNumber, Number(els.ayahInput.value || 1));
-    sendSetQuran(surahNumber, ayahNumber);
+    syncAyahInput(surahNumber, 1);
+    send({ type: 'select_surah', surahNumber });
   });
 
   els.ayahInput.addEventListener('change', () => {
-    const surahNumber = Number(els.surahSelect.value || currentState.quran.surahNumber || 1);
-    syncAyahBounds(surahNumber, Number(els.ayahInput.value || 1));
+    const surahNumber = Number(els.surahSelect.value || 1);
+    syncAyahInput(surahNumber, Number(els.ayahInput.value || 1));
   });
 
-  els.duaSelect.addEventListener('change', () => {
-    const duaId = String(els.duaSelect.value || currentState.dua.duaId || '').toLowerCase();
-    const lineIndex = syncDuaLineBounds(duaId, 1);
-    sendSetDua(duaId, lineIndex);
-  });
-
-  els.lineJumpBtn.addEventListener('click', () => {
-    const duaId = String(els.duaSelect.value || currentState.dua.duaId || '').toLowerCase();
-    const lineIndex = clampLine(duaId, Number(els.lineInput.value || 1));
-    sendSetDua(duaId, lineIndex);
+  els.ayahJumpBtn.addEventListener('click', () => {
+    const surahNumber = Number(els.surahSelect.value || 1);
+    const ayahNumber = clampAyah(surahNumber, Number(els.ayahInput.value || 1));
+    send({ type: 'jump_ayah', ayahNumber });
   });
 
   els.lineInput.addEventListener('change', () => {
-    const duaId = String(els.duaSelect.value || currentState.dua.duaId || '').toLowerCase();
-    syncDuaLineBounds(duaId, Number(els.lineInput.value || 1));
+    const max = Number(els.lineInput.max || 1);
+    syncLineInput(Number(els.lineInput.value || 1), max);
   });
 
-  els.prevBtn.addEventListener('click', () => sendStep('prev'));
-  els.nextBtn.addEventListener('click', () => sendStep('next'));
+  els.lineJumpBtn.addEventListener('click', () => {
+    const max = Number(els.lineInput.max || 1);
+    const lineIndex = Math.max(1, Math.min(max, Number(els.lineInput.value || 1)));
+    send({ type: 'jump_line', lineIndex });
+  });
+
+  els.prevBtn.addEventListener('click', () => send({ type: 'step', direction: 'prev' }));
+  els.nextBtn.addEventListener('click', () => send({ type: 'step', direction: 'next' }));
 }
 
 async function init() {
@@ -459,11 +414,10 @@ async function init() {
   try {
     const response = await fetch('/api/bootstrap?role=control', { cache: 'no-store' });
     if (response.ok) {
-      const bootstrap = await response.json();
-      handleSocketMessage(bootstrap);
+      applyBootstrap(await response.json());
     }
   } catch (_error) {
-    // socket bootstrap will recover
+    // websocket bootstrap will recover
   }
 
   connectSocket();

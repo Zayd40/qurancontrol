@@ -1,0 +1,165 @@
+{
+  "id": "laylat-al-qadr-21",
+  "title": "Laylat al-Qadr — 21st Night",
+  "_todo": "Replace the representative placeholder slides below with the exact approved source chunks for each amaal section. Keep manual slide boundaries in JSON only; the app never auto-splits content.",
+  "sections": [
+    {
+      "id": "salat-forgiveness",
+      "title": "2 Rakʿah Salat for Forgiveness",
+      "slides": [
+        {
+          "title": "2 Rakʿah Salat",
+          "instruction": "In every rakʿah recite Surah al-Hamd once and Surah al-Ikhlas seven times. After completing the prayer, continue with the forgiveness amaal for this night.",
+          "repeat": "After the salat, continue to the next section.",
+          "reference": "Laylat al-Qadr Amaal",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Representative instruction slide. Replace with the exact mosque-approved wording if needed."
+        }
+      ]
+    },
+    {
+      "id": "70-istighfar",
+      "title": "70x Istighfar",
+      "slides": [
+        {
+          "title": "70x Istighfar",
+          "instruction": "Recite the prescribed istighfar seventy times with attention and humility.",
+          "repeat": "70 times",
+          "reference": "Laylat al-Qadr Amaal",
+          "arabic": "أَسْتَغْفِرُ اللّٰهَ وَأَتُوبُ إِلَيْهِ",
+          "transliteration": "Astaghfirullaha wa atubu ilayh.",
+          "english": "I seek the forgiveness of Allah and I turn to Him in repentance.",
+          "note": "Use this slide until the exact approved wording/chunking is inserted."
+        }
+      ]
+    },
+    {
+      "id": "100-istighfar",
+      "title": "100x Istighfar",
+      "slides": [
+        {
+          "title": "100x Istighfar",
+          "instruction": "Continue with the one-hundred-fold istighfar for the 21st night amaal.",
+          "repeat": "100 times",
+          "reference": "Laylat al-Qadr Amaal",
+          "arabic": "أَسْتَغْفِرُ اللّٰهَ رَبِّي وَأَتُوبُ إِلَيْهِ",
+          "transliteration": "Astaghfirullaha rabbi wa atubu ilayh.",
+          "english": "I seek forgiveness from Allah, my Lord, and I turn to Him in repentance.",
+          "note": "Replace with the exact local source text if your programme uses a different wording."
+        }
+      ]
+    },
+    {
+      "id": "ziyarat-imam-husayn",
+      "title": "Ziyarat of Imam Husayn",
+      "slides": [
+        {
+          "title": "Ziyarat of Imam Husayn",
+          "instruction": "Recite the ziyarat of Imam Husayn (as). Insert the exact approved source chunks as separate slides here.",
+          "repeat": "",
+          "reference": "TODO: Insert exact ziyarat source reference",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Placeholder slide. Duplicate and replace with the exact recitation chunks provided by the source text."
+        }
+      ]
+    },
+    {
+      "id": "night-21-amal",
+      "title": "21st Night Specific Amaal",
+      "slides": [
+        {
+          "title": "21st Night Specific Amaal",
+          "instruction": "Insert the exact specific aʿmāl for the 21st night here, preserving the natural source sections as separate slides.",
+          "repeat": "",
+          "reference": "TODO: Insert source reference",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Representative placeholder. Add as many manual slides as needed for the approved programme."
+        }
+      ]
+    },
+    {
+      "id": "jawshan-kabir",
+      "title": "Duʿāʾ Jawshan al-Kabir",
+      "slides": [
+        {
+          "title": "Duʿāʾ Jawshan al-Kabir",
+          "instruction": "Insert the approved Jawshan al-Kabir source chunks here. Each section should be entered as a deliberate manual slide.",
+          "repeat": "",
+          "reference": "TODO: Insert source reference",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Placeholder slide for future source entry."
+        }
+      ]
+    },
+    {
+      "id": "holy-quran-amal",
+      "title": "Holy Qur’an Amaal",
+      "slides": [
+        {
+          "title": "Holy Qur’an Amaal",
+          "instruction": "Recite the Qur’an amaal for Laylat al-Qadr. Replace this placeholder with the exact approved chunks for the programme.",
+          "repeat": "",
+          "reference": "Laylat al-Qadr Amaal",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Placeholder slide. Add manual slides for every source chunk without relying on auto-splitting."
+        }
+      ]
+    },
+    {
+      "id": "bidding-farewell",
+      "title": "Bidding Farewell",
+      "slides": [
+        {
+          "title": "Bidding Farewell",
+          "instruction": "End the night with tawassul, submit the evening's deeds to Allah, ask for acceptance, and close with humility and hope.",
+          "repeat": "",
+          "reference": "",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Instruction-led closing slide."
+        },
+        {
+          "title": "Salawāt on Sayyeda Fatima (sa)",
+          "instruction": "Recite salawāt and gift the reward to Sayyeda Fatima al-Zahra (sa), asking Allah to accept the aʿmāl through her intercession.",
+          "repeat": "",
+          "reference": "",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Instruction slide. Add exact local wording if desired."
+        },
+        {
+          "title": "Recite Qur’an 2:127",
+          "instruction": "Recite Qur’an 2:127 and ask Allah to accept these deeds just as He accepted from Ibrahim and Isma'il (as).",
+          "repeat": "",
+          "reference": "Qur’an 2:127",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Instruction-led slide. The ayah text can be added later if the centre wants it shown here."
+        },
+        {
+          "title": "Shukran Lillah",
+          "instruction": "Thank Allah for the tawfiq to complete the aʿmāl and end the programme with gratitude.",
+          "repeat": "",
+          "reference": "",
+          "arabic": "",
+          "transliteration": "",
+          "english": "",
+          "note": "Final closing slide."
+        }
+      ]
+    }
+  ]
+}

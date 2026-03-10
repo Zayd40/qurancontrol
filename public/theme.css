@@ -1,13 +1,20 @@
 :root {
-  --bg-primary: #0f1115;
-  --bg-surface: #151922;
-  --bg-surface-strong: #1a1f29;
-  --text-primary: #f2f4f6;
-  --text-secondary: #a7afb9;
-  --accent: #6f8f7f;
-  --divider: #252c37;
-  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --bg-primary: #12161b;
+  --bg-panel: #181d23;
+  --bg-panel-strong: #1f252d;
+  --bg-panel-soft: #161b21;
+  --text-primary: #f1eee8;
+  --text-secondary: #b7b1a6;
+  --text-muted: #8c938f;
+  --accent: #718272;
+  --accent-soft: rgba(113, 130, 114, 0.16);
+  --divider: rgba(255, 255, 255, 0.08);
+  --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.28);
   --safe-margin: 4vw;
+  --radius-panel: 22px;
+  --font-ui: "Optima", "Avenir Next", "Segoe UI", sans-serif;
+  --font-copy: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --font-arabic: "Noto Naskh Arabic", "Amiri", "Scheherazade New", "Traditional Arabic", serif;
 }
 
 * {
@@ -17,9 +24,22 @@
 html,
 body {
   margin: 0;
-  color: var(--text-primary);
+  min-height: 100%;
   background: var(--bg-primary);
-  font-family: "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 .hidden {

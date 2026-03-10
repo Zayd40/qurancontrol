@@ -1,0 +1,22 @@
+{
+  "id": "kumayl",
+  "title": "Duʿāʾ Kumayl",
+  "_todo": "Replace these representative placeholder lines with the exact approved Duʿāʾ Kumayl line chunks. Keep each recitation chunk as a single line object and do not auto-split in code.",
+  "lines": [
+    {
+      "arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ",
+      "transliteration": "Allahumma inni as'aluka bi-rahmatika allati wasi'at kulla shay'.",
+      "english": "O Allah, I ask You by Your mercy which embraces all things."
+    },
+    {
+      "arabic": "مُمَثِّل لِهَيْكَلِ بِنْيَةِ دُعَاءِ كُمَيْل لِلْعَرْضِ الْمَحَلِّي",
+      "transliteration": "Representative placeholder for the local Duʿāʾ Kumayl structure.",
+      "english": "Replace this line and the rest of the file with the exact source lines used by Al Zahraa Centre."
+    },
+    {
+      "arabic": "يُرْجَى إِدْخَالُ كُلِّ مَقْطَعٍ بِنَصِّهِ الْعَرَبِيِّ وَالتَّرْجَمَةِ وَالتَّلْفِيظِ",
+      "transliteration": "Please enter each source chunk with Arabic, transliteration, and English.",
+      "english": "The controller and display will automatically support the new content without code changes."
+    }
+  ]
+}

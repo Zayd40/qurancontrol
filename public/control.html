@@ -3,42 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Qur'an Control</title>
+    <title>Al Zahraa Centre Controller</title>
     <link rel="stylesheet" href="/theme.css" />
     <link rel="stylesheet" href="/control.css" />
   </head>
   <body>
     <main class="app">
-      <header class="top">
+      <header class="hero panel">
         <p class="brand" id="brandText">Al Zahraa Centre</p>
-        <h1>Recitation Controller</h1>
+        <h1>Presenter Controller</h1>
+        <p class="session-lock">Session type and content are locked in the terminal on the mosque computer.</p>
+        <p id="modeLabel" class="mode-label">Quran</p>
         <p id="currentRef" class="current-ref">Al-Fatihah (1) · Ayah 1</p>
         <p id="lockMessage" class="lock-message">Connecting...</p>
       </header>
 
-      <section class="mode-switch" aria-label="Mode toggle">
-        <button id="modeQuranBtn" class="mode-btn active" type="button">Qur'an</button>
-        <button id="modeDuaBtn" class="mode-btn" type="button">Duʿāʾ</button>
+      <section class="panel session-panel">
+        <p class="panel-label">Locked Session</p>
+        <h2 id="lockedTitle" class="locked-title">Quran Mode</h2>
+        <p id="lockedDescription" class="locked-description"></p>
       </section>
 
-      <section class="panel mode-panel" id="quranPanel">
+      <section class="panel hidden" id="quranPanel">
+        <p class="panel-label">Quran Navigation</p>
         <label for="surahSelect">Surah</label>
         <select id="surahSelect"></select>
 
-        <label for="ayahInput">Ayah</label>
+        <label for="ayahInput">Jump to ayah</label>
         <div class="row-input">
           <input id="ayahInput" type="number" min="1" value="1" inputmode="numeric" />
-          <button id="jumpBtn" class="secondary" type="button">Go</button>
+          <button id="ayahJumpBtn" class="secondary" type="button">Go</button>
         </div>
 
-        <p id="boundsHint" class="hint">Max ayah: 1</p>
+        <p id="ayahHint" class="hint">Max ayah: 1</p>
       </section>
 
-      <section class="panel mode-panel hidden" id="duaPanel">
-        <label for="duaSelect">Duʿāʾ</label>
-        <select id="duaSelect"></select>
+      <section class="panel hidden" id="duaPanel">
+        <p class="panel-label">Dua Navigation</p>
+        <p id="duaTitle" class="locked-subtitle">Duʿāʾ al-Iftitāḥ</p>
 
-        <label for="lineInput">Line</label>
+        <label for="lineInput">Jump to line</label>
         <div class="row-input">
           <input id="lineInput" type="number" min="1" value="1" inputmode="numeric" />
           <button id="lineJumpBtn" class="secondary" type="button">Go</button>
@@ -47,15 +51,28 @@
         <p id="lineHint" class="hint">Line 1 / 1</p>
       </section>
 
-      <section class="controls">
-        <button id="prevBtn" class="nav-btn" type="button">Previous Ayah</button>
-        <button id="nextBtn" class="nav-btn primary" type="button">Next Ayah</button>
+      <section class="panel hidden" id="guidedPanel">
+        <p class="panel-label">Guided Event Navigation</p>
+        <p id="eventTitle" class="locked-subtitle">Laylat al-Qadr — 21st Night</p>
+        <p id="sectionStatus" class="hint"></p>
+        <div id="sectionButtons" class="section-buttons"></div>
       </section>
 
-      <section class="panel preview-panel" aria-label="Current content preview">
-        <p id="previewArabic" class="preview-arabic">—</p>
-        <p id="previewTranslation" class="preview-translation"></p>
-        <p id="previewTransliteration" class="preview-transliteration"></p>
+      <section class="controls">
+        <button id="prevBtn" class="nav-btn" type="button">Previous</button>
+        <button id="nextBtn" class="nav-btn primary" type="button">Next</button>
+      </section>
+
+      <section class="panel preview-panel">
+        <p class="panel-label">Current Slide</p>
+        <p id="previewTitle" class="preview-title hidden"></p>
+        <p id="previewInstruction" class="preview-instruction hidden"></p>
+        <p id="previewRepeat" class="preview-repeat hidden"></p>
+        <p id="previewReference" class="preview-reference hidden"></p>
+        <p id="previewArabic" class="preview-arabic hidden"></p>
+        <p id="previewTransliteration" class="preview-transliteration hidden"></p>
+        <p id="previewEnglish" class="preview-english hidden"></p>
+        <p id="previewNote" class="preview-note hidden"></p>
       </section>
     </main>
 
