@@ -18,6 +18,10 @@ function resolveDuaTitle(duaId) {
     return 'Duʿāʾ al-Iftitāḥ';
   }
 
+  if (duaId === 'kumayl') {
+    return 'Duʿāʾ Kumayl';
+  }
+
   return `Duʿāʾ ${duaId}`;
 }
 
