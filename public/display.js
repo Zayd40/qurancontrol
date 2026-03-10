@@ -1,12 +1,9 @@
 const els = {
   brandLogo: document.getElementById('brandLogo'),
   brandText: document.getElementById('brandText'),
-  modeContext: document.getElementById('modeContext'),
-  contentMeta: document.getElementById('contentMeta'),
   clock: document.getElementById('clock'),
   contentViewport: document.getElementById('contentViewport'),
   contentStack: document.getElementById('contentStack'),
-  connectionLabel: document.getElementById('connectionLabel'),
   qrOverlay: document.getElementById('qrOverlay'),
   qrImage: document.getElementById('qrImage'),
   qrUrl: document.getElementById('qrUrl'),
@@ -72,11 +69,11 @@ function fitContent() {
     return;
   }
 
-  let low = 0.55;
-  let high = 1.48;
+  let low = 0.68;
+  let high = 2.35;
   let best = low;
 
-  for (let index = 0; index < 18; index += 1) {
+  for (let index = 0; index < 20; index += 1) {
     const mid = (low + high) / 2;
     els.contentStack.style.setProperty('--content-scale', mid.toFixed(3));
 
@@ -95,9 +92,35 @@ const debouncedFitContent = debounce(() => {
   window.requestAnimationFrame(() => fitContent());
 }, 120);
 
-function setFieldText(element, value) {
+function animateFieldChange(element) {
+  if (typeof element.animate !== 'function') {
+    return;
+  }
+
+  element.animate(
+    [
+      { opacity: 0.35, transform: 'translateY(0.35rem)' },
+      { opacity: 1, transform: 'translateY(0)' }
+    ],
+    {
+      duration: 170,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+    }
+  );
+}
+
+function setFieldText(element, value, animate = false) {
   const text = String(value || '').trim();
-  element.textContent = text;
+  const previous = element.dataset.renderedValue || '';
+
+  if (previous !== text) {
+    element.textContent = text;
+    element.dataset.renderedValue = text;
+    if (animate && text.length > 0) {
+      animateFieldChange(element);
+    }
+  }
+
   element.classList.toggle('hidden', text.length === 0);
 }
 
@@ -121,17 +144,52 @@ function getContentKey(content) {
   return `${content.mode || 'unknown'}:${content.header || ''}`;
 }
 
-function updateContentFields(content) {
-  els.modeContext.textContent = content.modeLabel || 'Presenter';
-  els.contentMeta.textContent = content.header || '';
-  setFieldText(els.fields.title, content.title);
-  setFieldText(els.fields.instruction, content.instruction);
-  setFieldText(els.fields.repeat, content.repeat);
-  setFieldText(els.fields.reference, content.reference);
-  setFieldText(els.fields.arabic, content.arabic);
-  setFieldText(els.fields.transliteration, content.transliteration);
-  setFieldText(els.fields.english, content.english);
-  setFieldText(els.fields.note, content.note);
+function buildContextText(content) {
+  const header = String(content?.header || '').trim();
+  const title = String(content?.title || '').trim();
+
+  if (content?.mode === 'quran' || content?.mode === 'dua') {
+    return header || title;
+  }
+
+  if (content?.mode === 'guided_event') {
+    if (!title) {
+      return header;
+    }
+
+    if (!header) {
+      return title;
+    }
+
+    const normalizedHeader = header.toLowerCase();
+    const normalizedTitle = title.toLowerCase();
+    if (normalizedHeader.includes(normalizedTitle) || normalizedTitle.includes(normalizedHeader)) {
+      return title.length <= header.length ? title : header;
+    }
+
+    return title;
+  }
+
+  return title || header;
+}
+
+function buildReferenceText(content) {
+  if (!content || content.mode === 'quran' || content.mode === 'dua') {
+    return '';
+  }
+
+  return String(content.reference || '').trim();
+}
+
+function updateContentFields(content, animateDynamic = true) {
+  setFieldText(els.fields.title, buildContextText(content), false);
+  setFieldText(els.fields.instruction, content.instruction, false);
+  setFieldText(els.fields.repeat, content.repeat, false);
+  setFieldText(els.fields.reference, buildReferenceText(content), false);
+  setFieldText(els.fields.arabic, content.arabic, animateDynamic);
+  setFieldText(els.fields.transliteration, content.transliteration, animateDynamic);
+  setFieldText(els.fields.english, content.english, animateDynamic);
+  setFieldText(els.fields.note, content.note, false);
   debouncedFitContent();
 }
 
@@ -146,24 +204,11 @@ function renderContent(content, animate = true) {
   }
 
   currentContentKey = nextKey;
-
-  if (!animate) {
-    updateContentFields(content);
-    return;
-  }
-
-  els.contentStack.classList.add('is-fading');
-  window.setTimeout(() => {
-    updateContentFields(content);
-    els.contentStack.classList.remove('is-fading');
-  }, 120);
+  updateContentFields(content, animate);
 }
 
 function setConnectionState(isConnected) {
   controllerConnected = Boolean(isConnected);
-  els.connectionLabel.textContent = controllerConnected ? 'Controller connected' : 'Awaiting controller';
-  els.connectionLabel.classList.toggle('connected', controllerConnected);
-
   const hasQr = Boolean(els.qrImage.getAttribute('src'));
   els.qrOverlay.classList.toggle('hidden', controllerConnected || !hasQr);
 }
