@@ -3,6 +3,7 @@ const els = {
   brandText: document.getElementById('brandText'),
   clock: document.getElementById('clock'),
   contentViewport: document.getElementById('contentViewport'),
+  contentBody: document.querySelector('.content-body'),
   contentStack: document.getElementById('contentStack'),
   qrOverlay: document.getElementById('qrOverlay'),
   qrImage: document.getElementById('qrImage'),
@@ -59,13 +60,13 @@ function applyBrandConfig(config) {
 
 function fitsContent() {
   return (
-    els.contentStack.scrollHeight <= els.contentViewport.clientHeight + 1 &&
-    els.contentStack.scrollWidth <= els.contentViewport.clientWidth + 1
+    els.contentStack.scrollHeight <= els.contentBody.clientHeight + 1 &&
+    els.contentStack.scrollWidth <= els.contentBody.clientWidth + 1
   );
 }
 
 function fitContent() {
-  if (!els.contentViewport.clientHeight || !els.contentViewport.clientWidth) {
+  if (!els.contentBody.clientHeight || !els.contentBody.clientWidth) {
     return;
   }
 
@@ -297,6 +298,7 @@ async function init() {
 
   const resizeObserver = new ResizeObserver(() => debouncedFitContent());
   resizeObserver.observe(els.contentViewport);
+  resizeObserver.observe(els.contentBody);
   window.addEventListener('resize', debouncedFitContent);
 
   connectSocket();

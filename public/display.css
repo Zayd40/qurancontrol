@@ -63,6 +63,21 @@ body {
 .content-viewport {
   width: 100%;
   height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+.content-header {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(26px, 4.2vh, 48px) clamp(10px, 1vw, 20px) clamp(4px, 0.8vh, 10px);
+  flex: 0 0 auto;
+}
+
+.content-body {
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -88,6 +103,7 @@ body {
   line-height: 1.14;
   color: var(--text-secondary);
   font-family: var(--font-copy);
+  max-width: min(94vw, 1600px);
 }
 
 .instruction {
