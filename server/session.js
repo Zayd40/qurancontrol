@@ -37,8 +37,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
   }
 
   function getDefaultEventId() {
-    if (eventsById.has('laylat-al-qadr-21')) {
-      return 'laylat-al-qadr-21';
+    if (eventsById.has('laylat-al-qadr-2026')) {
+      return 'laylat-al-qadr-2026';
     }
     return listEvents()[0]?.id || '';
   }
@@ -148,6 +148,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
 
     return {
       sessionType,
+      blanked: Boolean(candidateState?.blanked),
       selectedDuaId: sessionType === 'dua' ? (duasById.has(requestedDuaId) ? requestedDuaId : selectedDuaId) : null,
       selectedEventId:
         sessionType === 'guided_event'
@@ -170,6 +171,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
   function createNewSession(sessionType, options = {}) {
     return clampState({
       sessionType,
+      blanked: false,
       selectedDuaId: options.selectedDuaId || null,
       selectedEventId: options.selectedEventId || null,
       quran: { surahNumber: 1, ayahNumber: 1 },
@@ -224,6 +226,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       mode: 'quran',
       modeLabel: 'Quran Mode',
       header: `${ayah.surahNameEnglish} (${ayah.surahNumber}) · Ayah ${ayah.ayahNumber}`,
+      displayTitle: `${ayah.surahNameEnglish} (${ayah.surahNumber})`,
+      lineLabel: `Ayah ${ayah.ayahNumber}`,
       title: '',
       instruction: '',
       repeat: '',
@@ -243,6 +247,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         mode: 'dua',
         modeLabel: 'Dua Mode',
         header: 'Dua · Line 1',
+        displayTitle: 'Dua unavailable',
+        lineLabel: 'Line 1',
         title: 'Dua unavailable',
         instruction: '',
         repeat: '',
@@ -267,6 +273,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       mode: 'dua',
       modeLabel: 'Dua Mode',
       header: `${dua.title} · Line ${lineIndex}`,
+      displayTitle: dua.title,
+      lineLabel: `Line ${lineIndex}`,
       title: '',
       instruction: '',
       repeat: '',
@@ -291,6 +299,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         mode: 'guided_event',
         modeLabel: 'Guided Event Mode',
         header: 'Guided Event',
+        displayTitle: 'Guided Event',
+        lineLabel: 'Slide 1',
         title: 'Event unavailable',
         instruction: 'Add a valid JSON file in data/events.',
         repeat: '',
@@ -320,6 +330,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       mode: 'guided_event',
       modeLabel: 'Guided Event Mode',
       header: `${event.title} · ${section.title} · Slide ${guidedEvent.slideIndex + 1}`,
+      displayTitle: slide.title || section.title || event.title,
+      lineLabel: `Slide ${guidedEvent.slideIndex + 1}`,
       title: slide.title || section.title,
       instruction: slide.instruction || '',
       repeat: slide.repeat || '',
@@ -347,15 +359,21 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
   }
 
   function getCurrentContentPayload(state) {
-    if (state.sessionType === 'dua') {
-      return getDuaContentPayload(state);
+    const currentState = clampState(state);
+    let payload;
+
+    if (currentState.sessionType === 'dua') {
+      payload = getDuaContentPayload(currentState);
+    } else if (currentState.sessionType === 'guided_event') {
+      payload = getGuidedEventContentPayload(currentState);
+    } else {
+      payload = getQuranContentPayload(currentState);
     }
 
-    if (state.sessionType === 'guided_event') {
-      return getGuidedEventContentPayload(state);
-    }
-
-    return getQuranContentPayload(state);
+    return {
+      ...payload,
+      blanked: currentState.blanked
+    };
   }
 
   function describeQuranTarget(quranState) {
@@ -387,6 +405,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
   function statesEqual(a, b) {
     return (
       a.sessionType === b.sessionType &&
+      a.blanked === b.blanked &&
       a.selectedDuaId === b.selectedDuaId &&
       a.selectedEventId === b.selectedEventId &&
       a.quran.surahNumber === b.quran.surahNumber &&
@@ -471,6 +490,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         const nextQuran = clampQuranState(action.surahNumber, 1);
         const nextState = clampState({
           ...currentState,
+          blanked: false,
           quran: nextQuran
         });
 
@@ -488,6 +508,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         const nextQuran = clampQuranState(currentState.quran.surahNumber, action.ayahNumber);
         const nextState = clampState({
           ...currentState,
+          blanked: false,
           quran: nextQuran
         });
 
@@ -505,6 +526,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         const nextQuran = stepQuran(currentState.quran, action.direction);
         const nextState = clampState({
           ...currentState,
+          blanked: false,
           quran: nextQuran
         });
 
@@ -524,6 +546,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         const nextDua = clampDuaState({ lineIndex: action.lineIndex }, currentState.selectedDuaId);
         const nextState = clampState({
           ...currentState,
+          blanked: false,
           dua: nextDua
         });
         const dua = duasById.get(currentState.selectedDuaId || '');
@@ -542,6 +565,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         const nextDua = stepDua(currentState, action.direction);
         const nextState = clampState({
           ...currentState,
+          blanked: false,
           dua: nextDua
         });
         const dua = duasById.get(currentState.selectedDuaId || '');
@@ -569,6 +593,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         );
         const nextState = clampState({
           ...currentState,
+          blanked: false,
           guidedEvent: nextGuidedEvent
         });
         const section = event?.sections[nextGuidedEvent.sectionIndex];
@@ -587,6 +612,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         const nextGuidedEvent = stepGuidedEvent(currentState, action.direction);
         const nextState = clampState({
           ...currentState,
+          blanked: false,
           guidedEvent: nextGuidedEvent
         });
         const section = event?.sections[nextGuidedEvent.sectionIndex];
@@ -613,6 +639,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     const payload = {
       sessionType: state.sessionType,
       modeLabel: getModeLabel(state.sessionType),
+      blanked: state.blanked,
       selectedDuaId: state.selectedDuaId,
       selectedEventId: state.selectedEventId,
       quran: state.quran,
@@ -651,6 +678,65 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     return payload;
   }
 
+  function restartSession(state) {
+    const currentState = clampState(state);
+
+    if (currentState.sessionType === 'dua') {
+      return createNewSession('dua', {
+        selectedDuaId: currentState.selectedDuaId || getDefaultDuaId()
+      });
+    }
+
+    if (currentState.sessionType === 'guided_event') {
+      return createNewSession('guided_event', {
+        selectedEventId: currentState.selectedEventId || getDefaultEventId()
+      });
+    }
+
+    return createNewSession('quran');
+  }
+
+  function resetToFirstPosition(state) {
+    const currentState = clampState(state);
+
+    if (currentState.sessionType === 'dua') {
+      return clampState({
+        ...currentState,
+        blanked: false,
+        dua: {
+          lineIndex: 1
+        }
+      });
+    }
+
+    if (currentState.sessionType === 'guided_event') {
+      return clampState({
+        ...currentState,
+        blanked: false,
+        guidedEvent: {
+          sectionIndex: currentState.guidedEvent.sectionIndex,
+          slideIndex: 0
+        }
+      });
+    }
+
+    return clampState({
+      ...currentState,
+      blanked: false,
+      quran: {
+        surahNumber: currentState.quran.surahNumber,
+        ayahNumber: 1
+      }
+    });
+  }
+
+  function setBlanked(state, blanked) {
+    return clampState({
+      ...state,
+      blanked: Boolean(blanked)
+    });
+  }
+
   return {
     clampState,
     createNewSession,
@@ -664,6 +750,9 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     listEvents,
     metadata,
     quranDataset,
+    resetToFirstPosition,
+    restartSession,
+    setBlanked,
     summarizeSession,
     transition
   };

@@ -6,7 +6,7 @@ function formatTimestamp(date = new Date()) {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
-function createLogBuffer(limit = 3) {
+function createLogBuffer(limit = 20) {
   const items = [];
 
   return {
@@ -18,8 +18,8 @@ function createLogBuffer(limit = 3) {
       }
       return line;
     },
-    list() {
-      return [...items];
+    list(maxItems = items.length) {
+      return items.slice(0, Math.max(0, Number(maxItems) || 0));
     }
   };
 }

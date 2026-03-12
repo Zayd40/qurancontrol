@@ -10,6 +10,7 @@ const els = {
   qrUrl: document.getElementById('qrUrl'),
   fields: {
     title: document.getElementById('slideTitle'),
+    lineNumber: document.getElementById('slideLineNumber'),
     instruction: document.getElementById('slideInstruction'),
     repeat: document.getElementById('slideRepeat'),
     reference: document.getElementById('slideReference'),
@@ -70,11 +71,11 @@ function fitContent() {
     return;
   }
 
-  let low = 0.68;
-  let high = 2.35;
+  let low = 0.8;
+  let high = 4.4;
   let best = low;
 
-  for (let index = 0; index < 20; index += 1) {
+  for (let index = 0; index < 22; index += 1) {
     const mid = (low + high) / 2;
     els.contentStack.style.setProperty('--content-scale', mid.toFixed(3));
 
@@ -91,7 +92,7 @@ function fitContent() {
 
 const debouncedFitContent = debounce(() => {
   window.requestAnimationFrame(() => fitContent());
-}, 120);
+}, 80);
 
 function animateFieldChange(element) {
   if (typeof element.animate !== 'function') {
@@ -100,11 +101,11 @@ function animateFieldChange(element) {
 
   element.animate(
     [
-      { opacity: 0.35, transform: 'translateY(0.35rem)' },
+      { opacity: 0.35, transform: 'translateY(0.22rem)' },
       { opacity: 1, transform: 'translateY(0)' }
     ],
     {
-      duration: 170,
+      duration: 150,
       easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
     }
   );
@@ -131,66 +132,35 @@ function getContentKey(content) {
   }
 
   if (content.mode === 'quran' && content.quran) {
-    return `quran:${content.quran.surahNumber}:${content.quran.ayahNumber}`;
+    return `quran:${content.quran.surahNumber}:${content.quran.ayahNumber}:${content.blanked ? 1 : 0}`;
   }
 
   if (content.mode === 'dua' && content.dua) {
-    return `dua:${content.dua.duaId}:${content.dua.lineIndex}`;
+    return `dua:${content.dua.duaId}:${content.dua.lineIndex}:${content.blanked ? 1 : 0}`;
   }
 
   if (content.mode === 'guided_event' && content.guidedEvent) {
-    return `guided:${content.guidedEvent.eventId}:${content.guidedEvent.sectionIndex}:${content.guidedEvent.slideIndex}`;
+    return `guided:${content.guidedEvent.eventId}:${content.guidedEvent.sectionIndex}:${content.guidedEvent.slideIndex}:${content.blanked ? 1 : 0}`;
   }
 
-  return `${content.mode || 'unknown'}:${content.header || ''}`;
+  return `${content.mode || 'unknown'}:${content.header || ''}:${content.blanked ? 1 : 0}`;
 }
 
-function buildContextText(content) {
-  const header = String(content?.header || '').trim();
-  const title = String(content?.title || '').trim();
-
-  if (content?.mode === 'quran' || content?.mode === 'dua') {
-    return header || title;
-  }
-
-  if (content?.mode === 'guided_event') {
-    if (!title) {
-      return header;
-    }
-
-    if (!header) {
-      return title;
-    }
-
-    const normalizedHeader = header.toLowerCase();
-    const normalizedTitle = title.toLowerCase();
-    if (normalizedHeader.includes(normalizedTitle) || normalizedTitle.includes(normalizedHeader)) {
-      return title.length <= header.length ? title : header;
-    }
-
-    return title;
-  }
-
-  return title || header;
-}
-
-function buildReferenceText(content) {
-  if (!content || content.mode === 'quran' || content.mode === 'dua') {
-    return '';
-  }
-
-  return String(content.reference || '').trim();
+function updateBlankState(blanked) {
+  els.contentViewport.classList.toggle('blanked', Boolean(blanked));
 }
 
 function updateContentFields(content, animateDynamic = true) {
-  setFieldText(els.fields.title, buildContextText(content), false);
+  setFieldText(els.fields.title, content.displayTitle, false);
+  setFieldText(els.fields.lineNumber, content.lineLabel, animateDynamic);
   setFieldText(els.fields.instruction, content.instruction, false);
   setFieldText(els.fields.repeat, content.repeat, false);
-  setFieldText(els.fields.reference, buildReferenceText(content), false);
+  setFieldText(els.fields.reference, content.reference, false);
   setFieldText(els.fields.arabic, content.arabic, animateDynamic);
   setFieldText(els.fields.transliteration, content.transliteration, animateDynamic);
   setFieldText(els.fields.english, content.english, animateDynamic);
   setFieldText(els.fields.note, content.note, false);
+  updateBlankState(content.blanked);
   debouncedFitContent();
 }
 

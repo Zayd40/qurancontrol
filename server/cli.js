@@ -55,13 +55,13 @@ async function promptForStartupSession({ sessionManager, savedState }) {
 
     const eventChoice = await askChoice(
       rl,
-      'Select guided event:\n1) Laylat al-Qadr — 21st Night',
+      'Select guided event:\n1) Laylat al-Qadr — 2026',
       ['1']
     );
 
     if (eventChoice === '1') {
       return sessionManager.createNewSession('guided_event', {
-        selectedEventId: 'laylat-al-qadr-21'
+        selectedEventId: 'laylat-al-qadr-2026'
       });
     }
 

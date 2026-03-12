@@ -28,8 +28,6 @@ const DUA_DIR = path.join(DATA_DIR, 'duas');
 const EVENTS_DIR = path.join(DATA_DIR, 'events');
 
 const PORT = Number(process.env.PORT || 5173);
-const CONTROLLER_TIMEOUT_MS = Number(process.env.CONTROLLER_TIMEOUT_MS || 30000);
-const HEARTBEAT_INTERVAL_MS = Number(process.env.HEARTBEAT_INTERVAL_MS || 10000);
 
 const config = loadConfig(DATA_DIR);
 const metadata = loadSurahMetadata(DATA_DIR);
@@ -43,12 +41,13 @@ const sessionManager = createSessionManager({
   eventsById
 });
 const sessionStore = createSessionStore(ROOT_DIR);
-const logBuffer = createLogBuffer(3);
+const logBuffer = createLogBuffer(20);
 const dashboard = createDashboard();
 
 const lanIp = getLanIPv4();
 const displayUrl = `http://localhost:${PORT}/display`;
 const controlUrl = `http://${lanIp}:${PORT}/control`;
+const adminUrl = `http://${lanIp}:${PORT}/admin`;
 
 let qrCodeDataUrl = '';
 let currentState = null;
@@ -62,15 +61,25 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server, path: '/ws' });
 
 const socketInfoByWs = new Map();
-let socketIdCounter = 1;
-let activeControllerId = null;
 
 function stateKey(state) {
   return JSON.stringify(state);
 }
 
+function getControllerCount() {
+  let total = 0;
+
+  for (const [ws, info] of socketInfoByWs.entries()) {
+    if (ws.readyState === WebSocket.OPEN && info.role === 'control') {
+      total += 1;
+    }
+  }
+
+  return total;
+}
+
 function isControllerConnected() {
-  return activeControllerId !== null;
+  return getControllerCount() > 0;
 }
 
 function normalizeIp(address) {
@@ -80,9 +89,9 @@ function normalizeIp(address) {
   return String(address).replace('::ffff:', '');
 }
 
-function getRecentActivityLines() {
-  const entries = logBuffer.list();
-  return entries.length > 0 ? entries : ['[--:--:--] WAITING — No controller activity yet'];
+function getRecentActivityLines(limit = 3) {
+  const entries = logBuffer.list(limit);
+  return entries.length > 0 ? entries : ['[--:--:--] WAITING - No controller activity yet'];
 }
 
 function renderDashboard() {
@@ -91,24 +100,8 @@ function renderDashboard() {
     selectedContent: sessionManager.describeSelectedContent(currentState),
     displayUrl,
     controllerUrl: controlUrl,
-    recentActivity: getRecentActivityLines()
+    recentActivity: getRecentActivityLines(3)
   });
-}
-
-function pushActivity(action, detail) {
-  logBuffer.add(action, detail);
-  renderDashboard();
-}
-
-function getControllerFlags(socketInfo) {
-  const isControl = socketInfo?.role === 'control';
-  const isActiveController = isControl && socketInfo.id === activeControllerId;
-  const lockedByAnother = isControl && activeControllerId !== null && socketInfo.id !== activeControllerId;
-
-  return {
-    isActiveController,
-    lockedByAnother
-  };
 }
 
 function sendMessage(ws, payload) {
@@ -129,6 +122,30 @@ function broadcast(payload, role) {
   }
 }
 
+function broadcastActivityUpdate() {
+  broadcast(
+    {
+      type: 'activity_update',
+      recentActivity: getRecentActivityLines(20)
+    },
+    'admin'
+  );
+}
+
+function pushActivity(action, detail) {
+  logBuffer.add(action, detail);
+  renderDashboard();
+  broadcastActivityUpdate();
+}
+
+function broadcastControllerStatus() {
+  broadcast({
+    type: 'controller_status',
+    controllerConnected: isControllerConnected(),
+    controllerCount: getControllerCount()
+  });
+}
+
 function getBootstrapPayload(socketInfo) {
   return {
     type: 'bootstrap',
@@ -139,23 +156,38 @@ function getBootstrapPayload(socketInfo) {
     surahs: metadata.surahs || [],
     connection: {
       controllerConnected: isControllerConnected(),
+      controllerCount: getControllerCount(),
       controlUrl,
-      qrCodeDataUrl,
-      controllerTimeoutMs: CONTROLLER_TIMEOUT_MS,
-      heartbeatIntervalMs: HEARTBEAT_INTERVAL_MS,
-      ...getControllerFlags(socketInfo)
+      qrCodeDataUrl
+    },
+    system: {
+      displayUrl,
+      controllerUrl: controlUrl,
+      adminUrl
+    },
+    activity: {
+      recentActivity: getRecentActivityLines(20)
+    },
+    catalog: {
+      duas: sessionManager.listDuas(),
+      events: sessionManager.listEvents()
     },
     dataset: {
       path: path.relative(ROOT_DIR, quranDataset.path),
       type: quranDataset.meta.type,
       description: quranDataset.meta.description
-    }
+    },
+    socketRole: socketInfo?.role || 'display'
   };
 }
 
 function sendBootstrap(ws) {
-  const socketInfo = socketInfoByWs.get(ws) || { id: -1, role: 'display' };
+  const socketInfo = socketInfoByWs.get(ws) || { role: 'display' };
   sendMessage(ws, getBootstrapPayload(socketInfo));
+}
+
+function persistState() {
+  sessionStore.save(currentState);
 }
 
 function broadcastStateUpdate() {
@@ -165,32 +197,6 @@ function broadcastStateUpdate() {
     state: currentState,
     content: sessionManager.getCurrentContentPayload(currentState)
   });
-}
-
-function broadcastControllerStatus() {
-  broadcast(
-    {
-      type: 'controller_status',
-      controllerConnected: isControllerConnected()
-    },
-    'display'
-  );
-
-  for (const [ws, info] of socketInfoByWs.entries()) {
-    if (info.role !== 'control') {
-      continue;
-    }
-
-    sendMessage(ws, {
-      type: 'control_lock',
-      controllerConnected: isControllerConnected(),
-      ...getControllerFlags(info)
-    });
-  }
-}
-
-function persistState() {
-  sessionStore.save(currentState);
 }
 
 function setCurrentState(nextState, activity) {
@@ -210,62 +216,15 @@ function setCurrentState(nextState, activity) {
   return true;
 }
 
-function claimController(ws) {
-  const info = socketInfoByWs.get(ws);
-  if (!info || info.role !== 'control') {
-    return;
-  }
-
-  info.lastHeartbeatAt = Date.now();
-
-  if (activeControllerId === null) {
-    activeControllerId = info.id;
-    broadcastControllerStatus();
-    pushActivity('CONNECTED', `Controller joined (${info.ip})`);
-    return;
-  }
-
-  broadcastControllerStatus();
-}
-
-function releaseActiveController(reason, socketInfo) {
-  if (!socketInfo || socketInfo.id !== activeControllerId) {
-    return;
-  }
-
-  activeControllerId = null;
-  broadcastControllerStatus();
-
-  if (reason === 'timeout') {
-    pushActivity('TIMED OUT', `Controller inactive (${socketInfo.ip})`);
-    return;
-  }
-
-  pushActivity('DISCONNECTED', `Controller left (${socketInfo.ip})`);
-}
-
-function rejectIfNotActiveController(ws, socketInfo) {
-  if (socketInfo.role !== 'control') {
-    sendMessage(ws, {
-      type: 'error',
-      message: 'Only control clients can update the session.'
-    });
+function ensureControlRole(ws, socketInfo) {
+  if (socketInfo.role === 'control' || socketInfo.role === 'admin') {
     return true;
   }
 
-  if (socketInfo.id !== activeControllerId) {
-    sendMessage(ws, {
-      type: 'error',
-      message: activeControllerId === null ? 'No active controller. Refresh to claim control.' : 'Controller is active on another device.'
-    });
-    sendMessage(ws, {
-      type: 'control_lock',
-      controllerConnected: isControllerConnected(),
-      ...getControllerFlags(socketInfo)
-    });
-    return true;
-  }
-
+  sendMessage(ws, {
+    type: 'error',
+    message: 'Only controller and admin clients can update the session.'
+  });
   return false;
 }
 
@@ -310,6 +269,108 @@ function resolveActionFromMessage(message, sessionType) {
   return null;
 }
 
+function formatActor(socketInfo) {
+  if (socketInfo.role === 'admin') {
+    return 'Admin';
+  }
+
+  return `Controller (${socketInfo.ip})`;
+}
+
+function applySessionTransition(socketInfo, action) {
+  const transition = sessionManager.transition(currentState, action);
+  if (!transition.changed) {
+    return;
+  }
+
+  const actor = formatActor(socketInfo);
+  setCurrentState(transition.state, {
+    action: transition.activity.action,
+    detail: `${actor} - ${transition.activity.detail}`
+  });
+}
+
+function handleAdminCommand(ws, socketInfo, message) {
+  if (socketInfo.role !== 'admin') {
+    return false;
+  }
+
+  if (message.type === 'admin_set_mode') {
+    const sessionType = message.sessionType === 'dua' || message.sessionType === 'guided_event'
+      ? message.sessionType
+      : 'quran';
+
+    const nextState = sessionManager.createNewSession(sessionType, {
+      selectedDuaId:
+        sessionType === 'dua'
+          ? String(message.selectedDuaId || currentState.selectedDuaId || sessionManager.getDefaultDuaId())
+              .trim()
+              .toLowerCase()
+          : null,
+      selectedEventId:
+        sessionType === 'guided_event'
+          ? String(
+              message.selectedEventId ||
+                currentState.selectedEventId ||
+                sessionManager.getDefaultEventId()
+            )
+              .trim()
+              .toLowerCase()
+          : null
+    });
+
+    setCurrentState(nextState, {
+      action: 'MODE',
+      detail: `Admin - Switched to ${sessionManager.getModeLabel(nextState.sessionType)}`
+    });
+    return true;
+  }
+
+  if (message.type === 'admin_select_event') {
+    const nextState = sessionManager.createNewSession('guided_event', {
+      selectedEventId: String(message.selectedEventId || sessionManager.getDefaultEventId())
+        .trim()
+        .toLowerCase()
+    });
+
+    const selectedEvent = eventsById.get(nextState.selectedEventId || '');
+    setCurrentState(nextState, {
+      action: 'EVENT',
+      detail: `Admin - ${selectedEvent?.title || 'Guided Event'}`
+    });
+    return true;
+  }
+
+  if (message.type === 'admin_restart_session') {
+    const nextState = sessionManager.restartSession(currentState);
+    setCurrentState(nextState, {
+      action: 'RESTART',
+      detail: `Admin - ${sessionManager.describeSelectedContent(nextState)}`
+    });
+    return true;
+  }
+
+  if (message.type === 'admin_reset_position') {
+    const nextState = sessionManager.resetToFirstPosition(currentState);
+    setCurrentState(nextState, {
+      action: 'RESET',
+      detail: `Admin - ${sessionManager.describeSelectedContent(nextState)}`
+    });
+    return true;
+  }
+
+  if (message.type === 'admin_toggle_blank') {
+    const nextState = sessionManager.setBlanked(currentState, !currentState.blanked);
+    setCurrentState(nextState, {
+      action: nextState.blanked ? 'BLANK' : 'RESTORE',
+      detail: `Admin - ${nextState.blanked ? 'Display blanked' : 'Display restored'}`
+    });
+    return true;
+  }
+
+  return false;
+}
+
 app.get('/', (_req, res) => {
   res.redirect('/display');
 });
@@ -322,20 +383,21 @@ app.get('/control', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'control.html'));
 });
 
+app.get('/admin', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'admin.html'));
+});
+
 app.get('/api/bootstrap', (req, res) => {
-  const role = req.query.role === 'control' ? 'control' : 'display';
-  res.json(getBootstrapPayload({ id: -1, role, ip: normalizeIp(req.ip) }));
+  const role = ['control', 'admin'].includes(req.query.role) ? req.query.role : 'display';
+  res.json(getBootstrapPayload({ role, ip: normalizeIp(req.ip) }));
 });
 
 wss.on('connection', (ws, req) => {
   const socketInfo = {
-    id: socketIdCounter,
     ip: normalizeIp(req.socket.remoteAddress),
-    role: 'unknown',
-    lastHeartbeatAt: Date.now()
+    role: 'unknown'
   };
 
-  socketIdCounter += 1;
   socketInfoByWs.set(ws, socketInfo);
 
   ws.on('message', (buffer) => {
@@ -351,18 +413,18 @@ wss.on('connection', (ws, req) => {
     }
 
     if (message.type === 'hello') {
-      socketInfo.role = message.role === 'control' ? 'control' : 'display';
+      socketInfo.role = ['control', 'admin'].includes(message.role) ? message.role : 'display';
+
       if (socketInfo.role === 'control') {
-        claimController(ws);
+        pushActivity('CONNECTED', `Controller joined (${socketInfo.ip})`);
+        broadcastControllerStatus();
       }
+
       sendBootstrap(ws);
       return;
     }
 
     if (message.type === 'heartbeat') {
-      if (socketInfo.role === 'control' && socketInfo.id === activeControllerId) {
-        socketInfo.lastHeartbeatAt = Date.now();
-      }
       return;
     }
 
@@ -371,21 +433,24 @@ wss.on('connection', (ws, req) => {
       return;
     }
 
+    if (!ensureControlRole(ws, socketInfo)) {
+      return;
+    }
+
+    if (handleAdminCommand(ws, socketInfo, message)) {
+      return;
+    }
+
     const action = resolveActionFromMessage(message, currentState.sessionType);
     if (!action) {
+      sendMessage(ws, {
+        type: 'error',
+        message: 'Action is not available in the current mode.'
+      });
       return;
     }
 
-    if (rejectIfNotActiveController(ws, socketInfo)) {
-      return;
-    }
-
-    socketInfo.lastHeartbeatAt = Date.now();
-
-    const transition = sessionManager.transition(currentState, action);
-    if (transition.changed) {
-      setCurrentState(transition.state, transition.activity);
-    }
+    applySessionTransition(socketInfo, action);
   });
 
   ws.on('close', () => {
@@ -395,8 +460,10 @@ wss.on('connection', (ws, req) => {
     }
 
     socketInfoByWs.delete(ws);
-    if (info.id === activeControllerId) {
-      releaseActiveController('close', info);
+
+    if (info.role === 'control') {
+      pushActivity('DISCONNECTED', `Controller left (${info.ip})`);
+      broadcastControllerStatus();
     }
   });
 
@@ -404,30 +471,6 @@ wss.on('connection', (ws, req) => {
     // close handler owns cleanup
   });
 });
-
-const heartbeatMonitor = setInterval(() => {
-  if (activeControllerId === null) {
-    return;
-  }
-
-  for (const info of socketInfoByWs.values()) {
-    if (info.id !== activeControllerId) {
-      continue;
-    }
-
-    const elapsed = Date.now() - info.lastHeartbeatAt;
-    if (elapsed > CONTROLLER_TIMEOUT_MS) {
-      activeControllerId = null;
-      broadcastControllerStatus();
-      pushActivity('TIMED OUT', `Controller inactive (${info.ip})`);
-    }
-    return;
-  }
-
-  activeControllerId = null;
-  broadcastControllerStatus();
-  renderDashboard();
-}, 5000);
 
 async function start() {
   const savedState = sessionStore.load();
@@ -457,8 +500,6 @@ async function start() {
 }
 
 function shutdown(signal) {
-  clearInterval(heartbeatMonitor);
-
   for (const ws of socketInfoByWs.keys()) {
     try {
       ws.close();

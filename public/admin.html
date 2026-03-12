@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Al Zahraa Centre Admin</title>
+    <link rel="stylesheet" href="/theme.css" />
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="panel hero">
+        <p class="brand" id="brandText">Al Zahraa Centre</p>
+        <h1>Presenter Admin</h1>
+        <p id="statusText" class="muted">Connecting...</p>
+        <p id="sessionSummary" class="session-summary">Waiting for session data...</p>
+      </header>
+
+      <section class="panel">
+        <p class="panel-label">Mode</p>
+        <div class="mode-grid">
+          <button type="button" class="mode-btn" data-mode="quran">Quran mode</button>
+          <button type="button" class="mode-btn" data-mode="dua">Dua mode</button>
+          <button type="button" class="mode-btn" data-mode="guided_event">Guided event mode</button>
+        </div>
+
+        <label for="eventSelect">Guided event</label>
+        <select id="eventSelect"></select>
+      </section>
+
+      <section class="panel">
+        <p class="panel-label">Navigation</p>
+        <div class="nav-grid">
+          <button id="prevBtn" type="button">Previous</button>
+          <button id="nextBtn" type="button" class="primary">Next</button>
+        </div>
+
+        <label id="jumpLabel" for="jumpInput">Jump</label>
+        <div class="jump-row">
+          <input id="jumpInput" type="number" min="1" value="1" inputmode="numeric" />
+          <button id="jumpBtn" type="button">Jump</button>
+        </div>
+        <p id="jumpHint" class="muted"></p>
+      </section>
+
+      <section class="panel">
+        <p class="panel-label">System</p>
+        <div class="info-grid">
+          <div>
+            <p class="info-label">Display URL</p>
+            <p id="displayUrl" class="info-value"></p>
+          </div>
+          <div>
+            <p class="info-label">Controller URL</p>
+            <p id="controllerUrl" class="info-value"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <p class="panel-label">Session Tools</p>
+        <div class="tools-grid">
+          <button id="restartBtn" type="button">Restart session</button>
+          <button id="resetBtn" type="button">Reset to first slide</button>
+          <button id="blankBtn" type="button">Blank display screen</button>
+        </div>
+      </section>
+
+      <section class="panel logs-panel">
+        <p class="panel-label">Controller Logs</p>
+        <ul id="logsList" class="logs-list"></ul>
+      </section>
+    </main>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>

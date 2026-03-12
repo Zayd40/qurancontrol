@@ -35,16 +35,14 @@ const els = {
 
 let ws = null;
 let reconnectTimer = null;
-let heartbeatTimer = null;
 let surahs = [];
 const surahByNumber = new Map();
 
 let currentSession = null;
 let currentContent = null;
-let lockState = {
-  isActiveController: false,
-  lockedByAnother: false,
-  controllerConnected: false
+let controllerStatus = {
+  connected: false,
+  controllerCount: 0
 };
 
 function wsUrl() {
@@ -53,7 +51,7 @@ function wsUrl() {
 }
 
 function controlsEnabled() {
-  return lockState.isActiveController && ws && ws.readyState === WebSocket.OPEN;
+  return Boolean(ws && ws.readyState === WebSocket.OPEN);
 }
 
 function setFieldText(element, value) {
@@ -133,7 +131,8 @@ function renderSessionPanels() {
     els.prevBtn.textContent = 'Previous Ayah';
     els.nextBtn.textContent = 'Next Ayah';
     els.lockedTitle.textContent = 'Quran Mode';
-    els.lockedDescription.textContent = 'This phone can choose the surah, jump to an ayah, and move to the previous or next ayah only.';
+    els.lockedDescription.textContent =
+      'This page can choose the surah, jump to an ayah, and move to the previous or next ayah.';
     return;
   }
 
@@ -141,14 +140,16 @@ function renderSessionPanels() {
     els.prevBtn.textContent = 'Previous Line';
     els.nextBtn.textContent = 'Next Line';
     els.lockedTitle.textContent = currentSession?.lockedDua?.title || 'Dua Mode';
-    els.lockedDescription.textContent = 'This phone can move through the selected dua line by line and jump directly to a line. Changing the dua is disabled.';
+    els.lockedDescription.textContent =
+      'This page can move through the selected dua line by line and jump directly to a line.';
     return;
   }
 
   els.prevBtn.textContent = 'Previous Slide';
   els.nextBtn.textContent = 'Next Slide';
   els.lockedTitle.textContent = currentSession?.lockedEvent?.title || 'Guided Event Mode';
-  els.lockedDescription.textContent = 'This phone can move through slides and jump to a section only. Changing the event is disabled.';
+  els.lockedDescription.textContent =
+    'This page can move through slides and jump to a section in the current guided event.';
 }
 
 function renderPreview(content) {
@@ -192,12 +193,12 @@ function renderSessionState() {
     const currentSection = lockedEvent?.sections?.[guidedEvent.sectionIndex];
 
     els.eventTitle.textContent = lockedEvent?.title || 'Guided Event';
-    els.sectionStatus.textContent = `${currentSection?.title || 'Section'} · Slide ${(guidedEvent.slideIndex || 0) + 1} of ${currentContent?.guidedEvent?.totalSlides || currentSection?.totalSlides || 1}`;
+    els.sectionStatus.textContent = `${currentSection?.title || 'Section'} - Slide ${(guidedEvent.slideIndex || 0) + 1} of ${currentContent?.guidedEvent?.totalSlides || currentSection?.totalSlides || 1}`;
     renderGuidedSections();
   }
 }
 
-function updateUiLockState() {
+function updateUiStatus() {
   const enabled = controlsEnabled();
   const controlElements = [
     els.surahSelect,
@@ -218,17 +219,14 @@ function updateUiLockState() {
     button.disabled = !enabled;
   });
 
-  if (lockState.isActiveController) {
-    els.lockMessage.textContent = 'Connected: this phone can navigate the locked session.';
+  if (!enabled) {
+    els.lockMessage.textContent = 'Disconnected. Reconnecting...';
     return;
   }
 
-  if (lockState.lockedByAnother) {
-    els.lockMessage.textContent = 'Controller already active on another phone. This page is read-only.';
-    return;
-  }
-
-  els.lockMessage.textContent = 'No active controller is claimed. Refresh this page to claim control.';
+  const count = controllerStatus.controllerCount || 0;
+  const noun = count === 1 ? 'controller' : 'controllers';
+  els.lockMessage.textContent = `${count} ${noun} connected. Any connected controller can navigate.`;
 }
 
 function applyBootstrap(message) {
@@ -257,15 +255,14 @@ function applyBootstrap(message) {
 
   currentSession = message.session || currentSession;
   currentContent = message.content || currentContent;
-  lockState = {
-    isActiveController: Boolean(message.connection?.isActiveController),
-    lockedByAnother: Boolean(message.connection?.lockedByAnother),
-    controllerConnected: Boolean(message.connection?.controllerConnected)
+  controllerStatus = {
+    connected: Boolean(message.connection?.controllerConnected),
+    controllerCount: Number(message.connection?.controllerCount) || 0
   };
 
   renderSessionState();
   renderPreview(currentContent);
-  updateUiLockState();
+  updateUiStatus();
 }
 
 function applyStateUpdate(message) {
@@ -273,7 +270,7 @@ function applyStateUpdate(message) {
   currentContent = message.content || currentContent;
   renderSessionState();
   renderPreview(currentContent);
-  updateUiLockState();
+  updateUiStatus();
 }
 
 function send(payload) {
@@ -295,27 +292,6 @@ function scheduleReconnect() {
   }, 1500);
 }
 
-function startHeartbeat() {
-  if (heartbeatTimer) {
-    window.clearInterval(heartbeatTimer);
-  }
-
-  heartbeatTimer = window.setInterval(() => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'heartbeat' }));
-    }
-  }, 10000);
-}
-
-function stopHeartbeat() {
-  if (!heartbeatTimer) {
-    return;
-  }
-
-  window.clearInterval(heartbeatTimer);
-  heartbeatTimer = null;
-}
-
 function handleSocketMessage(message) {
   if (message.type === 'bootstrap') {
     applyBootstrap(message);
@@ -327,13 +303,12 @@ function handleSocketMessage(message) {
     return;
   }
 
-  if (message.type === 'control_lock') {
-    lockState = {
-      isActiveController: Boolean(message.isActiveController),
-      lockedByAnother: Boolean(message.lockedByAnother),
-      controllerConnected: Boolean(message.controllerConnected)
+  if (message.type === 'controller_status') {
+    controllerStatus = {
+      connected: Boolean(message.controllerConnected),
+      controllerCount: Number(message.controllerCount) || 0
     };
-    updateUiLockState();
+    updateUiStatus();
     return;
   }
 
@@ -347,7 +322,7 @@ function connectSocket() {
 
   ws.addEventListener('open', () => {
     ws.send(JSON.stringify({ type: 'hello', role: 'control' }));
-    startHeartbeat();
+    updateUiStatus();
   });
 
   ws.addEventListener('message', (event) => {
@@ -359,14 +334,11 @@ function connectSocket() {
   });
 
   ws.addEventListener('close', () => {
-    stopHeartbeat();
-    lockState = {
-      isActiveController: false,
-      lockedByAnother: false,
-      controllerConnected: false
+    controllerStatus = {
+      connected: false,
+      controllerCount: 0
     };
-    updateUiLockState();
-    els.lockMessage.textContent = 'Disconnected. Reconnecting...';
+    updateUiStatus();
     scheduleReconnect();
   });
 
@@ -410,6 +382,7 @@ function attachEvents() {
 
 async function init() {
   attachEvents();
+  updateUiStatus();
 
   try {
     const response = await fetch('/api/bootstrap?role=control', { cache: 'no-store' });
