@@ -78,8 +78,6 @@ body {
 .content-body {
   min-height: 0;
   overflow: hidden;
-  opacity: 1;
-  will-change: opacity;
 }
 
 .content-stack {
@@ -90,6 +88,28 @@ body {
   justify-content: center;
   gap: clamp(8px, 0.9vh, 16px);
   padding: clamp(2px, 0.35vh, 8px) clamp(2px, 0.4vw, 10px);
+}
+
+.reading-content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 0.9vh, 16px);
+  opacity: 1;
+  will-change: opacity;
+}
+
+.reading-content.is-pre-fade-in,
+.reading-content.is-fading-out {
+  opacity: 0.2;
+}
+
+.reading-content.is-fading-out {
+  transition: opacity 90ms ease;
+}
+
+.reading-content.is-fading-in {
+  opacity: 1;
+  transition: opacity 110ms ease;
 }
 
 .content-field {

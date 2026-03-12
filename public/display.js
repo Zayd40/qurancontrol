@@ -5,6 +5,7 @@ const els = {
   contentViewport: document.getElementById('contentViewport'),
   contentBody: document.querySelector('.content-body'),
   contentStack: document.getElementById('contentStack'),
+  readingContent: document.getElementById('readingContent'),
   qrOverlay: document.getElementById('qrOverlay'),
   qrImage: document.getElementById('qrImage'),
   qrUrl: document.getElementById('qrUrl'),
@@ -25,6 +26,11 @@ let ws = null;
 let reconnectTimer = null;
 let controllerConnected = false;
 let currentContentKey = '';
+let fadeOutTimer = null;
+let fadeInTimer = null;
+
+const FADE_OUT_MS = 90;
+const FADE_IN_MS = 110;
 
 function debounce(fn, waitMs) {
   let timeoutId = null;
@@ -94,23 +100,6 @@ const debouncedFitContent = debounce(() => {
   window.requestAnimationFrame(() => fitContent());
 }, 80);
 
-function animateContentChange() {
-  if (typeof els.contentBody.animate !== 'function') {
-    return;
-  }
-
-  els.contentBody.animate(
-    [
-      { opacity: 0.58 },
-      { opacity: 1 }
-    ],
-    {
-      duration: 190,
-      easing: 'cubic-bezier(0.33, 1, 0.68, 1)'
-    }
-  );
-}
-
 function setFieldText(element, value) {
   const text = String(value || '').trim();
   const previous = element.dataset.renderedValue || '';
@@ -147,22 +136,69 @@ function updateBlankState(blanked) {
   els.contentViewport.classList.toggle('blanked', Boolean(blanked));
 }
 
-function updateContentFields(content, animateDynamic = true) {
+function clearReadingFadeState() {
+  if (fadeOutTimer) {
+    window.clearTimeout(fadeOutTimer);
+    fadeOutTimer = null;
+  }
+
+  if (fadeInTimer) {
+    window.clearTimeout(fadeInTimer);
+    fadeInTimer = null;
+  }
+
+  els.readingContent.classList.remove('is-fading-out', 'is-pre-fade-in', 'is-fading-in');
+}
+
+function updateStaticFields(content) {
   setFieldText(els.fields.title, content.displayTitle);
   setFieldText(els.fields.lineNumber, content.lineLabel);
   setFieldText(els.fields.instruction, content.instruction);
   setFieldText(els.fields.repeat, content.repeat);
   setFieldText(els.fields.reference, content.reference);
+  updateBlankState(content.blanked);
+}
+
+function updateReadingFields(content) {
   setFieldText(els.fields.arabic, content.arabic);
   setFieldText(els.fields.transliteration, content.transliteration);
   setFieldText(els.fields.english, content.english);
   setFieldText(els.fields.note, content.note);
-  updateBlankState(content.blanked);
   debouncedFitContent();
+}
 
-  if (animateDynamic && !content.blanked) {
-    animateContentChange();
+function fadeReadingContent(content) {
+  clearReadingFadeState();
+  els.readingContent.classList.add('is-fading-out');
+
+  fadeOutTimer = window.setTimeout(() => {
+    fadeOutTimer = null;
+    els.readingContent.classList.remove('is-fading-out');
+    els.readingContent.classList.add('is-pre-fade-in');
+    updateReadingFields(content);
+
+    window.requestAnimationFrame(() => {
+      els.readingContent.classList.remove('is-pre-fade-in');
+      els.readingContent.classList.add('is-fading-in');
+
+      fadeInTimer = window.setTimeout(() => {
+        fadeInTimer = null;
+        els.readingContent.classList.remove('is-fading-in');
+      }, FADE_IN_MS);
+    });
+  }, FADE_OUT_MS);
+}
+
+function updateContentFields(content, animateDynamic = true) {
+  updateStaticFields(content);
+
+  if (!animateDynamic || content.blanked) {
+    clearReadingFadeState();
+    updateReadingFields(content);
+    return;
   }
+
+  fadeReadingContent(content);
 }
 
 function renderContent(content, animate = true) {
