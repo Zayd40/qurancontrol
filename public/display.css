@@ -78,6 +78,8 @@ body {
 .content-body {
   min-height: 0;
   overflow: hidden;
+  opacity: 1;
+  will-change: opacity;
 }
 
 .content-stack {

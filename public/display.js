@@ -94,33 +94,30 @@ const debouncedFitContent = debounce(() => {
   window.requestAnimationFrame(() => fitContent());
 }, 80);
 
-function animateFieldChange(element) {
-  if (typeof element.animate !== 'function') {
+function animateContentChange() {
+  if (typeof els.contentBody.animate !== 'function') {
     return;
   }
 
-  element.animate(
+  els.contentBody.animate(
     [
-      { opacity: 0.35, transform: 'translateY(0.22rem)' },
-      { opacity: 1, transform: 'translateY(0)' }
+      { opacity: 0.58 },
+      { opacity: 1 }
     ],
     {
-      duration: 150,
-      easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+      duration: 190,
+      easing: 'cubic-bezier(0.33, 1, 0.68, 1)'
     }
   );
 }
 
-function setFieldText(element, value, animate = false) {
+function setFieldText(element, value) {
   const text = String(value || '').trim();
   const previous = element.dataset.renderedValue || '';
 
   if (previous !== text) {
     element.textContent = text;
     element.dataset.renderedValue = text;
-    if (animate && text.length > 0) {
-      animateFieldChange(element);
-    }
   }
 
   element.classList.toggle('hidden', text.length === 0);
@@ -151,17 +148,21 @@ function updateBlankState(blanked) {
 }
 
 function updateContentFields(content, animateDynamic = true) {
-  setFieldText(els.fields.title, content.displayTitle, false);
-  setFieldText(els.fields.lineNumber, content.lineLabel, animateDynamic);
-  setFieldText(els.fields.instruction, content.instruction, false);
-  setFieldText(els.fields.repeat, content.repeat, false);
-  setFieldText(els.fields.reference, content.reference, false);
-  setFieldText(els.fields.arabic, content.arabic, animateDynamic);
-  setFieldText(els.fields.transliteration, content.transliteration, animateDynamic);
-  setFieldText(els.fields.english, content.english, animateDynamic);
-  setFieldText(els.fields.note, content.note, false);
+  setFieldText(els.fields.title, content.displayTitle);
+  setFieldText(els.fields.lineNumber, content.lineLabel);
+  setFieldText(els.fields.instruction, content.instruction);
+  setFieldText(els.fields.repeat, content.repeat);
+  setFieldText(els.fields.reference, content.reference);
+  setFieldText(els.fields.arabic, content.arabic);
+  setFieldText(els.fields.transliteration, content.transliteration);
+  setFieldText(els.fields.english, content.english);
+  setFieldText(els.fields.note, content.note);
   updateBlankState(content.blanked);
   debouncedFitContent();
+
+  if (animateDynamic && !content.blanked) {
+    animateContentChange();
+  }
 }
 
 function renderContent(content, animate = true) {
