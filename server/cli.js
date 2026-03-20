@@ -12,6 +12,10 @@ async function askChoice(rl, prompt, allowedChoices) {
   }
 }
 
+function buildIndexedPrompt(title, items) {
+  return `${title}\n${items.map((item, index) => `${index + 1}) ${item}`).join('\n')}`;
+}
+
 async function promptForStartupSession({ sessionManager, savedState }) {
   if (!stdin.isTTY || !stdout.isTTY) {
     return savedState ? sessionManager.clampState(savedState) : sessionManager.createNewSession('quran');
@@ -44,12 +48,17 @@ async function promptForStartupSession({ sessionManager, savedState }) {
     }
 
     if (sessionChoice === '2') {
+      const duas = sessionManager.listDuas();
+      const allowedChoices = duas.map((_, index) => String(index + 1));
       const duaChoice = await askChoice(
         rl,
-        'Select dua:\n1) Dua Iftitah\n2) Dua Kumayl',
-        ['1', '2']
+        buildIndexedPrompt(
+          'Select dua:',
+          duas.map((dua) => dua.title)
+        ),
+        allowedChoices
       );
-      const selectedDuaId = duaChoice === '2' ? 'kumayl' : 'iftitah';
+      const selectedDuaId = duas[Number(duaChoice) - 1]?.id || sessionManager.getDefaultDuaId();
       return sessionManager.createNewSession('dua', { selectedDuaId });
     }
 
