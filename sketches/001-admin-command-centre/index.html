@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Command Centre Concept</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f1412;
+      color: #f4f1e8;
+      padding: 24px;
+    }
+    .shell { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+    .panel { background: rgba(244,241,232,.075); border: 1px solid rgba(244,241,232,.12); border-radius: 24px; box-shadow: 0 24px 60px rgba(0,0,0,.25); }
+    aside { padding: 22px; position: sticky; top: 24px; height: calc(100vh - 48px); }
+    .brand { color: #cbbf9b; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 10px; }
+    h1 { font-size: 28px; line-height: 1.05; margin-bottom: 26px; }
+    nav { display: grid; gap: 9px; }
+    nav button, .btn { border: 0; border-radius: 16px; padding: 13px 14px; background: rgba(255,255,255,.06); color: #f4f1e8; text-align: left; font-weight: 700; cursor: pointer; transition: .18s ease; }
+    nav button.active, nav button:hover, .btn.primary { background: #c9a95c; color: #101410; }
+    .status { margin-top: auto; position: absolute; bottom: 22px; left: 22px; right: 22px; padding: 14px; border-radius: 18px; background: rgba(69,116,87,.25); border: 1px solid rgba(116,181,139,.3); }
+    .status strong { display: block; color: #98e6ad; }
+    main { display: grid; gap: 20px; }
+    .hero { padding: 24px; display: grid; grid-template-columns: 1.35fr .65fr; gap: 18px; align-items: stretch; }
+    .live-card { padding: 24px; border-radius: 22px; background: linear-gradient(135deg, rgba(201,169,92,.22), rgba(111,132,118,.12)); }
+    .eyebrow { color: #cbbf9b; font-size: 12px; text-transform: uppercase; letter-spacing: .16em; margin-bottom: 10px; }
+    .big { font-size: clamp(34px, 5vw, 64px); line-height: .95; margin-bottom: 16px; }
+    .muted { color: rgba(244,241,232,.68); }
+    .quick { padding: 20px; display: grid; gap: 12px; }
+    .quick .btn { text-align: center; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    section { padding: 22px; }
+    h2 { font-size: 18px; margin-bottom: 16px; }
+    .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .mode { padding: 18px; border-radius: 18px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.08); cursor: pointer; }
+    .mode.active { border-color: #c9a95c; background: rgba(201,169,92,.18); }
+    .mode strong { display: block; margin-bottom: 6px; }
+    .navpad { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .navpad .wide { grid-column: 1 / -1; }
+    input, select { width: 100%; padding: 14px 15px; border-radius: 14px; border: 1px solid rgba(244,241,232,.15); background: rgba(0,0,0,.2); color: #f4f1e8; margin-top: 8px; }
+    .pin-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+    .log { display: grid; gap: 10px; }
+    .log li { list-style: none; padding: 12px; border-radius: 14px; background: rgba(255,255,255,.05); color: rgba(244,241,232,.78); }
+    @media (max-width: 900px) { .shell, .hero, .grid { grid-template-columns: 1fr; } aside { position: relative; height: auto; top: 0; } .status { position: static; margin-top: 20px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="panel">
+      <p class="brand">Al Zahraa Centre</p>
+      <h1>Presenter Admin</h1>
+      <nav>
+        <button class="active">Live Control</button>
+        <button>Display</button>
+        <button>Content Library</button>
+        <button>Security PIN</button>
+        <button>Logs</button>
+      </nav>
+      <div class="status"><strong>Live</strong><span>1 controller connected · Display visible</span></div>
+    </aside>
+
+    <main>
+      <div class="hero panel">
+        <div class="live-card">
+          <p class="eyebrow">Now showing</p>
+          <div class="big">Al-Fatihah · Ayah 1</div>
+          <p class="muted">Quran mode · full offline dataset · OBS display synced</p>
+        </div>
+        <div class="quick panel">
+          <button class="btn primary">Next Ayah</button>
+          <button class="btn">Previous Ayah</button>
+          <button class="btn">Blank Display</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Session Mode</h2>
+          <div class="modes">
+            <div class="mode active"><strong>Quran</strong><span class="muted">Surah + ayah</span></div>
+            <div class="mode"><strong>Dua</strong><span class="muted">Line control</span></div>
+            <div class="mode"><strong>Event</strong><span class="muted">Sections + slides</span></div>
+          </div>
+          <label style="display:block;margin-top:16px">Guided event<select><option>Laylat al-Qadr — 2026</option></select></label>
+        </section>
+
+        <section class="panel">
+          <h2>Navigation</h2>
+          <div class="navpad">
+            <button class="btn">← Previous</button>
+            <button class="btn primary">Next →</button>
+            <label class="wide">Jump to ayah<input type="number" value="1" min="1" /></label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Admin PIN</h2>
+          <p class="muted">Change the admin PIN from inside the admin panel. Requires the current PIN before saving.</p>
+          <div class="pin-row" style="margin-top:12px">
+            <label>New PIN<input type="password" value="2468" /></label>
+            <button class="btn primary">Save PIN</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Recent Activity</h2>
+          <ul class="log">
+            <li>[20:41:03] Controller joined from 192.168.1.44</li>
+            <li>[20:41:18] Admin switched to Quran mode</li>
+            <li>[20:41:22] Controller moved to next ayah</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

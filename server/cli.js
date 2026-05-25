@@ -16,6 +16,18 @@ function buildIndexedPrompt(title, items) {
   return `${title}\n${items.map((item, index) => `${index + 1}) ${item}`).join('\n')}`;
 }
 
+function buildGuidedEventChoices(sessionManager) {
+  const items = sessionManager.listEvents();
+  return {
+    items,
+    allowedChoices: items.map((_, index) => String(index + 1)),
+    prompt: buildIndexedPrompt(
+      'Select guided event:',
+      items.map((event) => event.title)
+    )
+  };
+}
+
 async function promptForStartupSession({ sessionManager, savedState }) {
   if (!stdin.isTTY || !stdout.isTTY) {
     return savedState ? sessionManager.clampState(savedState) : sessionManager.createNewSession('quran');
@@ -62,24 +74,25 @@ async function promptForStartupSession({ sessionManager, savedState }) {
       return sessionManager.createNewSession('dua', { selectedDuaId });
     }
 
-    const eventChoice = await askChoice(
-      rl,
-      'Select guided event:\n1) Laylat al-Qadr — 2026',
-      ['1']
-    );
-
-    if (eventChoice === '1') {
-      return sessionManager.createNewSession('guided_event', {
-        selectedEventId: 'laylat-al-qadr-2026'
-      });
+    const guidedEventChoices = buildGuidedEventChoices(sessionManager);
+    if (guidedEventChoices.items.length === 0) {
+      return sessionManager.createNewSession('quran');
     }
 
-    return sessionManager.createNewSession('quran');
+    const eventChoice = await askChoice(
+      rl,
+      guidedEventChoices.prompt,
+      guidedEventChoices.allowedChoices
+    );
+
+    const selectedEventId = guidedEventChoices.items[Number(eventChoice) - 1]?.id || sessionManager.getDefaultEventId();
+    return sessionManager.createNewSession('guided_event', { selectedEventId });
   } finally {
     rl.close();
   }
 }
 
 module.exports = {
+  buildGuidedEventChoices,
   promptForStartupSession
 };

@@ -130,6 +130,24 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     return 'quran';
   }
 
+  function clampLanguages(candidateLanguages) {
+    const defaults = {
+      arabic: true,
+      english: true,
+      transliteration: true
+    };
+
+    if (!candidateLanguages || typeof candidateLanguages !== 'object') {
+      return defaults;
+    }
+
+    return {
+      arabic: candidateLanguages.arabic !== false,
+      english: candidateLanguages.english !== false,
+      transliteration: candidateLanguages.transliteration !== false
+    };
+  }
+
   function clampState(candidateState) {
     const sessionType = clampSessionType(candidateState?.sessionType);
     const selectedDuaId = sessionType === 'dua' ? getDefaultDuaId() : null;
@@ -149,6 +167,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     return {
       sessionType,
       blanked: Boolean(candidateState?.blanked),
+      languages: clampLanguages(candidateState?.languages),
       selectedDuaId: sessionType === 'dua' ? (duasById.has(requestedDuaId) ? requestedDuaId : selectedDuaId) : null,
       selectedEventId:
         sessionType === 'guided_event'
@@ -172,6 +191,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     return clampState({
       sessionType,
       blanked: false,
+      languages: options.languages,
       selectedDuaId: options.selectedDuaId || null,
       selectedEventId: options.selectedEventId || null,
       quran: { surahNumber: 1, ayahNumber: 1 },
@@ -372,7 +392,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
 
     return {
       ...payload,
-      blanked: currentState.blanked
+      blanked: currentState.blanked,
+      languages: currentState.languages
     };
   }
 
@@ -640,6 +661,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       sessionType: state.sessionType,
       modeLabel: getModeLabel(state.sessionType),
       blanked: state.blanked,
+      languages: state.languages,
       selectedDuaId: state.selectedDuaId,
       selectedEventId: state.selectedEventId,
       quran: state.quran,
@@ -737,6 +759,16 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     });
   }
 
+  function setLanguages(state, languages) {
+    return clampState({
+      ...state,
+      languages: {
+        ...state.languages,
+        ...languages
+      }
+    });
+  }
+
   return {
     clampState,
     createNewSession,
@@ -753,6 +785,7 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     resetToFirstPosition,
     restartSession,
     setBlanked,
+    setLanguages,
     summarizeSession,
     transition
   };
