@@ -51,12 +51,12 @@ test('imports all existing local dua JSON files into SQLite', () => {
     const result = importDuaJsonDirectory(db, duasDir, { sourceName: 'local-json' });
 
     assert.equal(result.duas, 7);
-    assert.equal(result.lines, 999);
+    assert.equal(result.lines, 1762);
     assert.deepEqual(getDatabaseSummary(db), {
       surahs: 0,
       ayahs: 0,
       duas: 7,
-      duaLines: 999,
+      duaLines: 1762,
       events: 0,
       eventSections: 0,
       eventItems: 0

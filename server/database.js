@@ -222,7 +222,7 @@ function importDuasOrgDua(db, source, options = {}) {
   const segments = [];
 
   for (const item of source.duas || []) {
-    if (item.type !== 'dua' || !Array.isArray(item.segments)) continue;
+    if (!['dua', 'continue-dua'].includes(item.type) || !Array.isArray(item.segments)) continue;
     for (const segment of item.segments) {
       if (!segment.arabic && !segment.translation && !segment.transliteration) continue;
       segments.push({
