@@ -4,6 +4,7 @@ const els = {
   sessionSummary: document.getElementById('sessionSummary'),
   modeButtons: [...document.querySelectorAll('.mode-btn')],
   eventSelect: document.getElementById('eventSelect'),
+  duaSelect: document.getElementById('duaSelect'),
   prevBtn: document.getElementById('prevBtn'),
   nextBtn: document.getElementById('nextBtn'),
   jumpLabel: document.getElementById('jumpLabel'),
@@ -29,6 +30,7 @@ let currentContent = null;
 let systemInfo = null;
 let adminPin = window.sessionStorage.getItem('qurancontrolAdminPin') || '';
 let catalog = {
+  duas: [],
   events: []
 };
 let controllerStatus = {
@@ -85,6 +87,22 @@ function populateEventSelect() {
 
   if (selectedEventId) {
     els.eventSelect.value = selectedEventId;
+  }
+}
+
+function populateDuaSelect() {
+  const selectedDuaId = currentSession?.selectedDuaId || catalog.duas[0]?.id || '';
+  els.duaSelect.innerHTML = '';
+
+  catalog.duas.forEach((dua) => {
+    const option = document.createElement('option');
+    option.value = dua.id;
+    option.textContent = dua.title;
+    els.duaSelect.appendChild(option);
+  });
+
+  if (selectedDuaId) {
+    els.duaSelect.value = selectedDuaId;
   }
 }
 
@@ -185,6 +203,7 @@ function renderStatus(messageOverride) {
   }
 
   els.eventSelect.disabled = !enabled || (currentSession?.sessionType || 'quran') !== 'guided_event';
+  els.duaSelect.disabled = !enabled || (currentSession?.sessionType || 'quran') !== 'dua';
   els.prevBtn.disabled = !enabled;
   els.nextBtn.disabled = !enabled;
   els.jumpInput.disabled = !enabled;
@@ -208,6 +227,7 @@ function renderSession() {
   els.sessionSummary.textContent = `${selectedContent} ${blankState}`;
   els.blankBtn.textContent = currentSession.blanked ? 'Restore display screen' : 'Blank display screen';
   populateEventSelect();
+  populateDuaSelect();
   renderJumpControls();
   renderLanguageToggles();
   renderModeButtons();
@@ -355,8 +375,16 @@ function attachEvents() {
       send({
         type: 'admin_set_mode',
         sessionType: button.dataset.mode,
+        selectedDuaId: els.duaSelect.value,
         selectedEventId: els.eventSelect.value
       });
+    });
+  });
+
+  els.duaSelect.addEventListener('change', () => {
+    send({
+      type: 'admin_select_dua',
+      selectedDuaId: els.duaSelect.value
     });
   });
 

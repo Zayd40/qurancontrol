@@ -359,6 +359,21 @@ function handleAdminCommand(ws, socketInfo, message) {
     return true;
   }
 
+  if (message.type === 'admin_select_dua') {
+    const nextState = sessionManager.createNewSession('dua', {
+      selectedDuaId: String(message.selectedDuaId || sessionManager.getDefaultDuaId())
+        .trim()
+        .toLowerCase()
+    });
+
+    const selectedDua = duasById.get(nextState.selectedDuaId || '');
+    setCurrentState(nextState, {
+      action: 'DUA',
+      detail: `Admin - ${selectedDua?.title || 'Dua'}`
+    });
+    return true;
+  }
+
   if (message.type === 'admin_restart_session') {
     const nextState = sessionManager.restartSession(currentState);
     setCurrentState(nextState, {
