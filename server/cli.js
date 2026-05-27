@@ -62,16 +62,24 @@ async function promptForStartupSession({ sessionManager, savedState }) {
       return sessionManager.createNewSession('dua', { selectedDuaId });
     }
 
+    const events = sessionManager.listEvents();
+    if (events.length === 0) {
+      return sessionManager.createNewSession('quran');
+    }
+
+    const allowedChoices = events.map((_, index) => String(index + 1));
     const eventChoice = await askChoice(
       rl,
-      'Select guided event:\n1) Laylat al-Qadr — 2026',
-      ['1']
+      buildIndexedPrompt(
+        'Select guided event:',
+        events.map((event) => event.title)
+      ),
+      allowedChoices
     );
+    const selectedEventId = events[Number(eventChoice) - 1]?.id;
 
-    if (eventChoice === '1') {
-      return sessionManager.createNewSession('guided_event', {
-        selectedEventId: 'laylat-al-qadr-2026'
-      });
+    if (selectedEventId) {
+      return sessionManager.createNewSession('guided_event', { selectedEventId });
     }
 
     return sessionManager.createNewSession('quran');

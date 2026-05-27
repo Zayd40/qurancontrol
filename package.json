@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "format:iftitah": "node tools/format-dua.js"
+    "format:iftitah": "node tools/format-dua.js",
+    "ingest:eid-adha": "node tools/duas-org-ingest.js",
+    "test": "node --test"
   },
   "keywords": [
     "quran",
