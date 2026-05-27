@@ -4,20 +4,40 @@ body {
   background: var(--bg-primary);
 }
 
+body {
+  min-height: 100dvh;
+  margin: 0;
+  overflow-x: hidden;
+}
+
 .app {
-  max-width: 860px;
+  width: min(100%, 920px);
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: 20px 16px 32px;
+  padding: max(10px, env(safe-area-inset-top)) 10px max(14px, env(safe-area-inset-bottom));
   display: grid;
-  gap: 14px;
+  grid-template-rows: auto auto auto auto 1fr;
+  gap: 10px;
 }
 
 .panel {
-  padding: 18px;
-  border-radius: var(--radius-panel);
+  padding: clamp(12px, 3.2vw, 20px);
+  border-radius: clamp(16px, 4vw, var(--radius-panel));
   border: 1px solid var(--divider);
-  background: var(--bg-panel);
+  background: color-mix(in srgb, var(--bg-panel) 94%, transparent);
   box-shadow: var(--shadow-soft);
+}
+
+.hero {
+  position: relative;
+  padding-right: clamp(12px, 4vw, 24px);
+}
+
+.hero-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .hero h1,
@@ -28,16 +48,32 @@ body {
 }
 
 .brand {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 12px;
+  font-size: clamp(11px, 2.8vw, 14px);
+}
+
+.controller-clock {
+  flex: 0 0 auto;
+  min-width: 4.4ch;
+  padding: 6px 9px;
+  border: 1px solid var(--divider);
+  border-radius: 999px;
+  background: var(--bg-panel-strong);
+  color: var(--text-primary);
+  font-size: clamp(16px, 5vw, 24px);
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(28px, 7vw, 42px);
+  font-size: clamp(28px, 8vw, 50px);
+  line-height: 1.02;
 }
 
 .session-lock,
@@ -51,22 +87,25 @@ body {
 }
 
 .session-lock {
-  margin: 10px 0 0;
-  line-height: 1.45;
+  margin: 8px 0 0;
+  line-height: 1.35;
+  font-size: clamp(13px, 3.5vw, 16px);
 }
 
 .mode-label {
-  margin: 14px 0 6px;
+  margin: 12px 0 4px;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 12px;
+  font-size: clamp(11px, 2.8vw, 13px);
+  font-weight: 700;
 }
 
 .current-ref {
-  margin: 0 0 8px;
-  font-size: clamp(18px, 4.3vw, 28px);
-  line-height: 1.3;
+  margin: 0 0 6px;
+  font-size: clamp(22px, 6.5vw, 38px);
+  line-height: 1.16;
+  font-weight: 750;
 }
 
 .lock-message,
@@ -75,56 +114,68 @@ body {
 .preview-english,
 .preview-transliteration,
 .preview-note {
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .panel-label {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 12px;
+  font-size: clamp(11px, 2.7vw, 13px);
+  font-weight: 800;
 }
 
 .locked-title,
 .locked-subtitle {
   margin: 0;
+  font-size: clamp(20px, 5vw, 30px);
+  line-height: 1.15;
 }
 
 .locked-description {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
+  font-size: clamp(14px, 3.5vw, 18px);
 }
 
 label {
   display: block;
-  margin: 14px 0 8px;
+  margin: 10px 0 6px;
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: clamp(14px, 3.5vw, 18px);
 }
 
 select,
 input {
   width: 100%;
-  padding: 13px 14px;
+  min-height: 54px;
+  padding: 11px 12px;
   border-radius: 14px;
   border: 1px solid var(--divider);
   background: var(--bg-panel-strong);
   color: var(--text-primary);
+  font-size: clamp(18px, 5.2vw, 28px);
+  font-weight: 700;
 }
 
 button {
   border: 1px solid transparent;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 12px 16px;
   background: var(--bg-panel-strong);
   color: var(--text-primary);
+  touch-action: manipulation;
 }
 
 button.primary {
   background: var(--accent);
+  color: white;
 }
 
 button.secondary {
   border-color: var(--divider);
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: 800;
 }
 
 button:disabled,
@@ -135,30 +186,41 @@ input:disabled {
 
 .row-input {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(70px, 0.35fr);
+  gap: 8px;
 }
 
 .controls {
+  position: sticky;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 20;
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  order: 4;
 }
 
 .nav-btn {
-  min-height: 68px;
-  font-size: 20px;
-  font-weight: 700;
+  min-height: clamp(86px, 22dvh, 170px);
+  font-size: clamp(24px, 8vw, 42px);
+  font-weight: 900;
+  line-height: 1.08;
+  box-shadow: var(--shadow-soft);
 }
 
 .section-buttons {
   display: grid;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
+  max-height: min(42dvh, 420px);
+  overflow: auto;
 }
 
 .section-btn {
   text-align: left;
   border-color: var(--divider);
+  font-size: clamp(16px, 4.5vw, 24px);
+  font-weight: 750;
 }
 
 .section-btn.active {
@@ -166,43 +228,63 @@ input:disabled {
   border-color: var(--accent);
 }
 
+.preview-panel {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+}
+
 .preview-panel p {
   margin: 0;
 }
 
-.preview-panel {
-  display: grid;
-  gap: 10px;
-}
-
 .preview-title {
-  font-size: clamp(22px, 5vw, 32px);
+  font-size: clamp(22px, 6vw, 34px);
+  line-height: 1.16;
 }
 
 .preview-instruction {
   color: var(--text-secondary);
+  font-weight: 700;
 }
 
 .preview-arabic {
   direction: rtl;
   text-align: center;
   font-family: var(--font-arabic);
-  font-size: clamp(24px, 7vw, 40px);
-  line-height: 1.8;
+  font-size: clamp(28px, 9vw, 54px);
+  line-height: 1.55;
   color: var(--text-primary);
 }
 
 .preview-transliteration {
   color: var(--text-muted);
+  font-size: clamp(16px, 4.4vw, 24px);
   font-style: italic;
 }
 
 .preview-english {
-  color: color-mix(in srgb, var(--text-primary) 82%, var(--text-secondary));
+  color: color-mix(in srgb, var(--text-primary) 86%, var(--text-secondary));
+  font-size: clamp(17px, 4.7vw, 26px);
 }
 
-@media (min-width: 720px) {
-  .controls {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-height: 720px) {
+  .session-panel,
+  .locked-description {
+    display: none;
+  }
+
+  .app {
+    gap: 8px;
+  }
+
+  .panel {
+    padding: 10px;
+  }
+}
+
+@media (min-width: 860px) {
+  .app {
+    padding-inline: 16px;
   }
 }

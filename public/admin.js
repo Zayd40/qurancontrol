@@ -4,6 +4,7 @@ const els = {
   sessionSummary: document.getElementById('sessionSummary'),
   modeButtons: [...document.querySelectorAll('.mode-btn')],
   eventSelect: document.getElementById('eventSelect'),
+  duaSelect: document.getElementById('duaSelect'),
   prevBtn: document.getElementById('prevBtn'),
   nextBtn: document.getElementById('nextBtn'),
   jumpLabel: document.getElementById('jumpLabel'),
@@ -15,6 +16,7 @@ const els = {
   restartBtn: document.getElementById('restartBtn'),
   resetBtn: document.getElementById('resetBtn'),
   blankBtn: document.getElementById('blankBtn'),
+  languageInputs: [...document.querySelectorAll('[data-language]')],
   logsList: document.getElementById('logsList')
 };
 
@@ -26,7 +28,9 @@ const surahByNumber = new Map();
 let currentSession = null;
 let currentContent = null;
 let systemInfo = null;
+let adminPin = window.sessionStorage.getItem('qurancontrolAdminPin') || '';
 let catalog = {
+  duas: [],
   events: []
 };
 let controllerStatus = {
@@ -51,6 +55,25 @@ function send(payload) {
   ws.send(JSON.stringify(payload));
 }
 
+function getAdminPin() {
+  if (adminPin) {
+    return adminPin;
+  }
+
+  adminPin = String(window.prompt('Enter admin PIN. Leave blank only if no ADMIN_PIN is configured.', '') || '').trim();
+  window.sessionStorage.setItem('qurancontrolAdminPin', adminPin);
+  return adminPin;
+}
+
+function adminBootstrapUrl() {
+  return `/api/bootstrap?role=admin&pin=${encodeURIComponent(getAdminPin())}`;
+}
+
+function clearSavedAdminPin() {
+  adminPin = '';
+  window.sessionStorage.removeItem('qurancontrolAdminPin');
+}
+
 function populateEventSelect() {
   const selectedEventId = currentSession?.selectedEventId || catalog.events[0]?.id || '';
   els.eventSelect.innerHTML = '';
@@ -64,6 +87,22 @@ function populateEventSelect() {
 
   if (selectedEventId) {
     els.eventSelect.value = selectedEventId;
+  }
+}
+
+function populateDuaSelect() {
+  const selectedDuaId = currentSession?.selectedDuaId || catalog.duas[0]?.id || '';
+  els.duaSelect.innerHTML = '';
+
+  catalog.duas.forEach((dua) => {
+    const option = document.createElement('option');
+    option.value = dua.id;
+    option.textContent = dua.title;
+    els.duaSelect.appendChild(option);
+  });
+
+  if (selectedDuaId) {
+    els.duaSelect.value = selectedDuaId;
   }
 }
 
@@ -136,6 +175,20 @@ function renderSystemInfo() {
   els.controllerUrl.textContent = systemInfo?.controllerUrl || '';
 }
 
+function renderLanguageToggles() {
+  const languages = currentSession?.languages || {};
+  els.languageInputs.forEach((input) => {
+    input.checked = languages[input.dataset.language] !== false;
+    input.disabled = !controlsEnabled();
+  });
+}
+
+function selectedLanguagesFromInputs() {
+  return Object.fromEntries(
+    els.languageInputs.map((input) => [input.dataset.language, input.checked])
+  );
+}
+
 function renderStatus(messageOverride) {
   const enabled = controlsEnabled();
   const count = controllerStatus.controllerCount || 0;
@@ -150,6 +203,7 @@ function renderStatus(messageOverride) {
   }
 
   els.eventSelect.disabled = !enabled || (currentSession?.sessionType || 'quran') !== 'guided_event';
+  els.duaSelect.disabled = !enabled || (currentSession?.sessionType || 'quran') !== 'dua';
   els.prevBtn.disabled = !enabled;
   els.nextBtn.disabled = !enabled;
   els.jumpInput.disabled = !enabled;
@@ -157,6 +211,9 @@ function renderStatus(messageOverride) {
   els.restartBtn.disabled = !enabled;
   els.resetBtn.disabled = !enabled;
   els.blankBtn.disabled = !enabled;
+  els.languageInputs.forEach((input) => {
+    input.disabled = !enabled;
+  });
   renderModeButtons();
 }
 
@@ -170,7 +227,9 @@ function renderSession() {
   els.sessionSummary.textContent = `${selectedContent} ${blankState}`;
   els.blankBtn.textContent = currentSession.blanked ? 'Restore display screen' : 'Blank display screen';
   populateEventSelect();
+  populateDuaSelect();
   renderJumpControls();
+  renderLanguageToggles();
   renderModeButtons();
   renderStatus();
 }
@@ -213,6 +272,7 @@ function applyBootstrap(message) {
 function applyStateUpdate(message) {
   currentSession = message.session || currentSession;
   currentContent = message.content || currentContent;
+  catalog = message.catalog || catalog;
   renderSession();
 }
 
@@ -277,6 +337,9 @@ function handleSocketMessage(message) {
   }
 
   if (message.type === 'error') {
+    if (/pin/i.test(message.message || '')) {
+      clearSavedAdminPin();
+    }
     renderStatus(message.message || 'Action rejected by server.');
   }
 }
@@ -285,7 +348,7 @@ function connectSocket() {
   ws = new WebSocket(wsUrl());
 
   ws.addEventListener('open', () => {
-    ws.send(JSON.stringify({ type: 'hello', role: 'admin' }));
+    ws.send(JSON.stringify({ type: 'hello', role: 'admin', pin: getAdminPin() }));
     renderStatus();
   });
 
@@ -313,8 +376,16 @@ function attachEvents() {
       send({
         type: 'admin_set_mode',
         sessionType: button.dataset.mode,
+        selectedDuaId: els.duaSelect.value,
         selectedEventId: els.eventSelect.value
       });
+    });
+  });
+
+  els.duaSelect.addEventListener('change', () => {
+    send({
+      type: 'admin_select_dua',
+      selectedDuaId: els.duaSelect.value
     });
   });
 
@@ -332,6 +403,11 @@ function attachEvents() {
   els.restartBtn.addEventListener('click', () => send({ type: 'admin_restart_session' }));
   els.resetBtn.addEventListener('click', () => send({ type: 'admin_reset_position' }));
   els.blankBtn.addEventListener('click', () => send({ type: 'admin_toggle_blank' }));
+  els.languageInputs.forEach((input) => {
+    input.addEventListener('change', () => {
+      send({ type: 'admin_set_languages', languages: selectedLanguagesFromInputs() });
+    });
+  });
 }
 
 async function init() {
@@ -339,9 +415,12 @@ async function init() {
   renderStatus();
 
   try {
-    const response = await fetch('/api/bootstrap?role=admin', { cache: 'no-store' });
+    const response = await fetch(adminBootstrapUrl(), { cache: 'no-store' });
     if (response.ok) {
       applyBootstrap(await response.json());
+    } else if (response.status === 403) {
+      clearSavedAdminPin();
+      renderStatus('Invalid admin PIN. Refresh this page to try again.');
     }
   } catch (_error) {
     // websocket bootstrap will recover

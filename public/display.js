@@ -117,19 +117,23 @@ function getContentKey(content) {
     return '';
   }
 
+  const languageKey = content.languages
+    ? `${content.languages.arabic !== false ? 1 : 0}${content.languages.english !== false ? 1 : 0}${content.languages.transliteration !== false ? 1 : 0}`
+    : '111';
+
   if (content.mode === 'quran' && content.quran) {
-    return `quran:${content.quran.surahNumber}:${content.quran.ayahNumber}:${content.blanked ? 1 : 0}`;
+    return `quran:${content.quran.surahNumber}:${content.quran.ayahNumber}:${content.blanked ? 1 : 0}:${languageKey}`;
   }
 
   if (content.mode === 'dua' && content.dua) {
-    return `dua:${content.dua.duaId}:${content.dua.lineIndex}:${content.blanked ? 1 : 0}`;
+    return `dua:${content.dua.duaId}:${content.dua.lineIndex}:${content.blanked ? 1 : 0}:${languageKey}`;
   }
 
   if (content.mode === 'guided_event' && content.guidedEvent) {
-    return `guided:${content.guidedEvent.eventId}:${content.guidedEvent.sectionIndex}:${content.guidedEvent.slideIndex}:${content.blanked ? 1 : 0}`;
+    return `guided:${content.guidedEvent.eventId}:${content.guidedEvent.sectionIndex}:${content.guidedEvent.slideIndex}:${content.blanked ? 1 : 0}:${languageKey}`;
   }
 
-  return `${content.mode || 'unknown'}:${content.header || ''}:${content.blanked ? 1 : 0}`;
+  return `${content.mode || 'unknown'}:${content.header || ''}:${content.blanked ? 1 : 0}:${languageKey}`;
 }
 
 function updateBlankState(blanked) {
@@ -160,9 +164,10 @@ function updateStaticFields(content) {
 }
 
 function updateReadingFields(content) {
-  setFieldText(els.fields.arabic, content.arabic);
-  setFieldText(els.fields.transliteration, content.transliteration);
-  setFieldText(els.fields.english, content.english);
+  const languages = content.languages || {};
+  setFieldText(els.fields.arabic, languages.arabic === false ? '' : content.arabic);
+  setFieldText(els.fields.transliteration, languages.transliteration === false ? '' : content.transliteration);
+  setFieldText(els.fields.english, languages.english === false ? '' : content.english);
   setFieldText(els.fields.note, content.note);
   debouncedFitContent();
 }

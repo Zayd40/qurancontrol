@@ -16,6 +16,18 @@ function buildIndexedPrompt(title, items) {
   return `${title}\n${items.map((item, index) => `${index + 1}) ${item}`).join('\n')}`;
 }
 
+function buildGuidedEventChoices(sessionManager) {
+  const items = sessionManager.listEvents();
+  return {
+    items,
+    allowedChoices: items.map((_, index) => String(index + 1)),
+    prompt: buildIndexedPrompt(
+      'Select guided event:',
+      items.map((event) => event.title)
+    )
+  };
+}
+
 async function promptForStartupSession({ sessionManager, savedState }) {
   if (!stdin.isTTY || !stdout.isTTY) {
     return savedState ? sessionManager.clampState(savedState) : sessionManager.createNewSession('quran');
@@ -62,6 +74,15 @@ async function promptForStartupSession({ sessionManager, savedState }) {
       return sessionManager.createNewSession('dua', { selectedDuaId });
     }
 
+    const guidedEventChoices = buildGuidedEventChoices(sessionManager);
+    if (guidedEventChoices.items.length === 0) {
+      return sessionManager.createNewSession('quran');
+    }
+
+    const eventChoice = await askChoice(
+      rl,
+      guidedEventChoices.prompt,
+      guidedEventChoices.allowedChoices
     const events = sessionManager.listEvents();
     if (events.length === 0) {
       return sessionManager.createNewSession('quran');
@@ -78,6 +99,8 @@ async function promptForStartupSession({ sessionManager, savedState }) {
     );
     const selectedEventId = events[Number(eventChoice) - 1]?.id;
 
+    const selectedEventId = guidedEventChoices.items[Number(eventChoice) - 1]?.id || sessionManager.getDefaultEventId();
+    return sessionManager.createNewSession('guided_event', { selectedEventId });
     if (selectedEventId) {
       return sessionManager.createNewSession('guided_event', { selectedEventId });
     }
@@ -89,5 +112,6 @@ async function promptForStartupSession({ sessionManager, savedState }) {
 }
 
 module.exports = {
+  buildGuidedEventChoices,
   promptForStartupSession
 };

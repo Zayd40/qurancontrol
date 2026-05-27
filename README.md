@@ -2,7 +2,7 @@
 
 A local-first mosque presenter system for Al Zahraa Centre.
 
-The mosque computer runs the Node.js server. OBS captures [`/display`](/Users/zaydabbas/Documents/GitHub/qurancontrol/public/display.html) and sends it to TVs. A helper joins [`/control`](/Users/zaydabbas/Documents/GitHub/qurancontrol/public/control.html) from a phone on the same LAN and can only navigate inside the session that was chosen in the terminal before startup.
+The mosque computer runs the Node.js server. OBS captures [`/display`](public/display.html) and sends it to TVs. A helper joins [`/control`](public/control.html) from a phone on the same LAN and can only navigate inside the session that was chosen in the terminal before startup.
 
 ## What The System Does
 
@@ -29,7 +29,7 @@ The mosque computer runs the Node.js server. OBS captures [`/display`](/Users/za
 ## How To Install
 
 1. Open a terminal in the project folder:
-   - `/Users/zaydabbas/Documents/GitHub/qurancontrol`
+   - `<project-folder>`
 2. Install dependencies:
 
 ```bash
@@ -113,9 +113,7 @@ Choose:
 
 1. `Guided Event`
 
-Then choose:
-
-1. `Laylat al-Qadr — 21st Night`
+Then choose one of the valid events loaded from `data/events/`.
 
 That event is locked for the whole server run.
 
@@ -156,7 +154,7 @@ in the terminal that is running the app.
 3. Choose `1` to continue the saved session, including its last navigation position.
 4. Choose `2` to start a new locked session instead.
 
-The saved session file is written automatically to [`data/previous-session.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/previous-session.json).
+The saved session file is written automatically to [`data/previous-session.json`](data/previous-session.json).
 
 ## Data Files
 
@@ -164,8 +162,8 @@ The saved session file is written automatically to [`data/previous-session.json`
 
 The server loads Quran data from:
 
-- [`data/quran.full.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.full.json) if present
-- otherwise [`data/quran.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.json)
+- [`data/quran.full.json`](data/quran.full.json) if present
+- otherwise [`data/quran.json`](data/quran.json)
 
 You can also override the path with `QURAN_DATA_FILE` in `.env`.
 
@@ -173,22 +171,22 @@ You can also override the path with `QURAN_DATA_FILE` in `.env`.
 
 Duas live in:
 
-- [`data/duas/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas)
+- [`data/duas/`](data/duas)
 
 Current files:
 
-- [`data/duas/iftitah.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas/iftitah.json)
-- [`data/duas/kumayl.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas/kumayl.json)
+- [`data/duas/iftitah.json`](data/duas/iftitah.json)
+- [`data/duas/kumayl.json`](data/duas/kumayl.json)
 
 ### Guided event files
 
 Guided events live in:
 
-- [`data/events/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events)
+- [`data/events/`](data/events)
 
 Current file:
 
-- [`data/events/laylat-al-qadr-21.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events/laylat-al-qadr-21.json)
+- [`data/events/laylat-al-qadr-2026.json`](data/events/laylat-al-qadr-2026.json)
 
 ## How To Add Or Update Dua Iftitah / Dua Kumayl
 
@@ -210,7 +208,7 @@ Each dua uses this JSON shape:
 
 To update a dua:
 
-1. Open the relevant file in [`data/duas/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas).
+1. Open the relevant file in [`data/duas/`](data/duas).
 2. Replace each line entry with the approved Arabic, transliteration, and English text.
 3. Keep one recitation chunk per JSON line object.
 4. Restart the server.
@@ -223,7 +221,7 @@ npm run format:iftitah
 
 ## How To Add A New Guided Event JSON File
 
-1. Create a new file in [`data/events/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events).
+1. Create a new file in [`data/events/`](data/events).
 2. Use one JSON file per event.
 3. Keep manual section and slide boundaries in the JSON.
 4. Do not rely on automatic splitting by text length.
@@ -257,13 +255,13 @@ Schema:
 
 All slide fields are optional. Empty strings are fine and will be hidden automatically on the display.
 
-If you add a brand new guided event file and want it to appear in the startup menu, also add it to the terminal prompt logic in [`server/cli.js`](/Users/zaydabbas/Documents/GitHub/qurancontrol/server/cli.js).
+Brand new guided event JSON files are loaded automatically into the startup menu; no code change is needed if the JSON file is valid.
 
 ## Laylat al-Qadr 21st Night
 
 The included guided event file is:
 
-- [`data/events/laylat-al-qadr-21.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events/laylat-al-qadr-21.json)
+- [`data/events/laylat-al-qadr-2026.json`](data/events/laylat-al-qadr-2026.json)
 
 It already includes these sections in order:
 
@@ -330,11 +328,11 @@ It can only navigate inside the session that was chosen in the terminal before s
 ### Quran text is missing for some ayahs
 
 - The fallback dataset may be incomplete.
-- Add a full dataset file at [`data/quran.full.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.full.json) and restart.
+- Add a full dataset file at [`data/quran.full.json`](data/quran.full.json) and restart.
 
 ### A dua or guided event looks incomplete
 
-- Check the JSON file under [`data/duas/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas) or [`data/events/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events).
+- Check the JSON file under [`data/duas/`](data/duas) or [`data/events/`](data/events).
 - Placeholder slides and TODO notes are meant to be replaced with the exact approved source chunks.
 
 ## Environment Options
@@ -345,9 +343,13 @@ Optional `.env` settings:
 - `CONTROLLER_TIMEOUT_MS` default `30000`
 - `HEARTBEAT_INTERVAL_MS` default `10000`
 - `QURAN_DATA_FILE` optional custom Quran dataset path
+- `ADMIN_PIN` optional admin PIN for the admin page. If set, `/admin` requires this PIN before admin controls work. Example: `ADMIN_PIN=1234`
 
 ## Scripts
 
-- `npm run start`
-- `npm run dev`
+- `npm run start` / `npm start` — start the local web server.
+- `npm run dev` — start the server with Node watch mode for development.
+- `npm run desktop` — launch the Electron desktop wrapper; it starts the server and opens `/admin`.
+- `npm run pack:dir` — create an unpacked desktop build in `dist/` for local verification.
+- `npm run pack:win` — build the Windows installer/EXE target with Electron Builder.
 - `npm run format:iftitah`

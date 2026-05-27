@@ -1,5 +1,6 @@
 const els = {
   brandText: document.getElementById('brandText'),
+  controllerClock: document.getElementById('controllerClock'),
   modeLabel: document.getElementById('modeLabel'),
   currentRef: document.getElementById('currentRef'),
   lockMessage: document.getElementById('lockMessage'),
@@ -52,6 +53,13 @@ function wsUrl() {
 
 function controlsEnabled() {
   return Boolean(ws && ws.readyState === WebSocket.OPEN);
+}
+
+function setClock() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  els.controllerClock.textContent = `${hours}:${minutes}`;
 }
 
 function setFieldText(element, value) {
@@ -381,6 +389,8 @@ function attachEvents() {
 }
 
 async function init() {
+  setClock();
+  window.setInterval(setClock, 1000);
   attachEvents();
   updateUiStatus();
 

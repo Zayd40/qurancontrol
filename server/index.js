@@ -5,7 +5,6 @@ const WebSocket = require('ws');
 const QRCode = require('qrcode');
 const dotenv = require('dotenv');
 
-const { promptForStartupSession } = require('./cli');
 const { createDashboard } = require('./dashboard');
 const {
   getLanIPv4,
@@ -18,6 +17,7 @@ const {
 const { createLogBuffer } = require('./logBuffer');
 const { createSessionManager } = require('./session');
 const { createSessionStore } = require('./sessionStore');
+const { resolveStartupState } = require('./startup');
 
 dotenv.config();
 
@@ -28,6 +28,7 @@ const DUA_DIR = path.join(DATA_DIR, 'duas');
 const EVENTS_DIR = path.join(DATA_DIR, 'events');
 
 const PORT = Number(process.env.PORT || 5173);
+const ADMIN_PIN = String(process.env.ADMIN_PIN || '').trim();
 
 const config = loadConfig(DATA_DIR);
 const metadata = loadSurahMetadata(DATA_DIR);
@@ -62,6 +63,15 @@ const wss = new WebSocket.Server({ server, path: '/ws' });
 
 const socketInfoByWs = new Map();
 
+function refreshGuidedEvents() {
+  const nextEvents = loadGuidedEvents(EVENTS_DIR);
+  eventsById.clear();
+
+  for (const [id, event] of nextEvents.entries()) {
+    eventsById.set(id, event);
+  }
+}
+
 function stateKey(state) {
   return JSON.stringify(state);
 }
@@ -87,6 +97,23 @@ function normalizeIp(address) {
     return 'unknown';
   }
   return String(address).replace('::ffff:', '');
+}
+
+function isValidAdminPin(pin) {
+  if (!ADMIN_PIN) {
+    return true;
+  }
+
+  return String(pin || '').trim() === ADMIN_PIN;
+}
+
+function resolveRequestedRole(role, pin) {
+  const requestedRole = ['control', 'admin'].includes(role) ? role : 'display';
+  if (requestedRole === 'admin' && !isValidAdminPin(pin)) {
+    return null;
+  }
+
+  return requestedRole;
 }
 
 function getRecentActivityLines(limit = 3) {
@@ -147,6 +174,8 @@ function broadcastControllerStatus() {
 }
 
 function getBootstrapPayload(socketInfo) {
+  refreshGuidedEvents();
+
   return {
     type: 'bootstrap',
     config,
@@ -191,11 +220,16 @@ function persistState() {
 }
 
 function broadcastStateUpdate() {
+  refreshGuidedEvents();
+
   broadcast({
     type: 'state_update',
     session: sessionManager.getPublicSessionData(currentState),
     state: currentState,
-    content: sessionManager.getCurrentContentPayload(currentState)
+    content: sessionManager.getCurrentContentPayload(currentState),
+    catalog: {
+      events: sessionManager.listEvents()
+    }
   });
 }
 
@@ -295,6 +329,8 @@ function handleAdminCommand(ws, socketInfo, message) {
     return false;
   }
 
+  refreshGuidedEvents();
+
   if (message.type === 'admin_set_mode') {
     const sessionType = message.sessionType === 'dua' || message.sessionType === 'guided_event'
       ? message.sessionType
@@ -341,6 +377,21 @@ function handleAdminCommand(ws, socketInfo, message) {
     return true;
   }
 
+  if (message.type === 'admin_select_dua') {
+    const nextState = sessionManager.createNewSession('dua', {
+      selectedDuaId: String(message.selectedDuaId || sessionManager.getDefaultDuaId())
+        .trim()
+        .toLowerCase()
+    });
+
+    const selectedDua = duasById.get(nextState.selectedDuaId || '');
+    setCurrentState(nextState, {
+      action: 'DUA',
+      detail: `Admin - ${selectedDua?.title || 'Dua'}`
+    });
+    return true;
+  }
+
   if (message.type === 'admin_restart_session') {
     const nextState = sessionManager.restartSession(currentState);
     setCurrentState(nextState, {
@@ -368,6 +419,15 @@ function handleAdminCommand(ws, socketInfo, message) {
     return true;
   }
 
+  if (message.type === 'admin_set_languages') {
+    const nextState = sessionManager.setLanguages(currentState, message.languages || {});
+    setCurrentState(nextState, {
+      action: 'LANGUAGES',
+      detail: 'Admin - Updated display languages'
+    });
+    return true;
+  }
+
   return false;
 }
 
@@ -388,7 +448,15 @@ app.get('/admin', (_req, res) => {
 });
 
 app.get('/api/bootstrap', (req, res) => {
-  const role = ['control', 'admin'].includes(req.query.role) ? req.query.role : 'display';
+  const role = resolveRequestedRole(req.query.role, req.query.pin);
+  if (!role) {
+    res.status(403).json({
+      type: 'error',
+      message: 'Invalid admin PIN.'
+    });
+    return;
+  }
+
   res.json(getBootstrapPayload({ role, ip: normalizeIp(req.ip) }));
 });
 
@@ -413,7 +481,16 @@ wss.on('connection', (ws, req) => {
     }
 
     if (message.type === 'hello') {
-      socketInfo.role = ['control', 'admin'].includes(message.role) ? message.role : 'display';
+      const requestedRole = resolveRequestedRole(message.role, message.pin);
+      if (!requestedRole) {
+        sendMessage(ws, {
+          type: 'error',
+          message: 'Invalid admin PIN.'
+        });
+        return;
+      }
+
+      socketInfo.role = requestedRole;
 
       if (socketInfo.role === 'control') {
         pushActivity('CONNECTED', `Controller joined (${socketInfo.ip})`);
@@ -474,7 +551,7 @@ wss.on('connection', (ws, req) => {
 
 async function start() {
   const savedState = sessionStore.load();
-  currentState = await promptForStartupSession({
+  currentState = resolveStartupState({
     sessionManager,
     savedState: savedState ? sessionManager.clampState(savedState) : null
   });
