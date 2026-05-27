@@ -272,6 +272,7 @@ function applyBootstrap(message) {
 function applyStateUpdate(message) {
   currentSession = message.session || currentSession;
   currentContent = message.content || currentContent;
+  catalog = message.catalog || catalog;
   renderSession();
 }
 

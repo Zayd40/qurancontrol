@@ -63,6 +63,15 @@ const wss = new WebSocket.Server({ server, path: '/ws' });
 
 const socketInfoByWs = new Map();
 
+function refreshGuidedEvents() {
+  const nextEvents = loadGuidedEvents(EVENTS_DIR);
+  eventsById.clear();
+
+  for (const [id, event] of nextEvents.entries()) {
+    eventsById.set(id, event);
+  }
+}
+
 function stateKey(state) {
   return JSON.stringify(state);
 }
@@ -165,6 +174,8 @@ function broadcastControllerStatus() {
 }
 
 function getBootstrapPayload(socketInfo) {
+  refreshGuidedEvents();
+
   return {
     type: 'bootstrap',
     config,
@@ -209,11 +220,16 @@ function persistState() {
 }
 
 function broadcastStateUpdate() {
+  refreshGuidedEvents();
+
   broadcast({
     type: 'state_update',
     session: sessionManager.getPublicSessionData(currentState),
     state: currentState,
-    content: sessionManager.getCurrentContentPayload(currentState)
+    content: sessionManager.getCurrentContentPayload(currentState),
+    catalog: {
+      events: sessionManager.listEvents()
+    }
   });
 }
 
@@ -312,6 +328,8 @@ function handleAdminCommand(ws, socketInfo, message) {
   if (socketInfo.role !== 'admin') {
     return false;
   }
+
+  refreshGuidedEvents();
 
   if (message.type === 'admin_set_mode') {
     const sessionType = message.sessionType === 'dua' || message.sessionType === 'guided_event'
