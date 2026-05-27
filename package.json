@@ -6,11 +6,9 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "test": "node --test",
     "format:iftitah": "node tools/format-dua.js",
-    "desktop": "electron .",
-    "pack:win": "electron-builder --win --x64",
-    "pack:dir": "electron-builder --dir"
+    "ingest:eid-adha": "node tools/duas-org-ingest.js",
+    "test": "node --test"
   },
   "keywords": [
     "quran",

@@ -83,10 +83,29 @@ async function promptForStartupSession({ sessionManager, savedState }) {
       rl,
       guidedEventChoices.prompt,
       guidedEventChoices.allowedChoices
+    const events = sessionManager.listEvents();
+    if (events.length === 0) {
+      return sessionManager.createNewSession('quran');
+    }
+
+    const allowedChoices = events.map((_, index) => String(index + 1));
+    const eventChoice = await askChoice(
+      rl,
+      buildIndexedPrompt(
+        'Select guided event:',
+        events.map((event) => event.title)
+      ),
+      allowedChoices
     );
+    const selectedEventId = events[Number(eventChoice) - 1]?.id;
 
     const selectedEventId = guidedEventChoices.items[Number(eventChoice) - 1]?.id || sessionManager.getDefaultEventId();
     return sessionManager.createNewSession('guided_event', { selectedEventId });
+    if (selectedEventId) {
+      return sessionManager.createNewSession('guided_event', { selectedEventId });
+    }
+
+    return sessionManager.createNewSession('quran');
   } finally {
     rl.close();
   }
