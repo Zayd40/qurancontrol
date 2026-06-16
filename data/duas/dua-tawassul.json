@@ -1,0 +1,856 @@
+{
+  "id": "dua-tawassul",
+  "title": "Dua Tawassul",
+  "category": "Muharram",
+  "tags": [
+    "Muharram"
+  ],
+  "sourceUrl": "https://www.duas.org/tawassul.htm",
+  "lines": [
+    {
+      "arabic": "اَللَّهُمَّ إِنِّي أَسْأَلُكَ وَأَتَوَجَّهُ إِلَيْكَ",
+      "transliteration": "allahumma inni as'aluka wa atawajjahu ilayka",
+      "english": "O Allah, I beseech You and turn my face toward You"
+    },
+    {
+      "arabic": "بِنَبِيِّكَ نَبِيِّ ٱلرَّحْمَةِ",
+      "transliteration": "binabiyyika nabiyyi alrrahmati",
+      "english": "in the name of Your Prophet; the Prophet of Mercy,"
+    },
+    {
+      "arabic": "مُحَمَّدٍ صَلَّىٰ ٱللَّهُ عَلَيْهِ وَآلِهِ",
+      "transliteration": "muhammadin salla allahu `alayhi wa alihi",
+      "english": "Muhammad—may Allah send blessings to him and his Household."
+    },
+    {
+      "arabic": "يَا أَبَا ٱلْقَاسِمِ",
+      "transliteration": "ya aba alqasimi",
+      "english": "O Abu’l-Qasim!"
+    },
+    {
+      "arabic": "يَا رَسُولَ ٱللَّهِ",
+      "transliteration": "ya rasula allahi",
+      "english": "O Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا إِمَامَ ٱلرَّحْمَةِ",
+      "transliteration": "ya imama alrrahmati",
+      "english": "O Chief of Mercy!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "We are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا ٱلْحَسَنِ",
+      "transliteration": "ya aba alhasani",
+      "english": "O Abu’l-Hasan!"
+    },
+    {
+      "arabic": "يَا أَمِيرَ ٱلْمُؤْمِنِينَ",
+      "transliteration": "ya amira almu'minina",
+      "english": "O commander of the Believers!"
+    },
+    {
+      "arabic": "يَا عَلِيُّ بْنَ أَبِي طَالِبٍ",
+      "transliteration": "ya `aliyyu bna abi talibin",
+      "english": "O `Ali, son of Abu-Talib!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "We are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ اللّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا فَاطِمَةُ ٱلزَّهْرَاءُ",
+      "transliteration": "ya fatimatu alzzahra'u",
+      "english": "O Fatimah, the Luminous Lady!"
+    },
+    {
+      "arabic": "يَا بِنْتَ مُحَمَّدٍ",
+      "transliteration": "ya binta muhammadin",
+      "english": "O daughter of Muhammad!"
+    },
+    {
+      "arabic": "يَا قُرَّةَ عَيْنِ ٱلرَّسُولِ",
+      "transliteration": "ya qurrata `ayni alrrasuli",
+      "english": "O delight of the Messenger’s eyes!"
+    },
+    {
+      "arabic": "يَا سَيِّدَتَنَا وَمَوْلاَتَنَا",
+      "transliteration": "ya sayyidatana wa mawlatana",
+      "english": "O our chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "We are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكِ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna biki ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكِ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaki bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهَةً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihatan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعي لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa`i lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا مُحَمَّدٍ",
+      "transliteration": "ya aba muhammadin",
+      "english": "O Abu-Muhammad!"
+    },
+    {
+      "arabic": "يَا حَسَنُ بْنَ عَلِيٍّ",
+      "transliteration": "ya hasanu bna `aliyyin",
+      "english": "O Hasan the son of `Ali!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلْمجْتَبَىٰ",
+      "transliteration": "ayyuha almujtaba",
+      "english": "O well-Chosen one!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا عَبْدِ ٱللَّهِ",
+      "transliteration": "ya aba `abdillahi",
+      "english": "O Abu-`Abdullah!"
+    },
+    {
+      "arabic": "يَا حُسَيْنُ بْنَ عَلِيٍّ",
+      "transliteration": "ya husaynu bna `aliyyin",
+      "english": "O Husayn the son of `Ali!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلشَّهِيدُ",
+      "transliteration": "ayyuha alshshahidu",
+      "english": "O Martyr!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا ٱلْحَسَنِ",
+      "transliteration": "ya aba alhasani",
+      "english": "O Abu’l-Hasan!"
+    },
+    {
+      "arabic": "يَا عَلِيُّ بْنَ ٱلْحُسَيْنِ",
+      "transliteration": "ya `aliyyu bna alhusayni",
+      "english": "O `Ali the son of al-Husayn!"
+    },
+    {
+      "arabic": "يَا زَيْنَ ٱلْعَابِدينَ",
+      "transliteration": "ya zayna al`abidina",
+      "english": "O Ornament of the Worshippers!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا جَعْفَرٍ",
+      "transliteration": "ya aba ja`farin",
+      "english": "O Abu-Ja`far!"
+    },
+    {
+      "arabic": "يَا مُحَمَّدُ بْنَ عَلِيٍّ",
+      "transliteration": "ya muhammadu bna `aliyyin",
+      "english": "O Muhammad the son of `Ali!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلْبَاقِرُ",
+      "transliteration": "ayyuha albaqiru",
+      "english": "O Cleaver [of knowledge]!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا عَبْدِ ٱللَّهِ",
+      "transliteration": "ya aba `abdillahi",
+      "english": "O Abu-`Abdullah!"
+    },
+    {
+      "arabic": "يَا جَعْفَرُ بْنَ مُحَمَّدٍ",
+      "transliteration": "ya ja`faru bna muhammadin",
+      "english": "O Ja`far the son of Muhammad!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلصَّادِقُ",
+      "transliteration": "ayyuha alssadiqu",
+      "english": "O Veracious!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qadamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا ٱلْحَسَنِ",
+      "transliteration": "ya aba alhasani",
+      "english": "O Abu’l-Hasan!"
+    },
+    {
+      "arabic": "يَا مُوسَىٰ بْنَ جَعْفَرٍ",
+      "transliteration": "ya musa bna ja`farin",
+      "english": "O Musa the son of Ja`far!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلْكَاظِمُ",
+      "transliteration": "ayyuha alkazimu",
+      "english": "O Suppressor [of rage]!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا ٱلْحَسَنِ",
+      "transliteration": "ya aba alhasani",
+      "english": "O Abu’l-Hasan!"
+    },
+    {
+      "arabic": "يَا عَلِيُّ بْنَ مُوسَىٰ",
+      "transliteration": "ya `aliyyu bna musa",
+      "english": "O `Ali the son of Musa!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلرِّضَا",
+      "transliteration": "ayyuha alrrida",
+      "english": "O Amicable!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا جَعْفَرٍ",
+      "transliteration": "ya aba ja`farin",
+      "english": "O Abu-Ja`far!"
+    },
+    {
+      "arabic": "يَا مُحَمَّدُ بْنَ عَلِيٍّ",
+      "transliteration": "ya muhammadu bna `aliyyin",
+      "english": "O Muhammad the son of `Ali!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلتَّقِيُّ ٱلْجَوَادُ",
+      "transliteration": "ayyuha alttaqiyyu aljawadu",
+      "english": "O pious and magnanimous!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا ٱلْحَسَنِ",
+      "transliteration": "ya aba alhasani",
+      "english": "O Abu’l-Hasan!"
+    },
+    {
+      "arabic": "يَا عَلِيُّ بْنَ مُحَمَّدٍ",
+      "transliteration": "ya `aliyyu bna muhammadin",
+      "english": "O `Ali the son of Muhammad!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلْهَادِي ٱلنَّقِيُّ",
+      "transliteration": "ayyuha alhadi alnnaqiyyu",
+      "english": "O guide and pure!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا أَبَا مُحَمَّدٍ",
+      "transliteration": "ya aba muhammadin",
+      "english": "O Abu-Muhammad!"
+    },
+    {
+      "arabic": "يَا حَسَنُ بْنَ عَلِيٍّ",
+      "transliteration": "ya hasanu bna `aliyyin",
+      "english": "O Hasan the son of `Ali!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلزَّكِيُّ ٱلْعَسْكَرِيُّ",
+      "transliteration": "ayyuha alzzakiyyu al`askariyyu",
+      "english": "O immaculate resident of `Askar [city]!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا وَصِيَّ ٱلْحَسَنِ",
+      "transliteration": "ya wasiyya alhasani",
+      "english": "O successor of al-Hasan!"
+    },
+    {
+      "arabic": "وَٱلْخَلَفُ ٱلْحُجَّةُ",
+      "transliteration": "walkhalafu alhujjatu",
+      "english": "O descendant [of the Infallibles] and Argument [of Allah]!"
+    },
+    {
+      "arabic": "أَيُّهَا ٱلْقَائِمُ ٱلْمُنْتَظَرُ ٱلْمَهْدِيُّ",
+      "transliteration": "ayyuha alqa'imu almuntazaru almahdiyyu",
+      "english": "O Riser, Awaited, and Well-guided!"
+    },
+    {
+      "arabic": "يَا بْنَ رَسُولِ ٱللَّهِ",
+      "transliteration": "yabna rasuli allahi",
+      "english": "O son of Allah’s Messenger!"
+    },
+    {
+      "arabic": "يَا حُجَّةَ ٱللَّهِ عَلَىٰ خَلْقِهِ",
+      "transliteration": "ya hujjata allahi `ala khalqihi",
+      "english": "O Allah’s Argument against His creatures!"
+    },
+    {
+      "arabic": "يَا سَيِّدَنَا وَمَوْلاَنَا",
+      "transliteration": "ya sayyidana wa mawlana",
+      "english": "O our master and chief!"
+    },
+    {
+      "arabic": "إِنَّا تَوَجَّهْنَا وَٱسْتَشْفَعْنَا",
+      "transliteration": "inna tawajjahana wastashfa`na",
+      "english": "we are turning our faces toward you, seeking your intercession"
+    },
+    {
+      "arabic": "وَتَوَسَّلْنَا بِكَ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassalna bika ila allahi",
+      "english": "and your advocacy for us before Allah;"
+    },
+    {
+      "arabic": "وَقَدَّمْنَاكَ بَيْنَ يَدَيْ حَاجَاتِنَا",
+      "transliteration": "wa qaddamnaka bayna yaday hajatina",
+      "english": "and we are presenting you [as our intermediary] for the settlement of our needs."
+    },
+    {
+      "arabic": "يَا وَجِيهاً عِنْدَ ٱللَّهِ",
+      "transliteration": "ya wajihan `inda allahi",
+      "english": "O well-esteemed with Allah,"
+    },
+    {
+      "arabic": "إِشْفَعْ لَنَا عِنْدَ ٱللَّهِ",
+      "transliteration": "ishfa` lana `inda allahi",
+      "english": "intercede for us before Allah."
+    },
+    {
+      "arabic": "يَا سَادَتِي وَمَوَالِيَّ",
+      "transliteration": "ya sadati wa mawaliyya",
+      "english": "O my chiefs and masters!"
+    },
+    {
+      "arabic": "إِنِّي تَوَجَّهْتُ بِكُمْ",
+      "transliteration": "inni tawajjahtu bikum",
+      "english": "I am turning my face toward Allah in the names of you [all],"
+    },
+    {
+      "arabic": "ائِمَّتِي وَعُدَّتِي",
+      "transliteration": "a'immati wa `uddati",
+      "english": "for you are my leaders and my supporters"
+    },
+    {
+      "arabic": "لِيَوْمِ فَقْرِي وَحَاجَتِي",
+      "transliteration": "liyawmi faqri wa hajati",
+      "english": "on the day of my destitution and neediness"
+    },
+    {
+      "arabic": "إِلَىٰ ٱللَّهِ",
+      "transliteration": "ila allahi",
+      "english": "before Allah."
+    },
+    {
+      "arabic": "وَتَوَسَّلْتُ بِكُمْ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wa tawassaltu bikum ila allahi",
+      "english": "I am seeking your advocacy for me before Allah"
+    },
+    {
+      "arabic": "وَٱسْتَشْفَعْتُ بِكُمْ إِلَىٰ ٱللَّهِ",
+      "transliteration": "wastashfa`tu bikum ila allahi",
+      "english": "and seeking your intercession for me before Allah;"
+    },
+    {
+      "arabic": "فَٱشْفَعُوا لِي عِنْدَ ٱللَّهِ",
+      "transliteration": "fashfa`u li `inda allahi",
+      "english": "so, (please) intercede for me before Allah"
+    },
+    {
+      "arabic": "وَٱسْتَنْقِذُونِي مِنْ ذُنُوبِي عِنْدَ ٱللَّهِ",
+      "transliteration": "wastanqidhuni min dhunubi `inda allahi",
+      "english": "and save me from my sins before Allah,"
+    },
+    {
+      "arabic": "فَإنَّكُمْ وَسيلَتِي إِلَىٰ ٱللَّهِ",
+      "transliteration": "fa'innakum wasilati ila allahi",
+      "english": "for you are my means to Allah"
+    },
+    {
+      "arabic": "وَبِحُبِّكُمْ وَبِقُرْبِكُمْ ارْجُو نَجَاةً مِنَ ٱللَّهِ",
+      "transliteration": "wa bihubbikum wa biqurbikum arju najatan mina allahi",
+      "english": "and through my love for you and my seeking nearness to you do I hope for salvation from Allah."
+    },
+    {
+      "arabic": "فَكُونُوا عِنْدَ ٱللَّهِ رَجَائِي",
+      "transliteration": "fakunu `inda allahi raja'i",
+      "english": "So, be my hope before Allah."
+    },
+    {
+      "arabic": "يَا سَادَتِي يَا اوْلِيَاءَ ٱللَّهِ",
+      "transliteration": "ya sadati ya awliya'a allahi",
+      "english": "O my masters! O Allah’s intimate servants!"
+    },
+    {
+      "arabic": "صَلَّىٰ ٱللَّهُ عَلَيْهِمْ اجْمَعينَ",
+      "transliteration": "salla allahu `alayhim ajma`ina",
+      "english": "May Allah bless you all"
+    },
+    {
+      "arabic": "وَلَعَنَ ٱللَّهُ اعْدَاءَ ٱللَّهِ ظَالِمِيهِمْ",
+      "transliteration": "wa la`ana allahu a`da'a allahi zalimihim",
+      "english": "and may Allah curse the enemies of Allah; those who wronged you,"
+    },
+    {
+      "arabic": "مِنَ ٱلاوَّلِينَ وَٱلآخِرِينَ",
+      "transliteration": "mina al-awwalina wal-akhirina",
+      "english": "from the past and the last generations."
+    },
+    {
+      "arabic": "آمِينَ رَبَّ ٱلْعَالَمينَ",
+      "transliteration": "amina rabba al`alamina",
+      "english": "Respond to us, O Lord of the Worlds!"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "id": "kumayl",
-  "title": "Duʿāʾ Kumayl",
+  "title": "Dua Kumayl",
   "lines": [
     {
       "arabic": "اَللَّهُمَّ إِنِّي أَسْألُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيٍْء",
@@ -1247,5 +1247,10 @@
       "transliteration": "wa sal-lama tas-liman kathira",
       "english": "And give them abundant peace!"
     }
-  ]
+  ],
+  "category": "Muharram",
+  "tags": [
+    "Muharram"
+  ],
+  "sourceUrl": "https://www.duas.org/kumayl.htm"
 }

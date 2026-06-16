@@ -155,6 +155,9 @@ function loadDuas(duaDir) {
     duaMap.set(id, {
       id,
       title,
+      category: String(parsed.category || '').trim(),
+      tags: Array.isArray(parsed.tags) ? parsed.tags.map((tag) => String(tag).trim()).filter(Boolean) : [],
+      sourceUrl: String(parsed.sourceUrl || '').trim(),
       lines
     });
   }

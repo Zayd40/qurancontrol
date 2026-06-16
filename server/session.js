@@ -14,6 +14,9 @@ function createSessionManager({ metadata, quranDataset, duasById }) {
       .map((dua) => ({
         id: dua.id,
         title: dua.title,
+        category: dua.category,
+        tags: dua.tags,
+        sourceUrl: dua.sourceUrl,
         totalLines: dua.lines.length
       }))
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -432,6 +435,9 @@ function createSessionManager({ metadata, quranDataset, duasById }) {
         ? {
             id: dua.id,
             title: dua.title,
+            category: dua.category,
+            tags: dua.tags,
+            sourceUrl: dua.sourceUrl,
             totalLines: dua.lines.length
           }
         : null;
