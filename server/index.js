@@ -1,5 +1,6 @@
 const path = require('path');
 const http = require('http');
+const { spawn } = require('child_process');
 const express = require('express');
 const WebSocket = require('ws');
 const QRCode = require('qrcode');
@@ -11,7 +12,6 @@ const {
   getLanIPv4,
   loadConfig,
   loadDuas,
-  loadGuidedEvents,
   loadQuranDataset,
   loadSurahMetadata
 } = require('./loaders');
@@ -25,20 +25,18 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const DATA_DIR = path.join(ROOT_DIR, 'data');
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
 const DUA_DIR = path.join(DATA_DIR, 'duas');
-const EVENTS_DIR = path.join(DATA_DIR, 'events');
 
 const PORT = Number(process.env.PORT || 5173);
+const OPEN_ADMIN_ON_START = process.env.OPEN_ADMIN_ON_START === '1';
 
 const config = loadConfig(DATA_DIR);
 const metadata = loadSurahMetadata(DATA_DIR);
 const quranDataset = loadQuranDataset(ROOT_DIR, DATA_DIR);
 const duasById = loadDuas(DUA_DIR);
-const eventsById = loadGuidedEvents(EVENTS_DIR);
 const sessionManager = createSessionManager({
   metadata,
   quranDataset,
-  duasById,
-  eventsById
+  duasById
 });
 const sessionStore = createSessionStore(ROOT_DIR);
 const logBuffer = createLogBuffer(20);
@@ -146,6 +144,23 @@ function broadcastControllerStatus() {
   });
 }
 
+function openBrowser(url) {
+  const platform = process.platform;
+  const command =
+    platform === 'win32' ? 'cmd' : platform === 'darwin' ? 'open' : 'xdg-open';
+  const args = platform === 'win32' ? ['/c', 'start', '', url] : [url];
+
+  try {
+    const child = spawn(command, args, {
+      detached: true,
+      stdio: 'ignore'
+    });
+    child.unref();
+  } catch (error) {
+    console.warn(`[warn] Failed to open admin panel: ${error.message}`);
+  }
+}
+
 function getBootstrapPayload(socketInfo) {
   return {
     type: 'bootstrap',
@@ -169,8 +184,7 @@ function getBootstrapPayload(socketInfo) {
       recentActivity: getRecentActivityLines(20)
     },
     catalog: {
-      duas: sessionManager.listDuas(),
-      events: sessionManager.listEvents()
+      duas: sessionManager.listDuas()
     },
     dataset: {
       path: path.relative(ROOT_DIR, quranDataset.path),
@@ -259,13 +273,6 @@ function resolveActionFromMessage(message, sessionType) {
     };
   }
 
-  if (sessionType === 'guided_event' && message.type === 'jump_section') {
-    return {
-      type: 'jump_section',
-      sectionIndex: Number(message.sectionIndex)
-    };
-  }
-
   return null;
 }
 
@@ -296,24 +303,12 @@ function handleAdminCommand(ws, socketInfo, message) {
   }
 
   if (message.type === 'admin_set_mode') {
-    const sessionType = message.sessionType === 'dua' || message.sessionType === 'guided_event'
-      ? message.sessionType
-      : 'quran';
+    const sessionType = message.sessionType === 'dua' ? 'dua' : 'quran';
 
     const nextState = sessionManager.createNewSession(sessionType, {
       selectedDuaId:
         sessionType === 'dua'
           ? String(message.selectedDuaId || currentState.selectedDuaId || sessionManager.getDefaultDuaId())
-              .trim()
-              .toLowerCase()
-          : null,
-      selectedEventId:
-        sessionType === 'guided_event'
-          ? String(
-              message.selectedEventId ||
-                currentState.selectedEventId ||
-                sessionManager.getDefaultEventId()
-            )
               .trim()
               .toLowerCase()
           : null
@@ -322,21 +317,6 @@ function handleAdminCommand(ws, socketInfo, message) {
     setCurrentState(nextState, {
       action: 'MODE',
       detail: `Admin - Switched to ${sessionManager.getModeLabel(nextState.sessionType)}`
-    });
-    return true;
-  }
-
-  if (message.type === 'admin_select_event') {
-    const nextState = sessionManager.createNewSession('guided_event', {
-      selectedEventId: String(message.selectedEventId || sessionManager.getDefaultEventId())
-        .trim()
-        .toLowerCase()
-    });
-
-    const selectedEvent = eventsById.get(nextState.selectedEventId || '');
-    setCurrentState(nextState, {
-      action: 'EVENT',
-      detail: `Admin - ${selectedEvent?.title || 'Guided Event'}`
     });
     return true;
   }
@@ -496,6 +476,9 @@ async function start() {
 
   server.listen(PORT, '0.0.0.0', () => {
     renderDashboard();
+    if (OPEN_ADMIN_ON_START) {
+      openBrowser(`http://localhost:${PORT}/admin`);
+    }
   });
 }
 

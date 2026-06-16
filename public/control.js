@@ -3,24 +3,25 @@ const els = {
   modeLabel: document.getElementById('modeLabel'),
   currentRef: document.getElementById('currentRef'),
   lockMessage: document.getElementById('lockMessage'),
-  lockedTitle: document.getElementById('lockedTitle'),
-  lockedDescription: document.getElementById('lockedDescription'),
+  controlNotice: document.getElementById('controlNotice'),
+  modeButtons: [...document.querySelectorAll('.mode-btn')],
   quranPanel: document.getElementById('quranPanel'),
   surahSelect: document.getElementById('surahSelect'),
   ayahInput: document.getElementById('ayahInput'),
   ayahJumpBtn: document.getElementById('ayahJumpBtn'),
   ayahHint: document.getElementById('ayahHint'),
   duaPanel: document.getElementById('duaPanel'),
-  duaTitle: document.getElementById('duaTitle'),
+  duaSelect: document.getElementById('duaSelect'),
+  openDuaBtn: document.getElementById('openDuaBtn'),
+  duaNotice: document.getElementById('duaNotice'),
   lineInput: document.getElementById('lineInput'),
   lineJumpBtn: document.getElementById('lineJumpBtn'),
   lineHint: document.getElementById('lineHint'),
-  guidedPanel: document.getElementById('guidedPanel'),
-  eventTitle: document.getElementById('eventTitle'),
-  sectionStatus: document.getElementById('sectionStatus'),
-  sectionButtons: document.getElementById('sectionButtons'),
+  scrollBackBtn: document.getElementById('scrollBackBtn'),
+  scrollForwardBtn: document.getElementById('scrollForwardBtn'),
   prevBtn: document.getElementById('prevBtn'),
   nextBtn: document.getElementById('nextBtn'),
+  previewPanel: document.querySelector('.preview-panel'),
   preview: {
     title: document.getElementById('previewTitle'),
     instruction: document.getElementById('previewInstruction'),
@@ -40,6 +41,9 @@ const surahByNumber = new Map();
 
 let currentSession = null;
 let currentContent = null;
+let catalog = {
+  duas: []
+};
 let controllerStatus = {
   connected: false,
   controllerCount: 0
@@ -52,6 +56,16 @@ function wsUrl() {
 
 function controlsEnabled() {
   return Boolean(ws && ws.readyState === WebSocket.OPEN);
+}
+
+function hasDuas() {
+  return catalog.duas.length > 0;
+}
+
+function send(payload) {
+  if (controlsEnabled()) {
+    ws.send(JSON.stringify(payload));
+  }
 }
 
 function setFieldText(element, value) {
@@ -102,54 +116,46 @@ function populateSurahSelect() {
   els.surahSelect.value = selected;
 }
 
-function renderGuidedSections() {
-  els.sectionButtons.innerHTML = '';
+function populateDuaSelect() {
+  const selectedDuaId = currentSession?.selectedDuaId || catalog.duas[0]?.id || '';
+  els.duaSelect.innerHTML = '';
 
-  const sections = currentSession?.lockedEvent?.sections || [];
-  const currentIndex = Number(currentSession?.guidedEvent?.sectionIndex) || 0;
+  if (!hasDuas()) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'No duas available';
+    els.duaSelect.appendChild(option);
+    return;
+  }
 
-  sections.forEach((section) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'section-btn';
-    button.textContent = `${section.index + 1}. ${section.title}`;
-    button.disabled = !controlsEnabled();
-    button.classList.toggle('active', section.index === currentIndex);
-    button.addEventListener('click', () => send({ type: 'jump_section', sectionIndex: section.index }));
-    els.sectionButtons.appendChild(button);
+  catalog.duas.forEach((dua) => {
+    const option = document.createElement('option');
+    option.value = dua.id;
+    option.textContent = dua.title;
+    els.duaSelect.appendChild(option);
+  });
+
+  if (selectedDuaId) {
+    els.duaSelect.value = selectedDuaId;
+  }
+}
+
+function renderModeButtons() {
+  const sessionType = currentSession?.sessionType || 'quran';
+  els.modeButtons.forEach((button) => {
+    const isUnavailableDua = button.dataset.mode === 'dua' && !hasDuas();
+    button.classList.toggle('active', button.dataset.mode === sessionType);
+    button.disabled = !controlsEnabled() || isUnavailableDua;
+    button.title = isUnavailableDua ? 'No duas are loaded on the server.' : '';
   });
 }
 
 function renderSessionPanels() {
   const sessionType = currentSession?.sessionType || 'quran';
-
   els.quranPanel.classList.toggle('hidden', sessionType !== 'quran');
   els.duaPanel.classList.toggle('hidden', sessionType !== 'dua');
-  els.guidedPanel.classList.toggle('hidden', sessionType !== 'guided_event');
-
-  if (sessionType === 'quran') {
-    els.prevBtn.textContent = 'Previous Ayah';
-    els.nextBtn.textContent = 'Next Ayah';
-    els.lockedTitle.textContent = 'Quran Mode';
-    els.lockedDescription.textContent =
-      'This page can choose the surah, jump to an ayah, and move to the previous or next ayah.';
-    return;
-  }
-
-  if (sessionType === 'dua') {
-    els.prevBtn.textContent = 'Previous Line';
-    els.nextBtn.textContent = 'Next Line';
-    els.lockedTitle.textContent = currentSession?.lockedDua?.title || 'Dua Mode';
-    els.lockedDescription.textContent =
-      'This page can move through the selected dua line by line and jump directly to a line.';
-    return;
-  }
-
-  els.prevBtn.textContent = 'Previous Slide';
-  els.nextBtn.textContent = 'Next Slide';
-  els.lockedTitle.textContent = currentSession?.lockedEvent?.title || 'Guided Event Mode';
-  els.lockedDescription.textContent =
-    'This page can move through slides and jump to a section in the current guided event.';
+  els.prevBtn.textContent = sessionType === 'dua' ? 'Previous line' : 'Previous ayah';
+  els.nextBtn.textContent = sessionType === 'dua' ? 'Next line' : 'Next ayah';
 }
 
 function renderPreview(content) {
@@ -175,6 +181,8 @@ function renderSessionState() {
   }
 
   renderSessionPanels();
+  renderModeButtons();
+  populateDuaSelect();
 
   if (currentSession.sessionType === 'quran') {
     els.surahSelect.value = String(currentSession.quran?.surahNumber || 1);
@@ -182,24 +190,13 @@ function renderSessionState() {
   }
 
   if (currentSession.sessionType === 'dua') {
-    const lockedDua = currentSession.lockedDua;
-    els.duaTitle.textContent = lockedDua?.title || 'Dua';
-    syncLineInput(currentSession.dua?.lineIndex || 1, lockedDua?.totalLines || 1);
-  }
-
-  if (currentSession.sessionType === 'guided_event') {
-    const lockedEvent = currentSession.lockedEvent;
-    const guidedEvent = currentSession.guidedEvent || { sectionIndex: 0, slideIndex: 0 };
-    const currentSection = lockedEvent?.sections?.[guidedEvent.sectionIndex];
-
-    els.eventTitle.textContent = lockedEvent?.title || 'Guided Event';
-    els.sectionStatus.textContent = `${currentSection?.title || 'Section'} - Slide ${(guidedEvent.slideIndex || 0) + 1} of ${currentContent?.guidedEvent?.totalSlides || currentSection?.totalSlides || 1}`;
-    renderGuidedSections();
+    syncLineInput(currentSession.dua?.lineIndex || 1, currentSession.lockedDua?.totalLines || 1);
   }
 }
 
-function updateUiStatus() {
+function updateUiStatus(messageOverride) {
   const enabled = controlsEnabled();
+  const duaAvailable = hasDuas();
   const controlElements = [
     els.surahSelect,
     els.ayahInput,
@@ -214,19 +211,29 @@ function updateUiStatus() {
     element.disabled = !enabled;
   });
 
-  const sectionButtons = els.sectionButtons.querySelectorAll('button');
-  sectionButtons.forEach((button) => {
-    button.disabled = !enabled;
-  });
+  els.duaSelect.disabled = !enabled || !duaAvailable;
+  els.openDuaBtn.disabled = !enabled || !duaAvailable || !els.duaSelect.value;
+  els.scrollBackBtn.disabled = false;
+  els.scrollForwardBtn.disabled = false;
+  renderModeButtons();
 
   if (!enabled) {
-    els.lockMessage.textContent = 'Disconnected. Reconnecting...';
+    els.lockMessage.textContent = messageOverride || 'Reconnecting';
+    els.lockMessage.classList.add('offline');
+    els.controlNotice.textContent =
+      'Presentation controls are unavailable while the phone reconnects. Preview scrolling still works.';
+    els.duaNotice.textContent = duaAvailable ? '' : 'No duas are loaded. Add one in data/duas and restart.';
     return;
   }
 
   const count = controllerStatus.controllerCount || 0;
   const noun = count === 1 ? 'controller' : 'controllers';
-  els.lockMessage.textContent = `${count} ${noun} connected. Any connected controller can navigate.`;
+  els.lockMessage.textContent = messageOverride || `${count} ${noun}`;
+  els.lockMessage.classList.remove('offline');
+  els.controlNotice.textContent = duaAvailable
+    ? ''
+    : 'Dua mode is unavailable because no dua JSON files were loaded.';
+  els.duaNotice.textContent = duaAvailable ? '' : 'No duas are loaded. Add one in data/duas and restart.';
 }
 
 function applyBootstrap(message) {
@@ -255,6 +262,9 @@ function applyBootstrap(message) {
 
   currentSession = message.session || currentSession;
   currentContent = message.content || currentContent;
+  catalog = {
+    duas: Array.isArray(message.catalog?.duas) ? message.catalog.duas : []
+  };
   controllerStatus = {
     connected: Boolean(message.connection?.controllerConnected),
     controllerCount: Number(message.connection?.controllerCount) || 0
@@ -273,12 +283,17 @@ function applyStateUpdate(message) {
   updateUiStatus();
 }
 
-function send(payload) {
-  if (!controlsEnabled()) {
+function openSelectedDua() {
+  if (!hasDuas() || !els.duaSelect.value) {
+    updateUiStatus('No duas available');
     return;
   }
 
-  ws.send(JSON.stringify(payload));
+  send({
+    type: 'admin_set_mode',
+    sessionType: 'dua',
+    selectedDuaId: els.duaSelect.value
+  });
 }
 
 function scheduleReconnect() {
@@ -313,7 +328,7 @@ function handleSocketMessage(message) {
   }
 
   if (message.type === 'error') {
-    els.lockMessage.textContent = message.message || 'Action rejected by server.';
+    updateUiStatus(message.message || 'Action rejected');
   }
 }
 
@@ -348,6 +363,21 @@ function connectSocket() {
 }
 
 function attachEvents() {
+  els.modeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (button.dataset.mode === 'dua' && !hasDuas()) {
+        updateUiStatus('No duas available');
+        return;
+      }
+
+      send({
+        type: 'admin_set_mode',
+        sessionType: button.dataset.mode,
+        selectedDuaId: els.duaSelect.value
+      });
+    });
+  });
+
   els.surahSelect.addEventListener('change', () => {
     const surahNumber = Number(els.surahSelect.value || 1);
     syncAyahInput(surahNumber, 1);
@@ -365,6 +395,9 @@ function attachEvents() {
     send({ type: 'jump_ayah', ayahNumber });
   });
 
+  els.duaSelect.addEventListener('change', openSelectedDua);
+  els.openDuaBtn.addEventListener('click', openSelectedDua);
+
   els.lineInput.addEventListener('change', () => {
     const max = Number(els.lineInput.max || 1);
     syncLineInput(Number(els.lineInput.value || 1), max);
@@ -374,6 +407,14 @@ function attachEvents() {
     const max = Number(els.lineInput.max || 1);
     const lineIndex = Math.max(1, Math.min(max, Number(els.lineInput.value || 1)));
     send({ type: 'jump_line', lineIndex });
+  });
+
+  els.scrollBackBtn.addEventListener('click', () => {
+    els.previewPanel.scrollBy({ top: -160, behavior: 'smooth' });
+  });
+
+  els.scrollForwardBtn.addEventListener('click', () => {
+    els.previewPanel.scrollBy({ top: 160, behavior: 'smooth' });
   });
 
   els.prevBtn.addEventListener('click', () => send({ type: 'step', direction: 'prev' }));

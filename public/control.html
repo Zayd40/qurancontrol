@@ -9,62 +9,62 @@
   </head>
   <body>
     <main class="app">
-      <header class="hero panel">
+      <header class="topbar">
         <p class="brand" id="brandText">Al Zahraa Centre</p>
-        <h1>Presenter Controller</h1>
-        <p class="session-lock">Navigation only. Use <code>/admin</code> for mode changes and session tools.</p>
-        <p id="modeLabel" class="mode-label">Quran</p>
-        <p id="currentRef" class="current-ref">Al-Fatihah (1) · Ayah 1</p>
-        <p id="lockMessage" class="lock-message">Connecting...</p>
+        <p id="lockMessage" class="connection-pill">Connecting</p>
       </header>
 
-      <section class="panel session-panel">
-        <p class="panel-label">Locked Session</p>
-        <h2 id="lockedTitle" class="locked-title">Quran Mode</h2>
-        <p id="lockedDescription" class="locked-description"></p>
+      <section class="current-panel">
+        <p id="modeLabel" class="mode-label">Quran</p>
+        <h1 id="currentRef">Al-Fatihah (1) · Ayah 1</h1>
       </section>
 
-      <section class="panel hidden" id="quranPanel">
-        <p class="panel-label">Quran Navigation</p>
+      <section class="mode-switch" aria-label="Mode">
+        <button type="button" class="mode-btn" data-mode="quran">Quran</button>
+        <button type="button" class="mode-btn" data-mode="dua">Dua</button>
+      </section>
+      <p id="controlNotice" class="notice" aria-live="polite"></p>
+
+      <section id="quranPanel" class="control-panel">
         <label for="surahSelect">Surah</label>
         <select id="surahSelect"></select>
 
-        <label for="ayahInput">Jump to ayah</label>
+        <label for="ayahInput">Ayah</label>
         <div class="row-input">
           <input id="ayahInput" type="number" min="1" value="1" inputmode="numeric" />
           <button id="ayahJumpBtn" class="secondary" type="button">Go</button>
         </div>
-
         <p id="ayahHint" class="hint">Max ayah: 1</p>
       </section>
 
-      <section class="panel hidden" id="duaPanel">
-        <p class="panel-label">Dua Navigation</p>
-        <p id="duaTitle" class="locked-subtitle">Duʿāʾ al-Iftitāḥ</p>
+      <section id="duaPanel" class="control-panel hidden">
+        <label for="duaSelect">Dua</label>
+        <div class="row-input">
+          <select id="duaSelect"></select>
+          <button id="openDuaBtn" class="secondary" type="button">Open</button>
+        </div>
+        <p id="duaNotice" class="notice" aria-live="polite"></p>
 
-        <label for="lineInput">Jump to line</label>
+        <label for="lineInput">Line</label>
         <div class="row-input">
           <input id="lineInput" type="number" min="1" value="1" inputmode="numeric" />
           <button id="lineJumpBtn" class="secondary" type="button">Go</button>
         </div>
-
         <p id="lineHint" class="hint">Line 1 / 1</p>
       </section>
 
-      <section class="panel hidden" id="guidedPanel">
-        <p class="panel-label">Guided Event Navigation</p>
-        <p id="eventTitle" class="locked-subtitle">Laylat al-Qadr — 2026</p>
-        <p id="sectionStatus" class="hint"></p>
-        <div id="sectionButtons" class="section-buttons"></div>
+      <section class="scroll-grid" aria-label="Scroll">
+        <button id="scrollBackBtn" type="button">Scroll back</button>
+        <button id="scrollForwardBtn" type="button">Scroll forward</button>
       </section>
 
-      <section class="controls">
+      <section class="nav-grid">
         <button id="prevBtn" class="nav-btn" type="button">Previous</button>
         <button id="nextBtn" class="nav-btn primary" type="button">Next</button>
       </section>
 
-      <section class="panel preview-panel">
-        <p class="panel-label">Current Slide</p>
+      <section class="preview-panel">
+        <p class="panel-label">Preview</p>
         <p id="previewTitle" class="preview-title hidden"></p>
         <p id="previewInstruction" class="preview-instruction hidden"></p>
         <p id="previewRepeat" class="preview-repeat hidden"></p>

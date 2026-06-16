@@ -1,203 +1,120 @@
 # Al Zahraa Centre Presenter System
 
-A local-first mosque presenter system for Al Zahraa Centre.
+Local-first Quran and dua presenter control for Al Zahraa Centre.
 
-The mosque computer runs the Node.js server. OBS captures [`/display`](/Users/zaydabbas/Documents/GitHub/qurancontrol/public/display.html) and sends it to TVs. A helper joins [`/control`](/Users/zaydabbas/Documents/GitHub/qurancontrol/public/control.html) from a phone on the same LAN and can only navigate inside the session that was chosen in the terminal before startup.
+The mosque computer runs the Node.js server. OBS or the hall display opens `/display`. The admin operator opens `/admin` for setup, QR access, display status, and recovery controls. A phone opens `/control` for simple navigation.
 
-## What The System Does
+## Modes
 
-- Runs fully on the local network. No internet is required during use.
-- Supports 3 locked session types:
-  - Quran mode
-  - Dua mode
-  - Guided Event mode
-- Keeps the phone controller restricted:
-  - no mode switching
-  - no content switching
-  - no setup or admin controls
-- Shows a QR code on the display only when no active controller is connected.
-- Keeps display and controller in sync over WebSockets.
-- Saves the previous session so the next launch can resume it from the terminal.
+- Quran mode
+- Dua mode
 
-## Requirements
+Guided event mode is no longer part of the runtime UI or session state. Old saved guided-event sessions are clamped back to Quran mode on startup.
 
-- Node.js 18 or newer
-- npm
-- The mosque computer and phone on the same Wi-Fi/LAN
-- OBS Studio on the display computer if you are sending the presenter view to TVs
-
-## How To Install
-
-1. Open a terminal in the project folder:
-   - `/Users/zaydabbas/Documents/GitHub/qurancontrol`
-2. Install dependencies:
+## Install
 
 ```bash
 npm install
 ```
 
-## How To Start
-
-Run:
+## Run Locally
 
 ```bash
 npm run start
 ```
 
-The app starts with an interactive terminal setup before the web server begins.
+The server listens on port `5173` unless `PORT` is set.
 
-## What Happens In The Terminal
+Typical URLs:
 
-When you run `npm run start`, the terminal will ask what session to start.
-
-If there is a saved previous session, you will first see:
-
-1. `Start previous session?`
-2. `1) Yes — [previous session summary]`
-3. `2) No — choose a new session`
-
-If you choose a new session, the terminal will ask for one of these:
-
-1. `Quran`
-2. `Dua`
-3. `Guided Event`
-
-After the choice is made, the server starts and the terminal shows a runtime dashboard with:
-
-- mode
-- selected content
-- display URL
-- controller URL
-- controller access instructions
-- recent controller activity (latest 3 items only)
-
-## How To Choose Quran, Dua, Or Guided Event
-
-### Quran
-
-Choose:
-
-1. `Quran`
-
-The app starts immediately in Quran mode.
-
-The phone controller can then:
-
-- choose a surah
-- jump to an ayah
-- move to previous or next ayah
-
-### Dua
-
-Choose:
-
-1. `Dua`
-
-Then choose:
-
-1. `Dua Iftitah`
-2. `Dua Kumayl`
-
-That dua is locked for the whole server run.
-
-The phone controller can then:
-
-- jump to a line
-- move to previous or next line
-
-It cannot load a different dua.
-
-### Guided Event
-
-Choose:
-
-1. `Guided Event`
-
-Then choose:
-
-1. `Laylat al-Qadr — 21st Night`
-
-That event is locked for the whole server run.
-
-The phone controller can then:
-
-- move to previous or next slide
-- jump to a section only
-
-It cannot switch to a different event, and it cannot jump directly to a slide inside a section.
-
-## Display And Controller URLs
-
-After startup, the app shows:
-
-- Display URL in the terminal
-- Controller URL in the terminal
-- Controller QR code on the display page when no active controller is connected
-
-Typical URLs look like:
-
+- Admin: `http://<LAN_IP>:5173/admin`
 - Display: `http://localhost:5173/display`
-- Controller: `http://<LAN_IP>:5173/control`
+- Phone controller: `http://<LAN_IP>:5173/control`
 
-Use the display URL on the OBS computer. Use the controller URL or QR code on the phone.
+The QR code appears only on the admin panel. It is intentionally not rendered on the display screen.
 
-## How To Stop The Server
+For packaging tests, the server can open the admin panel automatically after it starts:
 
-Press:
+```bash
+npm run start:admin
+```
 
-- `CTRL+C`
+## Centre usage
 
-in the terminal that is running the app.
+Install once on the centre computer:
 
-## How To Restart And Resume The Previous Session
+```bash
+npm install
+```
 
-1. Run `npm run start` again.
-2. If a previous session exists, the terminal offers to resume it.
-3. Choose `1` to continue the saved session, including its last navigation position.
-4. Choose `2` to start a new locked session instead.
+Normal start command:
 
-The saved session file is written automatically to [`data/previous-session.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/previous-session.json).
+```bash
+npm run start:admin
+```
+
+Use `/display` for the projector, TV, or OBS browser capture.
+
+The phone controller scans the QR code from the admin panel only. The QR code is not shown on `/display`.
+
+Do not show the admin panel on the projector.
+
+## Admin Panel
+
+Use `/admin` for setup and control-room operation.
+
+The admin panel shows:
+
+- current mode
+- current Quran/surah/ayah or dua line
+- display live/blanked status
+- connected controller count
+- controller URL and QR code
+- compact mode, navigation, jump, reset, and blank controls
+
+## Phone Controller
+
+Use `/control` from a phone on the same LAN.
+
+The controller is mobile-first and only includes:
+
+- Quran mode
+- Dua mode
+- Surah selector
+- Ayah selector
+- Dua selector
+- Line selector
+- Scroll forward/back for the preview
+- Preview
+- Previous/next navigation
+
+## Display Screen
+
+Use `/display` for OBS/browser capture.
+
+The display receives updates over WebSockets. Text changes fade out, swap while hidden, then fade back in so words do not change mid-fade or jump during transitions.
 
 ## Data Files
 
-### Quran data
+### Quran
 
 The server loads Quran data from:
 
-- [`data/quran.full.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.full.json) if present
-- otherwise [`data/quran.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.json)
+- `data/quran.full.json` if present
+- otherwise `data/quran.json`
 
-You can also override the path with `QURAN_DATA_FILE` in `.env`.
+You can override the path with `QURAN_DATA_FILE` in `.env`.
 
-### Dua files
+### Duas
 
-Duas live in:
+Duas live in `data/duas/`.
 
-- [`data/duas/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas)
-
-Current files:
-
-- [`data/duas/iftitah.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas/iftitah.json)
-- [`data/duas/kumayl.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas/kumayl.json)
-
-### Guided event files
-
-Guided events live in:
-
-- [`data/events/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events)
-
-Current file:
-
-- [`data/events/laylat-al-qadr-21.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events/laylat-al-qadr-21.json)
-
-## How To Add Or Update Dua Iftitah / Dua Kumayl
-
-Each dua uses this JSON shape:
+Each dua uses this shape:
 
 ```json
 {
-  "id": "iftitah",
-  "title": "Duʿāʾ al-Iftitāḥ",
+  "id": "sample-dua",
+  "title": "Sample Dua",
   "lines": [
     {
       "arabic": "...",
@@ -208,146 +125,43 @@ Each dua uses this JSON shape:
 }
 ```
 
-To update a dua:
+Keep one readable presenter chunk per `lines` entry.
 
-1. Open the relevant file in [`data/duas/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas).
-2. Replace each line entry with the approved Arabic, transliteration, and English text.
-3. Keep one recitation chunk per JSON line object.
-4. Restart the server.
-
-If you still use the raw Iftitah formatter, the existing helper remains available:
+## Verification
 
 ```bash
-npm run format:iftitah
+npm test
+npm run check
 ```
 
-## How To Add A New Guided Event JSON File
+`npm run check` runs JavaScript syntax checks for the server/browser scripts and then runs the test suite.
 
-1. Create a new file in [`data/events/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events).
-2. Use one JSON file per event.
-3. Keep manual section and slide boundaries in the JSON.
-4. Do not rely on automatic splitting by text length.
+## Windows EXE packaging plan
 
-Schema:
+Do not package from this repo until the team is ready to test on Windows.
 
-```json
-{
-  "id": "your-event-id",
-  "title": "Your Event Title",
-  "sections": [
-    {
-      "id": "section-id",
-      "title": "Section Title",
-      "slides": [
-        {
-          "title": "",
-          "instruction": "",
-          "repeat": "",
-          "reference": "",
-          "arabic": "",
-          "transliteration": "",
-          "english": "",
-          "note": ""
-        }
-      ]
-    }
-  ]
-}
+A future single-file Windows package should:
+
+1. Bundle the Node server entrypoint `server/index.js`.
+2. Include `public/`, `data/`, and production dependencies.
+3. Start the local server.
+4. Set `OPEN_ADMIN_ON_START=1` so the server opens `http://localhost:5173/admin` automatically in the default browser.
+5. Keep the console or tray process alive while the local server is running.
+
+Candidate tooling:
+
+- `pkg` or `nexe` for a single executable Node bundle.
+- A small launcher script that starts `server/index.js` and opens `/admin`.
+- A Windows smoke test that confirms `/admin`, `/control`, `/display`, and `/api/bootstrap?role=admin` load without internet.
+
+Suggested later packaging command shape after adding the tooling:
+
+```bash
+npm run package:windows
 ```
 
-All slide fields are optional. Empty strings are fine and will be hidden automatically on the display.
+That script does not exist yet.
 
-If you add a brand new guided event file and want it to appear in the startup menu, also add it to the terminal prompt logic in [`server/cli.js`](/Users/zaydabbas/Documents/GitHub/qurancontrol/server/cli.js).
+## Stop The Server
 
-## Laylat al-Qadr 21st Night
-
-The included guided event file is:
-
-- [`data/events/laylat-al-qadr-21.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events/laylat-al-qadr-21.json)
-
-It already includes these sections in order:
-
-1. 2 Rakʿah Salat for Forgiveness
-2. 70x Istighfar
-3. 100x Istighfar
-4. Ziyarat of Imam Husayn
-5. 21st Night Specific Amaal
-6. Duʿāʾ Jawshan al-Kabir
-7. Holy Qur’an Amaal
-8. Bidding Farewell
-
-Some long-source sections currently use representative placeholder slides with TODO notes. Replace them with the exact approved recitation chunks when ready. No code changes are needed for that update.
-
-## OBS Setup
-
-1. Start the app with `npm run start`.
-2. In OBS, add a `Browser Source`.
-3. Set the URL to the Display URL shown in the terminal:
-   - usually `http://localhost:5173/display`
-4. Set width and height:
-   - `1920 x 1080` is a good default
-5. Refresh the source if OBS cached an old version.
-
-## Controller Rules
-
-The phone controller is intentionally restricted.
-
-It cannot:
-
-- switch mode
-- choose a different dua during a locked dua session
-- choose a different guided event during a locked event session
-- open setup/admin controls
-
-It can only navigate inside the session that was chosen in the terminal before startup.
-
-## Troubleshooting
-
-### The phone cannot connect
-
-- Confirm the phone and computer are on the same Wi-Fi/LAN.
-- Use the exact Controller URL shown in the terminal.
-- Allow Node.js through the local firewall if needed.
-- Confirm the server is still running.
-
-### The QR code is not showing
-
-- The QR code only appears when there is no active controller.
-- If a valid controller is connected, the QR code hides automatically.
-- Refresh the display page if needed.
-
-### The wrong IP address is shown
-
-- Restart the server.
-- The app detects a LAN IPv4 address at startup.
-
-### The display page is blank in OBS
-
-- Confirm OBS is using the Display URL from the terminal.
-- Confirm the server is running.
-- Refresh the OBS Browser Source.
-
-### Quran text is missing for some ayahs
-
-- The fallback dataset may be incomplete.
-- Add a full dataset file at [`data/quran.full.json`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/quran.full.json) and restart.
-
-### A dua or guided event looks incomplete
-
-- Check the JSON file under [`data/duas/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/duas) or [`data/events/`](/Users/zaydabbas/Documents/GitHub/qurancontrol/data/events).
-- Placeholder slides and TODO notes are meant to be replaced with the exact approved source chunks.
-
-## Environment Options
-
-Optional `.env` settings:
-
-- `PORT` default `5173`
-- `CONTROLLER_TIMEOUT_MS` default `30000`
-- `HEARTBEAT_INTERVAL_MS` default `10000`
-- `QURAN_DATA_FILE` optional custom Quran dataset path
-
-## Scripts
-
-- `npm run start`
-- `npm run dev`
-- `npm run format:iftitah`
+Press `CTRL+C` in the terminal running the app.

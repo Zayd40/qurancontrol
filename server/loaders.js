@@ -162,73 +162,10 @@ function loadDuas(duaDir) {
   return duaMap;
 }
 
-function normalizeSlide(slide) {
-  return {
-    title: String(slide?.title || '').trim(),
-    instruction: String(slide?.instruction || '').trim(),
-    repeat: String(slide?.repeat || '').trim(),
-    reference: String(slide?.reference || '').trim(),
-    arabic: String(slide?.arabic || '').trim(),
-    transliteration: String(slide?.transliteration || '').trim(),
-    english: String(slide?.english || '').trim(),
-    note: String(slide?.note || '').trim()
-  };
-}
-
-function loadGuidedEvents(eventsDir) {
-  const eventMap = new Map();
-
-  if (!fs.existsSync(eventsDir)) {
-    console.warn(`[warn] Event directory not found at ${eventsDir}`);
-    return eventMap;
-  }
-
-  for (const fileName of fs.readdirSync(eventsDir)) {
-    if (!fileName.endsWith('.json')) {
-      continue;
-    }
-
-    const filePath = path.join(eventsDir, fileName);
-    const parsed = readJsonFile(filePath, null);
-    if (!parsed) {
-      continue;
-    }
-
-    const id = String(parsed.id || path.basename(fileName, '.json')).trim().toLowerCase();
-    const title = String(parsed.title || id).trim();
-    const sections = Array.isArray(parsed.sections)
-      ? parsed.sections
-          .map((section, sectionIndex) => ({
-            id: String(section?.id || `section-${sectionIndex + 1}`)
-              .trim()
-              .toLowerCase(),
-            title: String(section?.title || `Section ${sectionIndex + 1}`).trim(),
-            slides: Array.isArray(section?.slides) ? section.slides.map(normalizeSlide) : []
-          }))
-          .filter((section) => section.title && section.slides.length > 0)
-      : [];
-
-    if (!id || !title || sections.length === 0) {
-      console.warn(`[warn] Skipping invalid event file ${fileName} (missing id/title/sections)`);
-      continue;
-    }
-
-    eventMap.set(id, {
-      id,
-      title,
-      sections,
-      todo: String(parsed._todo || '').trim()
-    });
-  }
-
-  return eventMap;
-}
-
 module.exports = {
   getLanIPv4,
   loadConfig,
   loadDuas,
-  loadGuidedEvents,
   loadQuranDataset,
   loadSurahMetadata,
   readJsonFile,

@@ -17,7 +17,7 @@ function createDashboard() {
       snapshot.controllerUrl,
       '',
       'Controller access:',
-      '- Scan the QR code on the display',
+      '- Scan the QR code on the admin panel',
       '- Or open the Controller URL manually on the phone',
       '',
       'Recent controller activity:',

@@ -1,4 +1,4 @@
-function createSessionManager({ metadata, quranDataset, duasById, eventsById }) {
+function createSessionManager({ metadata, quranDataset, duasById }) {
   const surahMetaByNumber = new Map();
   for (const surah of metadata.surahs || []) {
     surahMetaByNumber.set(Number(surah.number), {
@@ -19,16 +19,6 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  function listEvents() {
-    return [...eventsById.values()]
-      .map((event) => ({
-        id: event.id,
-        title: event.title,
-        totalSections: event.sections.length
-      }))
-      .sort((a, b) => a.title.localeCompare(b.title));
-  }
-
   function getDefaultDuaId() {
     if (duasById.has('iftitah')) {
       return 'iftitah';
@@ -36,19 +26,9 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     return listDuas()[0]?.id || '';
   }
 
-  function getDefaultEventId() {
-    if (eventsById.has('laylat-al-qadr-2026')) {
-      return 'laylat-al-qadr-2026';
-    }
-    return listEvents()[0]?.id || '';
-  }
-
   function getModeLabel(sessionType) {
     if (sessionType === 'dua') {
       return 'Dua';
-    }
-    if (sessionType === 'guided_event') {
-      return 'Guided Event';
     }
     return 'Quran';
   }
@@ -93,38 +73,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     };
   }
 
-  function clampGuidedEventState(candidateGuidedEvent, selectedEventId) {
-    const defaultId = getDefaultEventId();
-    const eventId = String(selectedEventId || defaultId)
-      .trim()
-      .toLowerCase();
-    const event = eventsById.get(eventId) || eventsById.get(defaultId);
-
-    if (!event) {
-      return {
-        sectionIndex: 0,
-        slideIndex: 0
-      };
-    }
-
-    const sectionIndex = Math.max(
-      0,
-      Math.min(event.sections.length - 1, Number(candidateGuidedEvent?.sectionIndex) || 0)
-    );
-    const section = event.sections[sectionIndex];
-    const slideIndex = Math.max(
-      0,
-      Math.min(section.slides.length - 1, Number(candidateGuidedEvent?.slideIndex) || 0)
-    );
-
-    return {
-      sectionIndex,
-      slideIndex
-    };
-  }
-
   function clampSessionType(value) {
-    if (value === 'dua' || value === 'guided_event') {
+    if (value === 'dua') {
       return value;
     }
     return 'quran';
@@ -133,15 +83,9 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
   function clampState(candidateState) {
     const sessionType = clampSessionType(candidateState?.sessionType);
     const selectedDuaId = sessionType === 'dua' ? getDefaultDuaId() : null;
-    const selectedEventId = sessionType === 'guided_event' ? getDefaultEventId() : null;
 
     const requestedDuaId = sessionType === 'dua'
       ? String(candidateState?.selectedDuaId || selectedDuaId || '')
-          .trim()
-          .toLowerCase()
-      : null;
-    const requestedEventId = sessionType === 'guided_event'
-      ? String(candidateState?.selectedEventId || selectedEventId || '')
           .trim()
           .toLowerCase()
       : null;
@@ -150,21 +94,11 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       sessionType,
       blanked: Boolean(candidateState?.blanked),
       selectedDuaId: sessionType === 'dua' ? (duasById.has(requestedDuaId) ? requestedDuaId : selectedDuaId) : null,
-      selectedEventId:
-        sessionType === 'guided_event'
-          ? eventsById.has(requestedEventId)
-            ? requestedEventId
-            : selectedEventId
-          : null,
       quran: clampQuranState(
         candidateState?.quran?.surahNumber,
         candidateState?.quran?.ayahNumber
       ),
-      dua: clampDuaState(candidateState?.dua, requestedDuaId || selectedDuaId),
-      guidedEvent: clampGuidedEventState(
-        candidateState?.guidedEvent,
-        requestedEventId || selectedEventId
-      )
+      dua: clampDuaState(candidateState?.dua, requestedDuaId || selectedDuaId)
     };
   }
 
@@ -173,10 +107,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       sessionType,
       blanked: false,
       selectedDuaId: options.selectedDuaId || null,
-      selectedEventId: options.selectedEventId || null,
       quran: { surahNumber: 1, ayahNumber: 1 },
-      dua: { lineIndex: 1 },
-      guidedEvent: { sectionIndex: 0, slideIndex: 0 }
+      dua: { lineIndex: 1 }
     });
   }
 
@@ -292,80 +224,12 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     };
   }
 
-  function getGuidedEventContentPayload(state) {
-    const event = eventsById.get(state.selectedEventId || '');
-    if (!event) {
-      return {
-        mode: 'guided_event',
-        modeLabel: 'Guided Event Mode',
-        header: 'Guided Event',
-        displayTitle: 'Guided Event',
-        lineLabel: 'Slide 1',
-        title: 'Event unavailable',
-        instruction: 'Add a valid JSON file in data/events.',
-        repeat: '',
-        reference: '',
-        arabic: '',
-        transliteration: '',
-        english: '',
-        note: 'Selected guided event could not be loaded.',
-        guidedEvent: {
-          eventId: '',
-          eventTitle: 'Guided Event',
-          sectionIndex: 0,
-          sectionTitle: 'Section 1',
-          totalSections: 1,
-          slideIndex: 0,
-          totalSlides: 1,
-          sections: []
-        }
-      };
-    }
-
-    const guidedEvent = clampGuidedEventState(state.guidedEvent, event.id);
-    const section = event.sections[guidedEvent.sectionIndex];
-    const slide = section.slides[guidedEvent.slideIndex] || {};
-
-    return {
-      mode: 'guided_event',
-      modeLabel: 'Guided Event Mode',
-      header: `${event.title} · ${section.title} · Slide ${guidedEvent.slideIndex + 1}`,
-      displayTitle: slide.title || section.title || event.title,
-      lineLabel: `Slide ${guidedEvent.slideIndex + 1}`,
-      title: slide.title || section.title,
-      instruction: slide.instruction || '',
-      repeat: slide.repeat || '',
-      reference: slide.reference || '',
-      arabic: slide.arabic || '',
-      transliteration: slide.transliteration || '',
-      english: slide.english || '',
-      note: slide.note || '',
-      guidedEvent: {
-        eventId: event.id,
-        eventTitle: event.title,
-        sectionIndex: guidedEvent.sectionIndex,
-        sectionTitle: section.title,
-        totalSections: event.sections.length,
-        slideIndex: guidedEvent.slideIndex,
-        totalSlides: section.slides.length,
-        sections: event.sections.map((entry, index) => ({
-          index,
-          id: entry.id,
-          title: entry.title,
-          totalSlides: entry.slides.length
-        }))
-      }
-    };
-  }
-
   function getCurrentContentPayload(state) {
     const currentState = clampState(state);
     let payload;
 
     if (currentState.sessionType === 'dua') {
       payload = getDuaContentPayload(currentState);
-    } else if (currentState.sessionType === 'guided_event') {
-      payload = getGuidedEventContentPayload(currentState);
     } else {
       payload = getQuranContentPayload(currentState);
     }
@@ -389,12 +253,6 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       return `${title} · Line ${state.dua.lineIndex}`;
     }
 
-    if (state.sessionType === 'guided_event') {
-      const event = eventsById.get(state.selectedEventId || '');
-      const section = event?.sections[state.guidedEvent.sectionIndex];
-      return `${event?.title || 'Guided Event'} · ${section?.title || 'Section'} · Slide ${state.guidedEvent.slideIndex + 1}`;
-    }
-
     return describeQuranTarget(state.quran);
   }
 
@@ -407,12 +265,9 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       a.sessionType === b.sessionType &&
       a.blanked === b.blanked &&
       a.selectedDuaId === b.selectedDuaId &&
-      a.selectedEventId === b.selectedEventId &&
       a.quran.surahNumber === b.quran.surahNumber &&
       a.quran.ayahNumber === b.quran.ayahNumber &&
-      a.dua.lineIndex === b.dua.lineIndex &&
-      a.guidedEvent.sectionIndex === b.guidedEvent.sectionIndex &&
-      a.guidedEvent.slideIndex === b.guidedEvent.slideIndex
+      a.dua.lineIndex === b.dua.lineIndex
     );
   }
 
@@ -452,34 +307,6 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     return {
       lineIndex: Math.max(1, Math.min(totalLines, state.dua.lineIndex + step))
     };
-  }
-
-  function stepGuidedEvent(state, direction) {
-    const event = eventsById.get(state.selectedEventId || '');
-    if (!event) {
-      return state.guidedEvent;
-    }
-
-    let sectionIndex = state.guidedEvent.sectionIndex;
-    let slideIndex = state.guidedEvent.slideIndex;
-
-    if (direction === 'prev') {
-      if (slideIndex > 0) {
-        slideIndex -= 1;
-      } else if (sectionIndex > 0) {
-        sectionIndex -= 1;
-        slideIndex = event.sections[sectionIndex].slides.length - 1;
-      }
-    } else if (direction === 'next') {
-      if (slideIndex < event.sections[sectionIndex].slides.length - 1) {
-        slideIndex += 1;
-      } else if (sectionIndex < event.sections.length - 1) {
-        sectionIndex += 1;
-        slideIndex = 0;
-      }
-    }
-
-    return clampGuidedEventState({ sectionIndex, slideIndex }, event.id);
   }
 
   function transition(state, action) {
@@ -581,53 +408,6 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       }
     }
 
-    if (currentState.sessionType === 'guided_event') {
-      const event = eventsById.get(currentState.selectedEventId || '');
-      if (action.type === 'jump_section') {
-        const nextGuidedEvent = clampGuidedEventState(
-          {
-            sectionIndex: action.sectionIndex,
-            slideIndex: 0
-          },
-          currentState.selectedEventId
-        );
-        const nextState = clampState({
-          ...currentState,
-          blanked: false,
-          guidedEvent: nextGuidedEvent
-        });
-        const section = event?.sections[nextGuidedEvent.sectionIndex];
-
-        return {
-          state: nextState,
-          changed: !statesEqual(currentState, nextState),
-          activity: {
-            action: 'JUMP',
-            detail: `Section ${nextGuidedEvent.sectionIndex + 1} "${section?.title || 'Section'}" → Slide 1`
-          }
-        };
-      }
-
-      if (action.type === 'step') {
-        const nextGuidedEvent = stepGuidedEvent(currentState, action.direction);
-        const nextState = clampState({
-          ...currentState,
-          blanked: false,
-          guidedEvent: nextGuidedEvent
-        });
-        const section = event?.sections[nextGuidedEvent.sectionIndex];
-
-        return {
-          state: nextState,
-          changed: !statesEqual(currentState, nextState),
-          activity: {
-            action: action.direction === 'prev' ? 'PREVIOUS' : 'NEXT',
-            detail: `Section ${nextGuidedEvent.sectionIndex + 1} "${section?.title || 'Section'}" → Slide ${nextGuidedEvent.slideIndex + 1}`
-          }
-        };
-      }
-    }
-
     return {
       state: currentState,
       changed: false,
@@ -641,10 +421,8 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       modeLabel: getModeLabel(state.sessionType),
       blanked: state.blanked,
       selectedDuaId: state.selectedDuaId,
-      selectedEventId: state.selectedEventId,
       quran: state.quran,
       dua: state.dua,
-      guidedEvent: state.guidedEvent,
       selectedContent: describeSelectedContent(state)
     };
 
@@ -655,22 +433,6 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
             id: dua.id,
             title: dua.title,
             totalLines: dua.lines.length
-          }
-        : null;
-    }
-
-    if (state.sessionType === 'guided_event') {
-      const event = eventsById.get(state.selectedEventId || '');
-      payload.lockedEvent = event
-        ? {
-            id: event.id,
-            title: event.title,
-            sections: event.sections.map((section, index) => ({
-              index,
-              id: section.id,
-              title: section.title,
-              totalSlides: section.slides.length
-            }))
           }
         : null;
     }
@@ -687,12 +449,6 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
       });
     }
 
-    if (currentState.sessionType === 'guided_event') {
-      return createNewSession('guided_event', {
-        selectedEventId: currentState.selectedEventId || getDefaultEventId()
-      });
-    }
-
     return createNewSession('quran');
   }
 
@@ -705,17 +461,6 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
         blanked: false,
         dua: {
           lineIndex: 1
-        }
-      });
-    }
-
-    if (currentState.sessionType === 'guided_event') {
-      return clampState({
-        ...currentState,
-        blanked: false,
-        guidedEvent: {
-          sectionIndex: currentState.guidedEvent.sectionIndex,
-          slideIndex: 0
         }
       });
     }
@@ -743,11 +488,9 @@ function createSessionManager({ metadata, quranDataset, duasById, eventsById }) 
     describeSelectedContent,
     getCurrentContentPayload,
     getDefaultDuaId,
-    getDefaultEventId,
     getModeLabel,
     getPublicSessionData,
     listDuas,
-    listEvents,
     metadata,
     quranDataset,
     resetToFirstPosition,

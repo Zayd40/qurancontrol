@@ -6,9 +6,6 @@ const els = {
   contentBody: document.querySelector('.content-body'),
   contentStack: document.getElementById('contentStack'),
   readingContent: document.getElementById('readingContent'),
-  qrOverlay: document.getElementById('qrOverlay'),
-  qrImage: document.getElementById('qrImage'),
-  qrUrl: document.getElementById('qrUrl'),
   fields: {
     title: document.getElementById('slideTitle'),
     lineNumber: document.getElementById('slideLineNumber'),
@@ -24,13 +21,12 @@ const els = {
 
 let ws = null;
 let reconnectTimer = null;
-let controllerConnected = false;
 let currentContentKey = '';
 let fadeOutTimer = null;
 let fadeInTimer = null;
 
-const FADE_OUT_MS = 90;
-const FADE_IN_MS = 110;
+const FADE_OUT_MS = 180;
+const FADE_IN_MS = 220;
 
 function debounce(fn, waitMs) {
   let timeoutId = null;
@@ -125,10 +121,6 @@ function getContentKey(content) {
     return `dua:${content.dua.duaId}:${content.dua.lineIndex}:${content.blanked ? 1 : 0}`;
   }
 
-  if (content.mode === 'guided_event' && content.guidedEvent) {
-    return `guided:${content.guidedEvent.eventId}:${content.guidedEvent.sectionIndex}:${content.guidedEvent.slideIndex}:${content.blanked ? 1 : 0}`;
-  }
-
   return `${content.mode || 'unknown'}:${content.header || ''}:${content.blanked ? 1 : 0}`;
 }
 
@@ -159,23 +151,29 @@ function updateStaticFields(content) {
   updateBlankState(content.blanked);
 }
 
-function updateReadingFields(content) {
+function updateReadingFields(content, options = {}) {
   setFieldText(els.fields.arabic, content.arabic);
   setFieldText(els.fields.transliteration, content.transliteration);
   setFieldText(els.fields.english, content.english);
   setFieldText(els.fields.note, content.note);
-  debouncedFitContent();
+  if (options.fit !== false) {
+    debouncedFitContent();
+  }
 }
 
 function fadeReadingContent(content) {
   clearReadingFadeState();
+  const previousMinHeight = els.readingContent.getBoundingClientRect().height;
+  els.readingContent.style.minHeight = `${Math.max(1, previousMinHeight)}px`;
   els.readingContent.classList.add('is-fading-out');
 
   fadeOutTimer = window.setTimeout(() => {
     fadeOutTimer = null;
     els.readingContent.classList.remove('is-fading-out');
     els.readingContent.classList.add('is-pre-fade-in');
-    updateReadingFields(content);
+    updateReadingFields(content, { fit: false });
+    fitContent();
+    els.readingContent.style.minHeight = '';
 
     window.requestAnimationFrame(() => {
       els.readingContent.classList.remove('is-pre-fade-in');
@@ -215,22 +213,9 @@ function renderContent(content, animate = true) {
   updateContentFields(content, animate);
 }
 
-function setConnectionState(isConnected) {
-  controllerConnected = Boolean(isConnected);
-  const hasQr = Boolean(els.qrImage.getAttribute('src'));
-  els.qrOverlay.classList.toggle('hidden', controllerConnected || !hasQr);
-}
-
 function applyBootstrap(payload) {
   applyBrandConfig(payload.config);
-
-  if (payload.connection?.qrCodeDataUrl) {
-    els.qrImage.src = payload.connection.qrCodeDataUrl;
-  }
-
-  els.qrUrl.textContent = payload.connection?.controlUrl || '';
   renderContent(payload.content, false);
-  setConnectionState(payload.connection?.controllerConnected);
 }
 
 function wsUrl() {
@@ -261,7 +246,7 @@ function handleSocketMessage(message) {
   }
 
   if (message.type === 'controller_status') {
-    setConnectionState(message.controllerConnected);
+    return;
   }
 }
 
@@ -281,7 +266,6 @@ function connectSocket() {
   });
 
   ws.addEventListener('close', () => {
-    setConnectionState(false);
     scheduleReconnect();
   });
 

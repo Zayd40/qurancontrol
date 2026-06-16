@@ -9,66 +9,118 @@
   </head>
   <body>
     <main class="app">
-      <header class="panel hero">
-        <p class="brand" id="brandText">Al Zahraa Centre</p>
-        <h1>Presenter Admin</h1>
-        <p id="statusText" class="muted">Connecting...</p>
-        <p id="sessionSummary" class="session-summary">Waiting for session data...</p>
+      <header class="topbar">
+        <div>
+          <p class="brand" id="brandText">Al Zahraa Centre</p>
+          <h1>Presenter Admin</h1>
+        </div>
+        <p id="statusText" class="connection-pill">Connecting</p>
       </header>
 
-      <section class="panel">
-        <p class="panel-label">Mode</p>
-        <div class="mode-grid">
-          <button type="button" class="mode-btn" data-mode="quran">Quran mode</button>
-          <button type="button" class="mode-btn" data-mode="dua">Dua mode</button>
-          <button type="button" class="mode-btn" data-mode="guided_event">Guided event mode</button>
+      <section class="status-grid" aria-label="System status">
+        <div class="status-item">
+          <span>Mode</span>
+          <strong id="modeStatus">Quran</strong>
         </div>
-
-        <label for="eventSelect">Guided event</label>
-        <select id="eventSelect"></select>
-      </section>
-
-      <section class="panel">
-        <p class="panel-label">Navigation</p>
-        <div class="nav-grid">
-          <button id="prevBtn" type="button">Previous</button>
-          <button id="nextBtn" type="button" class="primary">Next</button>
+        <div class="status-item">
+          <span>Current</span>
+          <strong id="currentStatus">Waiting for session data</strong>
         </div>
-
-        <label id="jumpLabel" for="jumpInput">Jump</label>
-        <div class="jump-row">
-          <input id="jumpInput" type="number" min="1" value="1" inputmode="numeric" />
-          <button id="jumpBtn" type="button">Jump</button>
+        <div class="status-item">
+          <span>Display</span>
+          <strong id="displayStatus">Unknown</strong>
         </div>
-        <p id="jumpHint" class="muted"></p>
-      </section>
-
-      <section class="panel">
-        <p class="panel-label">System</p>
-        <div class="info-grid">
-          <div>
-            <p class="info-label">Display URL</p>
-            <p id="displayUrl" class="info-value"></p>
-          </div>
-          <div>
-            <p class="info-label">Controller URL</p>
-            <p id="controllerUrl" class="info-value"></p>
-          </div>
+        <div class="status-item">
+          <span>Controller</span>
+          <strong id="controllerStatus">Unknown</strong>
         </div>
       </section>
 
-      <section class="panel">
-        <p class="panel-label">Session Tools</p>
-        <div class="tools-grid">
-          <button id="restartBtn" type="button">Restart session</button>
-          <button id="resetBtn" type="button">Reset to first slide</button>
-          <button id="blankBtn" type="button">Blank display screen</button>
-        </div>
-      </section>
+      <section class="workspace">
+        <div class="control-stack">
+          <section class="panel">
+            <div class="panel-heading">
+              <p class="panel-label">Mode</p>
+              <p class="hint">Choose what the display is presenting.</p>
+            </div>
+            <div class="mode-grid">
+              <button type="button" class="mode-btn" data-mode="quran">Quran</button>
+              <button type="button" class="mode-btn" data-mode="dua">Dua</button>
+            </div>
+            <p id="modeNotice" class="notice" aria-live="polite"></p>
 
-      <section class="panel logs-panel">
-        <p class="panel-label">Controller Logs</p>
-        <ul id="logsList" class="logs-list"></ul>
+            <div id="quranConfig" class="config-row">
+              <label for="adminSurahSelect">Surah</label>
+              <select id="adminSurahSelect"></select>
+            </div>
+
+            <div id="duaConfig" class="config-row hidden">
+              <label for="duaSelect">Dua</label>
+              <div class="inline-action">
+                <select id="duaSelect"></select>
+                <button id="openDuaBtn" type="button" class="secondary">Open</button>
+              </div>
+              <p id="duaNotice" class="notice" aria-live="polite"></p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <p class="panel-label">Navigation</p>
+              <p id="jumpHint" class="hint"></p>
+            </div>
+            <div class="nav-grid">
+              <button id="prevBtn" type="button">Previous</button>
+              <button id="nextBtn" type="button" class="primary">Next</button>
+            </div>
+
+            <label id="jumpLabel" for="jumpInput">Jump</label>
+            <div class="inline-action">
+              <input id="jumpInput" type="number" min="1" value="1" inputmode="numeric" />
+              <button id="jumpBtn" type="button" class="secondary">Go</button>
+            </div>
+            <p id="controlsNotice" class="notice" aria-live="polite"></p>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <p class="panel-label">Display</p>
+              <p class="hint">Keep these controls for setup and recovery.</p>
+            </div>
+            <div class="tools-grid">
+              <button id="resetBtn" type="button">Reset position</button>
+              <button id="blankBtn" type="button">Blank display</button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="side-stack">
+          <section class="panel qr-panel">
+            <div class="panel-heading">
+              <p class="panel-label">Phone Controller</p>
+              <p class="hint">Scan from a phone on the same network.</p>
+            </div>
+            <img id="qrImage" class="qr-image hidden" alt="Controller QR code" />
+            <p id="controllerUrl" class="url-value"></p>
+          </section>
+
+          <section class="panel urls-panel">
+            <p class="panel-label">Local URLs</p>
+            <div class="url-row">
+              <span>Display</span>
+              <p id="displayUrl" class="url-value"></p>
+            </div>
+            <div class="url-row">
+              <span>Admin</span>
+              <p id="adminUrl" class="url-value"></p>
+            </div>
+          </section>
+
+          <section class="panel logs-panel">
+            <p class="panel-label">Activity</p>
+            <ul id="logsList" class="logs-list"></ul>
+          </section>
+        </aside>
       </section>
     </main>
 

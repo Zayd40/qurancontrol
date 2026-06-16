@@ -5,7 +5,9 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
+    "start:admin": "node -e \"process.env.OPEN_ADMIN_ON_START='1'; require('./server/index.js')\"",
     "dev": "node --watch server/index.js",
+    "check": "node --check server/session.js && node --check server/index.js && node --check server/cli.js && node --check server/dashboard.js && node --check server/loaders.js && node --check public/admin.js && node --check public/control.js && node --check public/display.js && npm test",
     "format:iftitah": "node tools/format-dua.js",
     "ingest:eid-adha": "node tools/duas-org-ingest.js",
     "test": "node --test"
