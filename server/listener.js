@@ -11,6 +11,7 @@ function createListener({ rootDir, quranDataset, duasById, getState, applyPositi
   const script = path.join(rootDir, 'listener', 'worker.py');
   let child = null;
   let epoch = 0;
+  let latestSegment = -1;
   let mode = null;
   let status = { state: 'stopped', paused: false, message: 'Press Go to find the reciter’s position. Choose your mixer in Audio settings on first use.', level: 0 };
   let settings = { device: null, noiseFloor: 0.008 };
@@ -20,6 +21,8 @@ function createListener({ rootDir, quranDataset, duasById, getState, applyPositi
   function snapshot() { return { ...status, settings, epoch }; }
   function context(enabled = !status.paused) {
     epoch += 1;
+    latestSegment = -1;
+    status = { ...status, recovering: false };
     matcher.reset();
     if (child?.stdin.writable) child.stdin.write(`${JSON.stringify({ epoch, enabled })}\n`);
   }
@@ -53,7 +56,7 @@ function createListener({ rootDir, quranDataset, duasById, getState, applyPositi
     settings = nextSettings;
     fs.writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
     mode = nextMode;
-    publish({ state: 'loading', paused: false, message: 'Loading local speech model… First use downloads the model.' });
+    publish({ state: 'loading', paused: false, message: 'Loading local speech models… Run Setup-Windows.cmd first if models are missing.' });
     const args = ['-u', script, '--mode', mode, '--noise-floor', String(settings.noiseFloor)];
     if (settings.device !== null) args.push('--device', String(settings.device));
     const worker = spawnProcess(python, args, { cwd: rootDir, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env, PYTHONIOENCODING: 'utf-8' } });
@@ -67,13 +70,35 @@ function createListener({ rootDir, quranDataset, duasById, getState, applyPositi
       if (child !== worker || line.length > 20000) return;
       let event;
       try { event = JSON.parse(line); } catch (_) { return; }
-      if (event.type === 'status') {
+      if (event.type === 'interruption' && event.epoch === epoch && !status.paused &&
+          Number.isInteger(event.segment) && event.segment > latestSegment) {
+        latestSegment = event.segment;
+        matcher.reacquire();
+        const message = event.reason === 'silence' ? 'Pause detected — waiting to find the reciter again.'
+          : event.reason === 'non_arabic' ? 'Other speech detected — holding the slide until Arabic resumes.'
+          : 'Checking the speech — holding the slide.';
+        publish({ recovering: true, message, transcript: '', score: 0 });
+      } else if (event.type === 'status') {
         publish({ state: event.state, message: status.paused ? status.message : event.message, engine: event.engine });
       } else if (event.type === 'level' && !status.paused) {
         publish({ level: event.level, clipping: event.clipping, audioWarning: event.warning || '' });
       } else if (event.type === 'transcript' && event.epoch === epoch && !status.paused && !getState().blanked && typeof event.text === 'string') {
-        const match = matcher.locate(event.text.slice(0, 2000), getState());
-        publish({ message: match.reason, transcript: event.text.slice(0, 500), score: match.score || 0 });
+        if (Number.isInteger(event.segment)) {
+          if (event.segment < latestSegment) return;
+          latestSegment = event.segment;
+        }
+        const text = event.text.normalize('NFKC');
+        const letters = text.match(/\p{L}/gu) || [];
+        const arabic = text.match(/[\u0621-\u063a\u0641-\u064a]/g) || [];
+        if ((event.language && event.language !== 'ar') || (letters.length && arabic.length / letters.length < 0.85)) {
+          matcher.reacquire();
+          publish({ recovering: true, message: 'Other speech detected — holding the slide until Arabic resumes.', transcript: '', score: 0 });
+          return;
+        }
+        const match = matcher.locate(text.slice(0, 2000), getState());
+        publish({ message: match.reason, transcript: event.text.slice(0, 500), score: match.score || 0,
+          recovering: match.position || match.reason === 'Following current passage' ? false : status.recovering,
+          inferenceMs: Number.isFinite(event.inferenceMs) ? event.inferenceMs : undefined });
         if (match.position) applyPosition(match.position);
       }
     });

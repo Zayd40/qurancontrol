@@ -99,3 +99,27 @@ test('Stop disables audio capture and Go re-enables it without a new model proce
   assert.equal(f.listener.snapshot().paused, false);
   assert.equal(f.workers.length, 1);
 });
+
+
+test('pause/English interruption holds the display and rejects stale audio segments', (t) => {
+  const f = fixture(t); f.listener.start();
+  const worker = f.workers[0]; const epoch = f.listener.snapshot().epoch;
+  f.emit(worker, { ...f.transcript(epoch), segment: 1, language: 'ar' });
+  f.emit(worker, { type: 'interruption', epoch, segment: 2, reason: 'silence' });
+  assert.equal(f.listener.snapshot().recovering, true);
+  for (let i = 0; i < 5; i += 1) f.emit(worker, { ...f.transcript(epoch), segment: 1, language: 'ar' });
+  assert.equal(f.positions.length, 0);
+  f.emit(worker, { type: 'transcript', epoch, segment: 2, language: 'en', text: 'Thank you everyone, we will now continue.' });
+  assert.equal(f.positions.length, 0);
+  assert.match(f.listener.snapshot().message, /Other speech/);
+  for (let i = 0; i < 3; i += 1) f.emit(worker, { ...f.transcript(epoch), segment: 3, language: 'ar' });
+  assert.equal(f.positions.length, 1, 'Arabic resumes automatically without pressing Go');
+  assert.equal(f.listener.snapshot().recovering, false);
+});
+
+test('English text cannot be mistaken for an ayah even without language metadata', (t) => {
+  const f = fixture(t); f.listener.start();
+  for (let i = 0; i < 5; i += 1) f.emit(f.workers[0], { type: 'transcript', epoch: f.listener.snapshot().epoch, text: 'Please wait for the reciter to return' });
+  assert.equal(f.positions.length, 0);
+  assert.equal(f.listener.snapshot().recovering, true);
+});

@@ -15,7 +15,7 @@ test('presenter finds an unknown ayah from speech, advances the display, and obe
   // Exercise the real listener -> matcher -> server -> display path with a
   // deterministic speech backend. No microphone, GPU or model download in CI.
   fs.writeFileSync(path.join(temporary, 'listener', 'worker.py'), `
-import json, sys
+import json, sys, threading, time
 def emit(value):
     print(json.dumps(value), flush=True)
 run = 0
@@ -32,6 +32,16 @@ for line in sys.stdin:
     for text in texts:
         emit({'type': 'transcript', 'epoch': epoch, 'text': text})
     run += 1
+    if run == 2:
+        def interruption_cycle(epoch=epoch):
+            time.sleep(0.15)
+            emit({'type': 'interruption', 'epoch': epoch, 'segment': 4, 'reason': 'non_arabic'})
+            emit({'type': 'transcript', 'epoch': epoch, 'segment': 4, 'language': 'en', 'text': 'Please wait for an announcement'})
+            emit({'type': 'transcript', 'epoch': epoch, 'segment': 3, 'language': 'ar', 'text': 'الله الصمد'})
+            time.sleep(0.4)
+            for i in range(3):
+                emit({'type': 'transcript', 'epoch': epoch, 'segment': 4, 'language': 'ar', 'text': 'وسع كرسيه السماوات والارض ولا يوده حفظهما وهو العلي العظيم'})
+        threading.Thread(target=interruption_cycle, daemon=True).start()
 `, 'utf8');
   const probe = net.createServer();
   await new Promise((resolve) => probe.listen(0, '127.0.0.1', resolve));
@@ -114,6 +124,12 @@ for line in sys.stdin:
   result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 4);
   admin.socket.send(JSON.stringify({ type: 'listener_start' }));
   assert.equal((await result).state.quran.ayahNumber, 4, 'Go resumes the warm listener and continues advancing');
+  await nextMessage(admin.socket, (m) => m.type === 'listener_status' && m.listener.recovering === true);
+  const automaticRecovery = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 2 && m.state.quran.ayahNumber === 255);
+  result = nextMessage(display.socket, (m) => m.type === 'bootstrap');
+  display.socket.send(JSON.stringify({ type: 'request_state' }));
+  assert.equal((await result).state.quran.ayahNumber, 4, 'English and stale audio hold the current slide');
+  assert.equal((await automaticRecovery).state.quran.ayahNumber, 255, 'Arabic resumes at a different position without pressing Go');
 });
 
 function nextMessage(socket, predicate) {

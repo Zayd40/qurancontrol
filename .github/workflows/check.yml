@@ -21,7 +21,8 @@ jobs:
           python-version: '3.11'
       - run: npm ci
       - run: npm run check
-      - run: python -m py_compile listener/worker.py
+      - run: python -m py_compile listener/worker.py listener/audio_state.py
+      - run: python -m unittest discover -s listener -p 'test_*.py'
       - name: Check Windows setup syntax
         if: runner.os == 'Windows'
         shell: powershell

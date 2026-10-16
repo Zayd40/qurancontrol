@@ -43,7 +43,7 @@ function renderListener(value = listenerStatus) {
   audioEls.listenerMessage.textContent = value.message || '';
   audioEls.audioLevel.value = value.level || 0;
   audioEls.audioWarning.textContent = value.clipping ? 'Input is clipping — lower the mixer output.' : value.audioWarning || '';
-  audioEls.listenerEngine.textContent = value.engine || '';
+  audioEls.listenerEngine.textContent = (value.engine || '') + (Number.isFinite(value.inferenceMs) ? ` · Last recognition: ${value.inferenceMs} ms` : '');
   audioEls.listenerTranscript.textContent = value.transcript || '';
   audioEls.listenBtn.innerHTML = '<span aria-hidden="true">▶</span> Go';
   audioEls.listenBtn.disabled = !controlsEnabled() || (active && !value.paused);

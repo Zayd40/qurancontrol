@@ -69,8 +69,10 @@ function createFollowMatcher({ quranDataset, duasById }) {
   let confirmations = 0;
   let locked = false;
   let acquisition = null;
+  let globalSearch = false;
   function clearPending() { pending = null; confirmations = 0; }
-  function reset() { clearPending(); locked = false; acquisition = null; }
+  function reset() { clearPending(); locked = false; acquisition = null; globalSearch = false; }
+  function reacquire() { reset(); globalSearch = true; }
   function locate(text, state) {
     const query = normalizeArabic(text).split(' ').filter(Boolean).slice(-12);
     if (query.length < 2 || new Set(query).size < 2 || query.join('').length < 6) { clearPending(); return { reason: 'Waiting for more words' }; }
@@ -103,7 +105,7 @@ function createFollowMatcher({ quranDataset, duasById }) {
       .map((item) => ({ ...item, rankScore: item.score - (item.index < current || (locked && item.index > current + 1) ? 0.12 : 0) }))
       .sort((a, b) => b.rankScore - a.rankScore);
     const localMargin = (local[0]?.rankScore || 0) - (local[1]?.rankScore || 0);
-    const useLocal = local[0]?.score >= 0.84 && localMargin >= 0.08;
+    const useLocal = !globalSearch && local[0]?.score >= 0.84 && localMargin >= 0.08;
     const best = useLocal ? local[0] : ranked[0];
     if (!best) { clearPending(); return { reason: 'No text loaded' }; }
     const nearby = useLocal;
@@ -114,12 +116,14 @@ function createFollowMatcher({ quranDataset, duasById }) {
     const continuesAcquisition = state.sessionType === 'quran' && acquisition &&
       Date.now() - acquisition.time < 10000 && best.value.surahNumber === acquisition.surahNumber &&
       best.index >= acquisition.index && best.index <= acquisition.index + 4;
-    const requiredWords = !nearby && continuesAcquisition ? 2 : sequential && best.value.words.length === 1 ? 1 : nearby ? 2 : 4;
+    const shortRecovery = globalSearch && best.score >= 0.98 && margin >= 0.15 &&
+      best.index >= current - 1 && best.index <= current + 4;
+    const requiredWords = shortRecovery ? 2 : !nearby && continuesAcquisition ? 2 : sequential && best.value.words.length === 1 ? 1 : nearby ? 2 : 4;
     if (best.score < threshold || margin < 0.08 || Math.min(query.length, best.value.words.length) < requiredWords) {
       clearPending();
       return { reason: 'Uncertain match — holding display', score: best.score };
     }
-    if (best.index === current) { locked = true; acquisition = null; clearPending(); return { reason: 'Following current passage', score: best.score }; }
+    if (best.index === current && !globalSearch) { locked = true; acquisition = null; clearPending(); return { reason: 'Following current passage', score: best.score }; }
     if (!nearby && state.sessionType === 'quran') {
       // The reciter keeps moving while we acquire a position. Corroborate
       // adjacent ayahs in the same surah, rather than requiring one ayah to
@@ -135,11 +139,12 @@ function createFollowMatcher({ quranDataset, duasById }) {
     if (confirmations < requiredConfirmations) return { reason: 'Confirming passage', score: best.score };
     clearPending();
     locked = true;
+    globalSearch = false;
     acquisition = null;
     const { surahNumber, ayahNumber, lineIndex } = best.value;
     return { reason: 'Following reciter', score: best.score, position: { surahNumber, ayahNumber, lineIndex } };
   }
-  return { locate, reset };
+  return { locate, reset, reacquire };
 }
 
 module.exports = { normalizeArabic, scoreTokens, createFollowMatcher };

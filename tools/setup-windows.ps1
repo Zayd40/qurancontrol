@@ -28,7 +28,8 @@ try {
     Write-Host 'Downloading speech models. Internet is needed for this first setup.'
     Run-Checked $Python @('listener/worker.py', '--prepare')
     Run-Checked 'npm.cmd' @('run', 'check')
-    Write-Host 'Ready. Use Start-QuranControl.cmd, choose the mixer input, then Start listening.'
+    Run-Checked $Python @('-m', 'unittest', 'discover', '-s', 'listener', '-p', 'test_*.py')
+    Write-Host 'Ready. Use Start-QuranControl.cmd, choose the mixer input in Audio settings, then press Go.'
 } catch {
     Write-Host $_ -ForegroundColor Red
     exit 1

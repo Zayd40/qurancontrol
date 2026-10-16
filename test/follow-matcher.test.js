@@ -125,3 +125,23 @@ test('acquires a moving reciter across short adjacent ayahs without waiting on o
   assert.equal(acquired.position?.ayahNumber, 3, JSON.stringify(acquired));
   assert.equal(matcher.locate(arabic(112, 4), state(112, 3)).position?.ayahNumber, 4);
 });
+
+
+test('after a pause, reacquires globally and corrects to a different surah', () => {
+  const matcher = create();
+  const oldPosition = state(112, 1);
+  matcher.locate(arabic(112, 1), oldPosition);
+  matcher.reacquire();
+  assert.equal(matcher.locate(arabic(2, 255), oldPosition).position, undefined);
+  assert.equal(matcher.locate(arabic(2, 255), oldPosition).position, undefined);
+  assert.equal(matcher.locate(arabic(2, 255), oldPosition).position?.surahNumber, 2);
+});
+
+test('can recover on a distinctive short next ayah after a pause', () => {
+  const matcher = create();
+  matcher.reacquire();
+  const position = state(112, 1);
+  matcher.locate(arabic(112, 2), position);
+  matcher.locate(arabic(112, 2), position);
+  assert.equal(matcher.locate(arabic(112, 2), position).position?.ayahNumber, 2);
+});
