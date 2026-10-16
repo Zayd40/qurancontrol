@@ -17,8 +17,8 @@ function buildIndexedPrompt(title, items) {
 }
 
 async function promptForStartupSession({ sessionManager, savedState }) {
-  if (!stdin.isTTY || !stdout.isTTY) {
-    return sessionManager.createNewSession('quran');
+  if (process.env.NO_STARTUP_PROMPT === '1' || !stdin.isTTY || !stdout.isTTY) {
+    return savedState ? sessionManager.clampState(savedState) : sessionManager.createNewSession('quran');
   }
 
   const rl = readline.createInterface({ input: stdin, output: stdout });

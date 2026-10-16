@@ -38,6 +38,34 @@
 
       <section class="workspace">
         <div class="control-stack">
+          <section class="panel" aria-label="Automatic following">
+            <div class="panel-heading">
+              <p class="panel-label">Follow the reciter</p>
+              <span id="listenerState" class="connection-pill">Stopped</span>
+            </div>
+            <p class="hint">Listen to the mixer and follow the Qur’an or selected dua. Manual navigation pauses following.</p>
+            <label for="audioDevice">Mixer input</label>
+            <div class="inline-action">
+              <select id="audioDevice"><option value="">Windows default input</option></select>
+              <button id="refreshAudioBtn" type="button" class="secondary">Find inputs</button>
+            </div>
+            <label for="noiseFloor">Input sensitivity</label>
+            <select id="noiseFloor">
+              <option value="0.004">Quiet feed</option>
+              <option value="0.008" selected>Normal</option>
+              <option value="0.02">Noisy feed</option>
+            </select>
+            <label for="audioLevel">Audio level</label>
+            <meter id="audioLevel" min="0" max="1" value="0" aria-label="Mixer audio level"></meter>
+            <p id="audioWarning" class="notice" aria-live="polite"></p>
+            <div class="nav-grid">
+              <button id="listenBtn" type="button" class="primary">Start listening</button>
+              <button id="stopListenBtn" type="button">Stop</button>
+            </div>
+            <p id="listenerMessage" class="notice" aria-live="polite">Choose the mixer input, then start listening.</p>
+            <p id="listenerEngine" class="hint"></p>
+            <details><summary>Last recognised speech</summary><p id="listenerTranscript" lang="ar" dir="rtl"></p></details>
+          </section>
           <section class="panel">
             <div class="panel-heading">
               <p class="panel-label">Mode</p>
