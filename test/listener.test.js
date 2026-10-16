@@ -82,3 +82,20 @@ test('stopping releases the worker and late exit does not overwrite stopped stat
   assert.equal(worker.killed, true);
   assert.equal(f.listener.snapshot().state, 'stopped');
 });
+
+
+test('Stop disables audio capture and Go re-enables it without a new model process', (t) => {
+  const f = fixture(t); f.listener.start();
+  const worker = f.workers[0];
+  const commands = () => worker.stdin.read().toString().trim().split('\n').map((line) => JSON.parse(line));
+  assert.equal(commands().at(-1).enabled, true);
+  f.listener.pause('Stopped. Press Go to continue following.');
+  assert.equal(commands().at(-1).enabled, false);
+  assert.equal(f.listener.snapshot().paused, true);
+  f.emit(worker, { type: 'level', level: 1 });
+  assert.equal(f.listener.snapshot().level, 0);
+  f.listener.start();
+  assert.equal(commands().at(-1).enabled, true);
+  assert.equal(f.listener.snapshot().paused, false);
+  assert.equal(f.workers.length, 1);
+});

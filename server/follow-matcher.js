@@ -36,6 +36,7 @@ function scoreTokens(query, target) {
   // Match the newest words anywhere inside a verse/line; older audio may belong
   // to the preceding verse. Free target prefixes/suffixes support long ayahs.
   const words = query.slice(-Math.min(12, target.length));
+  if (target.length === 1) return query.length >= 2 && target[0].length >= 4 && query.at(-1) === target[0] ? 1 : 0;
   if (words.length < 2 || new Set(words).size < 2 || words.join('').length < 6) return 0;
   let row = new Array(target.length + 1).fill(0);
   for (let i = 1; i <= words.length; i += 1) {
@@ -66,10 +67,12 @@ function createFollowMatcher({ quranDataset, duasById }) {
   }
   let pending = null;
   let confirmations = 0;
-  function reset() { pending = null; confirmations = 0; }
+  let locked = false;
+  function clearPending() { pending = null; confirmations = 0; }
+  function reset() { clearPending(); locked = false; }
   function locate(text, state) {
     const query = normalizeArabic(text).split(' ').filter(Boolean).slice(-12);
-    if (query.length < 2 || query.join('').length < 6) { reset(); return { reason: 'Waiting for more words' }; }
+    if (query.length < 2 || query.join('').length < 6) { clearPending(); return { reason: 'Waiting for more words' }; }
     const corpus = state.sessionType === 'dua' ? (duas.get(state.selectedDuaId) || []) : quran;
     const current = corpus.findIndex((value) => state.sessionType === 'dua'
       ? value.lineIndex === state.dua.lineIndex
@@ -86,27 +89,30 @@ function createFollowMatcher({ quranDataset, duasById }) {
     // Once a passage is selected, nearby continuation resolves verses repeated
     // elsewhere in the Qur'an. Current/next identical lines still remain ambiguous.
     const local = ranked.filter((item) => item.index >= current - 1 && item.index <= current + 4)
-      .map((item) => ({ ...item, rankScore: item.score - (item.index < current ? 0.12 : 0) }))
+      .map((item) => ({ ...item, rankScore: item.score - (item.index < current || (locked && item.index > current + 1) ? 0.12 : 0) }))
       .sort((a, b) => b.rankScore - a.rankScore);
     const localMargin = (local[0]?.rankScore || 0) - (local[1]?.rankScore || 0);
     const useLocal = local[0]?.score >= 0.84 && localMargin >= 0.08;
     const best = useLocal ? local[0] : ranked[0];
-    if (!best) { reset(); return { reason: 'No text loaded' }; }
+    if (!best) { clearPending(); return { reason: 'No text loaded' }; }
     const nearby = useLocal;
     // Global acquisition needs a unique match; local following uses session context.
     const margin = useLocal ? localMargin : best.score - (ranked[1]?.score || 0);
     const threshold = nearby ? 0.84 : 0.94;
-    const requiredWords = nearby ? 2 : 4;
+    const sequential = locked && nearby && best.index === current + 1;
+    const requiredWords = sequential && best.value.words.length === 1 ? 1 : nearby ? 2 : 4;
     if (best.score < threshold || margin < 0.08 || Math.min(query.length, best.value.words.length) < requiredWords) {
-      reset();
+      clearPending();
       return { reason: 'Uncertain match — holding display', score: best.score };
     }
-    if (best.index === current) { reset(); return { reason: 'Following current passage', score: best.score }; }
+    if (best.index === current) { locked = true; clearPending(); return { reason: 'Following current passage', score: best.score }; }
     const key = `${state.sessionType}:${state.selectedDuaId || ''}:${best.index}`;
     if (pending === key) confirmations += 1;
     else { pending = key; confirmations = 1; }
-    if (confirmations < (nearby ? 2 : 3)) return { reason: 'Confirming passage', score: best.score };
-    reset();
+    const requiredConfirmations = sequential && best.score >= 0.96 && margin >= 0.10 ? 1 : nearby ? 2 : 3;
+    if (confirmations < requiredConfirmations) return { reason: 'Confirming passage', score: best.score };
+    clearPending();
+    locked = true;
     const { surahNumber, ayahNumber, lineIndex } = best.value;
     return { reason: 'Following reciter', score: best.score, position: { surahNumber, ayahNumber, lineIndex } };
   }

@@ -26,8 +26,8 @@ test('follows Fatiha despite its phrases also occurring elsewhere in the Quran',
   const matcher = create();
   let current = state();
   for (let ayah = 2; ayah <= 7; ayah += 1) {
-    assert.equal(matcher.locate(arabic(1, ayah), current).position, undefined);
-    const result = matcher.locate(arabic(1, ayah), current);
+    const first = matcher.locate(arabic(1, ayah), current);
+    const result = first.position ? first : matcher.locate(arabic(1, ayah), current);
     assert.equal(result.position?.ayahNumber, ayah, JSON.stringify(result));
     current = state(1, ayah);
   }
@@ -81,9 +81,35 @@ test('follows short two-word ayahs using the selected surah context', () => {
   const matcher = create();
   let current = state(112, 1);
   for (let ayah = 2; ayah <= 4; ayah += 1) {
-    matcher.locate(arabic(112, ayah), current);
+    const first = matcher.locate(arabic(112, ayah), current);
+    const result = first.position ? first : matcher.locate(arabic(112, ayah), current);
+    assert.equal(result.position?.ayahNumber, ayah, JSON.stringify(result));
+    current = state(112, ayah);
+  }
+});
+
+
+test('acquires an unknown position then advances on each clear next ayah without a timer', () => {
+  const matcher = create();
+  let current = state();
+  matcher.locate(arabic(112, 1), current);
+  matcher.locate(arabic(112, 1), current);
+  const acquired = matcher.locate(arabic(112, 1), current);
+  assert.equal(acquired.position?.surahNumber, 112);
+  current = state(112, 1);
+  for (let ayah = 2; ayah <= 4; ayah += 1) {
     const result = matcher.locate(arabic(112, ayah), current);
     assert.equal(result.position?.ayahNumber, ayah, JSON.stringify(result));
     current = state(112, ayah);
   }
+  for (let i = 0; i < 3; i += 1) assert.equal(matcher.locate('', current).position, undefined);
+});
+
+test('a distinctive one-word next ayah follows using preceding recitation context', () => {
+  const matcher = create();
+  matcher.locate(arabic(55, 62), state(55, 62));
+  assert.equal(matcher.locate(arabic(55, 63), state(55, 62)).position?.ayahNumber, 63);
+  const current = state(55, 63);
+  const result = matcher.locate(arabic(55, 63) + ' ' + arabic(55, 64), current);
+  assert.equal(result.position?.ayahNumber, 64, JSON.stringify(result));
 });

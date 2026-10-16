@@ -12,16 +12,16 @@ function createListener({ rootDir, quranDataset, duasById, getState, applyPositi
   let child = null;
   let epoch = 0;
   let mode = null;
-  let status = { state: 'stopped', paused: false, message: 'Choose the mixer input, then start listening.', level: 0 };
+  let status = { state: 'stopped', paused: false, message: 'Press Go to find the reciter’s position. Choose your mixer in Audio settings on first use.', level: 0 };
   let settings = { device: null, noiseFloor: 0.008 };
   const settingsPath = path.join(rootDir, 'data', 'listener-settings.json');
   try { settings = validateSettings(JSON.parse(fs.readFileSync(settingsPath, 'utf8'))); } catch (_) { /* first run */ }
   function publish(update) { status = { ...status, ...update }; onStatus(snapshot()); }
   function snapshot() { return { ...status, settings, epoch }; }
-  function context() {
+  function context(enabled = !status.paused) {
     epoch += 1;
     matcher.reset();
-    if (child?.stdin.writable) child.stdin.write(`${JSON.stringify({ epoch })}\n`);
+    if (child?.stdin.writable) child.stdin.write(`${JSON.stringify({ epoch, enabled })}\n`);
   }
   function validateSettings(value) {
     const device = value.device === null || value.device === '' || value.device === undefined ? null : Number(value.device);
@@ -33,19 +33,19 @@ function createListener({ rootDir, quranDataset, duasById, getState, applyPositi
   function stop() {
     const old = child;
     child = null;
-    context();
+    context(false);
     if (old) { old.stdin.destroy(); old.kill(); }
-    publish({ state: 'stopped', paused: false, level: 0, message: 'Listening stopped.' });
+    publish({ state: 'stopped', paused: false, level: 0, transcript: '', score: 0, engine: '', message: 'Stopped. Press Go to find the reciter’s position.' });
   }
-  function pause(message = 'Manual control — press Resume following when ready.') {
-    context();
-    if (child) publish({ paused: true, message });
+  function pause(message = 'Manual control — press Go to follow the reciter.') {
+    context(false);
+    if (child) publish({ paused: true, message, level: 0, clipping: false, transcript: '', score: 0 });
   }
   function start(value = settings) {
     const nextSettings = validateSettings(value);
     const nextMode = getState().sessionType;
     if (child && mode === nextMode && JSON.stringify(settings) === JSON.stringify(nextSettings)) {
-      context();
+      context(true);
       publish({ paused: false, message: 'Listening — waiting for a clear passage.' });
       return;
     }
@@ -69,7 +69,7 @@ function createListener({ rootDir, quranDataset, duasById, getState, applyPositi
       try { event = JSON.parse(line); } catch (_) { return; }
       if (event.type === 'status') {
         publish({ state: event.state, message: status.paused ? status.message : event.message, engine: event.engine });
-      } else if (event.type === 'level') {
+      } else if (event.type === 'level' && !status.paused) {
         publish({ level: event.level, clipping: event.clipping, audioWarning: event.warning || '' });
       } else if (event.type === 'transcript' && event.epoch === epoch && !status.paused && !getState().blanked && typeof event.text === 'string') {
         const match = matcher.locate(event.text.slice(0, 2000), getState());

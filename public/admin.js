@@ -3,6 +3,8 @@ const els = {
   statusText: document.getElementById('statusText'),
   modeStatus: document.getElementById('modeStatus'),
   currentStatus: document.getElementById('currentStatus'),
+  currentArabic: document.getElementById('currentArabic'),
+  currentEnglish: document.getElementById('currentEnglish'),
   displayStatus: document.getElementById('displayStatus'),
   controllerStatus: document.getElementById('controllerStatus'),
   modeButtons: [...document.querySelectorAll('.mode-btn')],
@@ -35,18 +37,20 @@ let audioSettingsLoaded = false;
 function renderListener(value = listenerStatus) {
   listenerStatus = value;
   const active = ['loading', 'listening'].includes(value.state);
-  audioEls.listenerState.textContent = value.paused ? 'Paused' : value.state;
+  const labels = { stopped: 'Stopped', loading: 'Preparing', listening: 'Listening', error: 'Needs attention' };
+  audioEls.listenerState.textContent = value.paused ? 'Stopped' : labels[value.state] || 'Stopped';
+  audioEls.listenerState.classList.toggle('offline', value.paused || value.state === 'error');
   audioEls.listenerMessage.textContent = value.message || '';
   audioEls.audioLevel.value = value.level || 0;
   audioEls.audioWarning.textContent = value.clipping ? 'Input is clipping — lower the mixer output.' : value.audioWarning || '';
   audioEls.listenerEngine.textContent = value.engine || '';
   audioEls.listenerTranscript.textContent = value.transcript || '';
-  audioEls.listenBtn.textContent = value.paused ? 'Resume following' : active ? 'Listening' : 'Start listening';
+  audioEls.listenBtn.innerHTML = '<span aria-hidden="true">▶</span> Go';
   audioEls.listenBtn.disabled = !controlsEnabled() || (active && !value.paused);
-  audioEls.stopListenBtn.disabled = !controlsEnabled() || !active;
-  audioEls.audioDevice.disabled = active;
-  audioEls.noiseFloor.disabled = active;
-  audioEls.refreshAudioBtn.disabled = active;
+  audioEls.stopListenBtn.disabled = !controlsEnabled() || !active || value.paused;
+  audioEls.audioDevice.disabled = active && !value.paused;
+  audioEls.noiseFloor.disabled = active && !value.paused;
+  audioEls.refreshAudioBtn.disabled = active && !value.paused;
   if (!audioSettingsLoaded && value.settings) {
     const saved = value.settings.device;
     if (saved !== null && ![...audioEls.audioDevice.options].some((o) => o.value === String(saved))) {
@@ -219,6 +223,9 @@ function renderStatus(messageOverride) {
   els.statusText.classList.toggle('offline', !enabled);
   els.modeStatus.textContent = sessionType === 'dua' ? 'Dua' : 'Quran';
   els.currentStatus.textContent = currentSession?.selectedContent || currentContent?.header || 'Waiting';
+  els.currentArabic.textContent = currentContent?.arabic || '';
+  els.currentEnglish.textContent = currentContent?.english || '';
+  els.jumpBtn.textContent = sessionType === 'dua' ? 'Show line' : 'Show ayah';
   els.displayStatus.textContent = currentSession?.blanked ? 'Blanked' : 'Live';
   els.controllerStatus.textContent = enabled ? `${count} ${noun}` : 'Offline';
 
@@ -411,7 +418,7 @@ function connectSocket() {
 function attachEvents() {
   audioEls.refreshAudioBtn.addEventListener('click', refreshAudioInputs);
   audioEls.listenBtn.addEventListener('click', () => send({ type: 'listener_start', settings: { device: audioEls.audioDevice.value, noiseFloor: Number(audioEls.noiseFloor.value) } }));
-  audioEls.stopListenBtn.addEventListener('click', () => send({ type: 'listener_stop' }));
+  audioEls.stopListenBtn.addEventListener('click', () => send({ type: 'listener_pause' }));
   els.modeButtons.forEach((button) => {
     button.addEventListener('click', () => {
       if (button.dataset.mode === 'dua' && !hasDuas()) {

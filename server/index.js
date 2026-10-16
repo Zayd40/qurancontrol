@@ -317,9 +317,10 @@ function handleAdminCommand(ws, socketInfo, message) {
     return false;
   }
 
-  if (message.type === 'listener_start' || message.type === 'listener_stop') {
+  if (message.type === 'listener_start' || message.type === 'listener_stop' || message.type === 'listener_pause') {
     try {
       if (message.type === 'listener_start') listener.start(message.settings);
+      else if (message.type === 'listener_pause') listener.pause('Stopped. Press Go to continue following.');
       else listener.stop();
     } catch (error) { sendMessage(ws, { type: 'error', message: error.message }); }
     return true;

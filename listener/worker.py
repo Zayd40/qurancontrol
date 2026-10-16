@@ -60,7 +60,7 @@ def main():
 
     lock = threading.Lock()
     blocks = deque(maxlen=80)  # bounded eight-second window, even during slow inference
-    state = {'epoch': 0, 'serial': 0, 'overflow': False, 'ended': False}
+    state = {'epoch': 0, 'serial': 0, 'overflow': False, 'ended': False, 'enabled': True}
 
     def commands():
         for line in sys.stdin:
@@ -68,6 +68,7 @@ def main():
                 command = json.loads(line)
                 with lock:
                     state['epoch'] = int(command['epoch'])
+                    state['enabled'] = bool(command.get('enabled', True))
                     blocks.clear()
             except (ValueError, KeyError, TypeError):
                 continue
@@ -83,6 +84,8 @@ def main():
 
     def capture(indata, frames, timing, status):
         with lock:
+            if not state['enabled']:
+                return
             # Choose the louder channel, avoiding cancellation on inverted stereo feeds.
             channel = int(np.argmax(np.mean(indata ** 2, axis=0)))
             blocks.append(indata[:, channel].copy())
@@ -90,7 +93,7 @@ def main():
             state['overflow'] = state['overflow'] or bool(status)
 
     with sd.InputStream(device=args.device, samplerate=rate, blocksize=blocksize,
-                        channels=channels, dtype='float32', callback=capture):
+                        channels=channels, dtype='float32', callback=capture) as stream:
         emit({'type': 'status', 'state': 'listening', 'engine': model_id + ' / ' + device,
               'message': 'Listening to ' + info['name'] + (' on NVIDIA GPU' if use_cuda else ' on CPU (slower; check CUDA setup)')})
         last_decode = 0.0
@@ -100,6 +103,15 @@ def main():
             with lock:
                 if state['ended']:
                     return
+                enabled = state['enabled']
+            if not enabled:
+                if stream.active:
+                    stream.stop()
+                continue
+            if not stream.active:
+                stream.start()
+                continue
+            with lock:
                 epoch = state['epoch']
                 serial = state['serial']
                 recent = list(blocks)
@@ -134,7 +146,7 @@ def main():
             last_decode = time.monotonic()
             last_serial = serial
             with lock:
-                valid = state['epoch'] == epoch
+                valid = state['epoch'] == epoch and state['enabled']
             if valid and text:
                 emit({'type': 'transcript', 'epoch': epoch, 'text': text})
 

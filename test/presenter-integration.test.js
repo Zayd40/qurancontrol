@@ -7,20 +7,49 @@ const net = require('node:net');
 const { spawn } = require('node:child_process');
 const WebSocket = require('ws');
 
-test('presenter serves all screens, synchronises phone navigation and rejects malformed/display commands', { timeout: 15000 }, async (t) => {
+test('presenter finds an unknown ayah from speech, advances the display, and obeys admin Stop/Go', { timeout: 15000 }, async (t) => {
   const root = path.resolve(__dirname, '..');
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'quran-presenter-'));
   for (const dir of ['server', 'data', 'public']) fs.cpSync(path.join(root, dir), path.join(temporary, dir), { recursive: true });
+  fs.mkdirSync(path.join(temporary, 'listener'));
+  // Exercise the real listener -> matcher -> server -> display path with a
+  // deterministic speech backend. No microphone, GPU or model download in CI.
+  fs.writeFileSync(path.join(temporary, 'listener', 'worker.py'), `
+import json, sys
+def emit(value):
+    print(json.dumps(value), flush=True)
+run = 0
+for line in sys.stdin:
+    command = json.loads(line)
+    epoch = command['epoch']
+    if not command.get('enabled', True):
+        for i in range(4):
+            emit({'type': 'transcript', 'epoch': epoch - 1, 'text': 'لم يلد ولم يولد'})
+        emit({'type': 'status', 'state': 'listening', 'engine': 'fake-paused'})
+        continue
+    emit({'type': 'status', 'state': 'listening', 'message': 'Listening', 'engine': 'fake-speech'})
+    texts = ['قل هو الله احد'] * 3 + ['الله الصمد'] if run == 0 else ['الله الصمد', 'لم يلد ولم يولد']
+    for text in texts:
+        emit({'type': 'transcript', 'epoch': epoch, 'text': text})
+    run += 1
+`, 'utf8');
   const probe = net.createServer();
   await new Promise((resolve) => probe.listen(0, '127.0.0.1', resolve));
   const port = probe.address().port;
   await new Promise((resolve) => probe.close(resolve));
   const server = spawn(process.execPath, ['server/index.js'], { cwd: temporary, env: {
     ...process.env, PORT: String(port), NO_STARTUP_PROMPT: '1', OPEN_ADMIN_ON_START: '0', LISTENER_AUTOSTART: '0',
+    LISTENER_PYTHON: process.platform === 'win32' ? 'python' : 'python3',
     NODE_PATH: path.join(root, 'node_modules')
   }, stdio: ['ignore', 'pipe', 'pipe'] });
   const sockets = [];
+  let adminSocket;
   t.after(async () => {
+    if (adminSocket?.readyState === WebSocket.OPEN) {
+      const stopped = nextMessage(adminSocket, (m) => m.type === 'listener_status' && m.listener.state === 'stopped');
+      adminSocket.send(JSON.stringify({ type: 'listener_stop' }));
+      await stopped.catch(() => {});
+    }
     sockets.forEach((socket) => socket.terminate());
     const done = new Promise((resolve) => server.once('exit', resolve));
     if (server.exitCode === null) { server.kill(); await done; }
@@ -49,6 +78,7 @@ test('presenter serves all screens, synchronises phone navigation and rejects ma
   const display = await connect('display');
   const phone = await connect('control');
   const admin = await connect('admin');
+  adminSocket = admin.socket;
   assert.equal(admin.bootstrap.listener.state, 'stopped');
   assert.equal(display.bootstrap.listener, undefined);
   let result = nextMessage(phone.socket, (message) => message.type === 'error');
@@ -68,6 +98,22 @@ test('presenter serves all screens, synchronises phone navigation and rejects ma
   result = nextMessage(phone.socket, (message) => message.type === 'error');
   phone.socket.send(JSON.stringify({ type: 'listener_start' }));
   assert.match((await result).message, /not available/);
+
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.sessionType === 'quran');
+  admin.socket.send(JSON.stringify({ type: 'admin_set_mode', sessionType: 'quran' }));
+  await result;
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 2);
+  admin.socket.send(JSON.stringify({ type: 'listener_start' }));
+  assert.equal((await result).content.arabic, JSON.parse(fs.readFileSync(path.join(root, 'data/quran.full.json'))).surahs.find((s) => s.number === 112).ayahs.find((a) => a.number === 2).arabic);
+  result = nextMessage(admin.socket, (m) => m.type === 'listener_status' && m.listener.engine === 'fake-paused');
+  admin.socket.send(JSON.stringify({ type: 'listener_pause' }));
+  assert.equal((await result).listener.paused, true);
+  result = nextMessage(display.socket, (m) => m.type === 'bootstrap');
+  display.socket.send(JSON.stringify({ type: 'request_state' }));
+  assert.equal((await result).state.quran.ayahNumber, 2, 'Stop must hold despite late speech results');
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 3);
+  admin.socket.send(JSON.stringify({ type: 'listener_start' }));
+  assert.equal((await result).state.quran.ayahNumber, 3, 'Go resumes the warm listener and continues advancing');
 });
 
 function nextMessage(socket, predicate) {
