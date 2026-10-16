@@ -3,6 +3,8 @@ const els = {
   statusText: document.getElementById('statusText'),
   modeStatus: document.getElementById('modeStatus'),
   currentStatus: document.getElementById('currentStatus'),
+  currentArabic: document.getElementById('currentArabic'),
+  currentEnglish: document.getElementById('currentEnglish'),
   displayStatus: document.getElementById('displayStatus'),
   controllerStatus: document.getElementById('controllerStatus'),
   modeButtons: [...document.querySelectorAll('.mode-btn')],
@@ -28,6 +30,53 @@ const els = {
   blankBtn: document.getElementById('blankBtn'),
   logsList: document.getElementById('logsList')
 };
+
+const audioEls = Object.fromEntries(['listenerState', 'audioDevice', 'refreshAudioBtn', 'noiseFloor', 'audioLevel', 'audioWarning', 'listenBtn', 'stopListenBtn', 'listenerMessage', 'listenerEngine', 'listenerTranscript'].map((id) => [id, document.getElementById(id)]));
+let listenerStatus = { state: 'stopped', paused: false };
+let audioSettingsLoaded = false;
+function renderListener(value = listenerStatus) {
+  listenerStatus = value;
+  const active = ['loading', 'listening'].includes(value.state);
+  const labels = { stopped: 'Stopped', loading: 'Preparing', listening: 'Listening', error: 'Needs attention' };
+  audioEls.listenerState.textContent = value.paused ? 'Stopped' : labels[value.state] || 'Stopped';
+  audioEls.listenerState.classList.toggle('offline', value.paused || value.state === 'error');
+  audioEls.listenerMessage.textContent = value.message || '';
+  audioEls.audioLevel.value = value.level || 0;
+  audioEls.audioWarning.textContent = value.clipping ? 'Input is clipping — lower the mixer output.' : value.audioWarning || '';
+  audioEls.listenerEngine.textContent = (value.engine || '') + (Number.isFinite(value.inferenceMs) ? ` · Last recognition: ${value.inferenceMs} ms` : '');
+  audioEls.listenerTranscript.textContent = value.transcript || '';
+  audioEls.listenBtn.innerHTML = '<span aria-hidden="true">▶</span> Go';
+  audioEls.listenBtn.disabled = !controlsEnabled() || (active && !value.paused);
+  audioEls.stopListenBtn.disabled = !controlsEnabled() || !active || value.paused;
+  audioEls.audioDevice.disabled = active && !value.paused;
+  audioEls.noiseFloor.disabled = active && !value.paused;
+  audioEls.refreshAudioBtn.disabled = active && !value.paused;
+  if (!audioSettingsLoaded && value.settings) {
+    const saved = value.settings.device;
+    if (saved !== null && ![...audioEls.audioDevice.options].some((o) => o.value === String(saved))) {
+      audioEls.audioDevice.add(new Option(`Saved input ${saved} — find inputs to check`, String(saved)));
+    }
+    audioEls.audioDevice.value = saved === null ? '' : String(saved);
+    const floor = String(value.settings.noiseFloor);
+    if (![...audioEls.noiseFloor.options].some((o) => o.value === floor)) audioEls.noiseFloor.add(new Option('Custom sensitivity', floor));
+    audioEls.noiseFloor.value = floor;
+    audioSettingsLoaded = true;
+  }
+}
+async function refreshAudioInputs() {
+  audioEls.refreshAudioBtn.disabled = true;
+  const selected = audioEls.audioDevice.value;
+  try {
+    const response = await fetch('/api/listener/devices');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unable to read inputs.');
+    audioEls.audioDevice.replaceChildren(new Option('Windows default input', ''));
+    result.devices.forEach((input) => audioEls.audioDevice.add(new Option(`${input.name} (${input.host})`, String(input.id))));
+    if ([...audioEls.audioDevice.options].some((o) => o.value === selected)) audioEls.audioDevice.value = selected;
+    audioEls.listenerMessage.textContent = 'Select the mixer input, then start listening.';
+  } catch (error) { audioEls.listenerMessage.textContent = error.message; }
+  finally { audioEls.refreshAudioBtn.disabled = false; }
+}
 
 let ws = null;
 let reconnectTimer = null;
@@ -174,6 +223,9 @@ function renderStatus(messageOverride) {
   els.statusText.classList.toggle('offline', !enabled);
   els.modeStatus.textContent = sessionType === 'dua' ? 'Dua' : 'Quran';
   els.currentStatus.textContent = currentSession?.selectedContent || currentContent?.header || 'Waiting';
+  els.currentArabic.textContent = currentContent?.arabic || '';
+  els.currentEnglish.textContent = currentContent?.english || '';
+  els.jumpBtn.textContent = sessionType === 'dua' ? 'Show line' : 'Show ayah';
   els.displayStatus.textContent = currentSession?.blanked ? 'Blanked' : 'Live';
   els.controllerStatus.textContent = enabled ? `${count} ${noun}` : 'Offline';
 
@@ -198,6 +250,7 @@ function renderStatus(messageOverride) {
     : 'Add a valid JSON file to data/duas, then restart the server.';
   els.controlsNotice.textContent = enabled ? '' : 'Navigation is paused until the WebSocket reconnects.';
   renderModeButtons();
+  renderListener();
 }
 
 function renderSession() {
@@ -213,6 +266,7 @@ function renderSession() {
 }
 
 function applyBootstrap(message) {
+  if (message.listener) renderListener(message.listener);
   if (message.config?.brandText) {
     els.brandText.textContent = message.config.brandText;
   }
@@ -305,6 +359,7 @@ function scheduleReconnect() {
 }
 
 function handleSocketMessage(message) {
+  if (message.type === 'listener_status') { renderListener(message.listener); return; }
   if (message.type === 'bootstrap') {
     applyBootstrap(message);
     return;
@@ -361,6 +416,9 @@ function connectSocket() {
 }
 
 function attachEvents() {
+  audioEls.refreshAudioBtn.addEventListener('click', refreshAudioInputs);
+  audioEls.listenBtn.addEventListener('click', () => send({ type: 'listener_start', settings: { device: audioEls.audioDevice.value, noiseFloor: Number(audioEls.noiseFloor.value) } }));
+  audioEls.stopListenBtn.addEventListener('click', () => send({ type: 'listener_pause' }));
   els.modeButtons.forEach((button) => {
     button.addEventListener('click', () => {
       if (button.dataset.mode === 'dua' && !hasDuas()) {

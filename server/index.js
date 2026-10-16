@@ -18,6 +18,7 @@ const {
 const { createLogBuffer } = require('./logBuffer');
 const { createSessionManager } = require('./session');
 const { createSessionStore } = require('./sessionStore');
+const { createListener } = require('./listener');
 
 dotenv.config();
 
@@ -59,6 +60,18 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server, path: '/ws' });
 
 const socketInfoByWs = new Map();
+const listener = createListener({
+  rootDir: ROOT_DIR, quranDataset, duasById,
+  getState: () => currentState,
+  applyPosition: (position) => {
+    if (!currentState || currentState.blanked) return;
+    const next = currentState.sessionType === 'dua'
+      ? { ...currentState, dua: { lineIndex: position.lineIndex } }
+      : { ...currentState, quran: { surahNumber: position.surahNumber, ayahNumber: position.ayahNumber } };
+    setCurrentState(next, { action: 'AUTO FOLLOW', detail: sessionManager.describeSelectedContent(next) });
+  },
+  onStatus: (value) => broadcast({ type: 'listener_status', listener: value }, 'admin')
+});
 
 function stateKey(state) {
   return JSON.stringify(state);
@@ -191,6 +204,7 @@ function getBootstrapPayload(socketInfo) {
       type: quranDataset.meta.type,
       description: quranDataset.meta.description
     },
+    listener: socketInfo?.role === 'admin' ? listener.snapshot() : undefined,
     socketRole: socketInfo?.role || 'display'
   };
 }
@@ -285,6 +299,7 @@ function formatActor(socketInfo) {
 }
 
 function applySessionTransition(socketInfo, action) {
+  listener.pause();
   const transition = sessionManager.transition(currentState, action);
   if (!transition.changed) {
     return;
@@ -298,9 +313,19 @@ function applySessionTransition(socketInfo, action) {
 }
 
 function handleAdminCommand(ws, socketInfo, message) {
-  if (socketInfo.role !== 'admin') {
+  if (socketInfo.role !== 'admin' && !(socketInfo.role === 'control' && message.type === 'admin_set_mode')) {
     return false;
   }
+
+  if (message.type === 'listener_start' || message.type === 'listener_stop' || message.type === 'listener_pause') {
+    try {
+      if (message.type === 'listener_start') listener.start(message.settings);
+      else if (message.type === 'listener_pause') listener.pause('Stopped. Press Go to continue following.');
+      else listener.stop();
+    } catch (error) { sendMessage(ws, { type: 'error', message: error.message }); }
+    return true;
+  }
+  if (message.type.startsWith('admin_')) listener.pause();
 
   if (message.type === 'admin_set_mode') {
     const sessionType = message.sessionType === 'dua' ? 'dua' : 'quran';
@@ -367,6 +392,11 @@ app.get('/admin', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'admin.html'));
 });
 
+app.get('/api/listener/devices', async (req, res) => {
+  try { res.json({ devices: await listener.devices() }); }
+  catch (error) { res.status(503).json({ error: error.message }); }
+});
+
 app.get('/api/bootstrap', (req, res) => {
   const role = ['control', 'admin'].includes(req.query.role) ? req.query.role : 'display';
   res.json(getBootstrapPayload({ role, ip: normalizeIp(req.ip) }));
@@ -389,6 +419,11 @@ wss.on('connection', (ws, req) => {
         type: 'error',
         message: 'Invalid JSON message.'
       });
+      return;
+    }
+
+    if (!message || typeof message !== 'object' || Array.isArray(message) || typeof message.type !== 'string') {
+      sendMessage(ws, { type: 'error', message: 'Invalid command.' });
       return;
     }
 
@@ -475,6 +510,7 @@ async function start() {
   }
 
   server.listen(PORT, '0.0.0.0', () => {
+    if (process.env.LISTENER_AUTOSTART === '1') listener.start();
     renderDashboard();
     if (OPEN_ADMIN_ON_START) {
       openBrowser(`http://localhost:${PORT}/admin`);
@@ -483,6 +519,7 @@ async function start() {
 }
 
 function shutdown(signal) {
+  listener.stop();
   for (const ws of socketInfoByWs.keys()) {
     try {
       ws.close();

@@ -1,0 +1,33 @@
+name: Presenter checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: npm ci
+      - run: npm run check
+      - run: python -m py_compile listener/worker.py listener/audio_state.py
+      - run: python -m unittest discover -s listener -p 'test_*.py'
+      - name: Check Windows setup syntax
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $Tokens = $null
+          $ParseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD/tools/setup-windows.ps1", [ref]$Tokens, [ref]$ParseErrors) | Out-Null
+          if ($ParseErrors.Count) { throw ($ParseErrors | Out-String) }

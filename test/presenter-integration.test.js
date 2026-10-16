@@ -1,0 +1,145 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const net = require('node:net');
+const { spawn } = require('node:child_process');
+const WebSocket = require('ws');
+
+test('presenter finds an unknown ayah from speech, advances the display, and obeys admin Stop/Go', { timeout: 15000 }, async (t) => {
+  const root = path.resolve(__dirname, '..');
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'quran-presenter-'));
+  for (const dir of ['server', 'data', 'public']) fs.cpSync(path.join(root, dir), path.join(temporary, dir), { recursive: true });
+  fs.mkdirSync(path.join(temporary, 'listener'));
+  // Exercise the real listener -> matcher -> server -> display path with a
+  // deterministic speech backend. No microphone, GPU or model download in CI.
+  fs.writeFileSync(path.join(temporary, 'listener', 'worker.py'), `
+import json, sys, threading, time
+def emit(value):
+    print(json.dumps(value), flush=True)
+run = 0
+for line in sys.stdin:
+    command = json.loads(line)
+    epoch = command['epoch']
+    if not command.get('enabled', True):
+        for i in range(4):
+            emit({'type': 'transcript', 'epoch': epoch - 1, 'text': 'ولم يكن له كفوا احد'})
+        emit({'type': 'status', 'state': 'listening', 'engine': 'fake-paused'})
+        continue
+    emit({'type': 'status', 'state': 'listening', 'message': 'Listening', 'engine': 'fake-speech'})
+    texts = ['قل هو الله احد', 'قل هو الله احد الله الصمد', 'الله الصمد لم يلد ولم يولد'] if run == 0 else ['لم يلد ولم يولد', 'ولم يكن له كفوا احد']
+    for text in texts:
+        emit({'type': 'transcript', 'epoch': epoch, 'text': text})
+    run += 1
+    if run == 2:
+        def interruption_cycle(epoch=epoch):
+            time.sleep(0.15)
+            emit({'type': 'interruption', 'epoch': epoch, 'segment': 4, 'reason': 'non_arabic'})
+            emit({'type': 'transcript', 'epoch': epoch, 'segment': 4, 'language': 'en', 'text': 'Please wait for an announcement'})
+            emit({'type': 'transcript', 'epoch': epoch, 'segment': 3, 'language': 'ar', 'text': 'الله الصمد'})
+            time.sleep(0.4)
+            for i in range(3):
+                emit({'type': 'transcript', 'epoch': epoch, 'segment': 4, 'language': 'ar', 'text': 'وسع كرسيه السماوات والارض ولا يوده حفظهما وهو العلي العظيم'})
+        threading.Thread(target=interruption_cycle, daemon=True).start()
+`, 'utf8');
+  const probe = net.createServer();
+  await new Promise((resolve) => probe.listen(0, '127.0.0.1', resolve));
+  const port = probe.address().port;
+  await new Promise((resolve) => probe.close(resolve));
+  const server = spawn(process.execPath, ['server/index.js'], { cwd: temporary, env: {
+    ...process.env, PORT: String(port), NO_STARTUP_PROMPT: '1', OPEN_ADMIN_ON_START: '0', LISTENER_AUTOSTART: '0',
+    LISTENER_PYTHON: process.platform === 'win32' ? 'python' : 'python3',
+    NODE_PATH: path.join(root, 'node_modules')
+  }, stdio: ['ignore', 'pipe', 'pipe'] });
+  const sockets = [];
+  let adminSocket;
+  t.after(async () => {
+    if (adminSocket?.readyState === WebSocket.OPEN) {
+      const stopped = nextMessage(adminSocket, (m) => m.type === 'listener_status' && m.listener.state === 'stopped');
+      adminSocket.send(JSON.stringify({ type: 'listener_stop' }));
+      await stopped.catch(() => {});
+    }
+    sockets.forEach((socket) => socket.terminate());
+    const done = new Promise((resolve) => server.once('exit', resolve));
+    if (server.exitCode === null) { server.kill(); await done; }
+    fs.rmSync(temporary, { recursive: true, force: true });
+  });
+  let output = '';
+  server.stdout.on('data', (chunk) => { output = (output + chunk.toString()).slice(-3000); });
+  server.stderr.on('data', (chunk) => { output = (output + chunk.toString()).slice(-3000); });
+  const base = `http://127.0.0.1:${port}`;
+  let ready = false;
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    try { ready = (await fetch(`${base}/api/bootstrap`)).ok; if (ready) break; } catch (_) { /* wait for listener */ }
+    if (server.exitCode !== null) break;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  assert.ok(ready, output);
+  for (const route of ['/admin', '/control', '/display']) assert.equal((await fetch(base + route)).status, 200);
+  async function connect(role) {
+    const socket = new WebSocket(`ws://127.0.0.1:${port}/ws`);
+    sockets.push(socket);
+    await new Promise((resolve, reject) => { socket.once('open', resolve); socket.once('error', reject); });
+    const response = nextMessage(socket, (message) => message.type === 'bootstrap');
+    socket.send(JSON.stringify({ type: 'hello', role }));
+    return { socket, bootstrap: await response };
+  }
+  const display = await connect('display');
+  const phone = await connect('control');
+  const admin = await connect('admin');
+  adminSocket = admin.socket;
+  assert.equal(admin.bootstrap.listener.state, 'stopped');
+  assert.equal(display.bootstrap.listener, undefined);
+  let result = nextMessage(phone.socket, (message) => message.type === 'error');
+  phone.socket.send('null');
+  assert.match((await result).message, /Invalid command/);
+  result = nextMessage(display.socket, (message) => message.type === 'error');
+  display.socket.send(JSON.stringify({ type: 'step', direction: 'next' }));
+  assert.match((await result).message, /Only controller/);
+  result = nextMessage(display.socket, (message) => message.type === 'state_update');
+  phone.socket.send(JSON.stringify({ type: 'admin_set_mode', sessionType: 'dua', selectedDuaId: 'kumayl' }));
+  const mode = await result;
+  assert.equal(mode.state.sessionType, 'dua');
+  assert.equal(mode.state.selectedDuaId, 'kumayl');
+  result = nextMessage(display.socket, (message) => message.type === 'state_update');
+  phone.socket.send(JSON.stringify({ type: 'step', direction: 'next' }));
+  assert.equal((await result).state.dua.lineIndex, 2);
+  result = nextMessage(phone.socket, (message) => message.type === 'error');
+  phone.socket.send(JSON.stringify({ type: 'listener_start' }));
+  assert.match((await result).message, /not available/);
+
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.sessionType === 'quran');
+  admin.socket.send(JSON.stringify({ type: 'admin_set_mode', sessionType: 'quran' }));
+  await result;
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 3);
+  admin.socket.send(JSON.stringify({ type: 'listener_start' }));
+  assert.equal((await result).content.arabic, JSON.parse(fs.readFileSync(path.join(root, 'data/quran.full.json'))).surahs.find((s) => s.number === 112).ayahs.find((a) => a.number === 3).arabic);
+  result = nextMessage(admin.socket, (m) => m.type === 'listener_status' && m.listener.engine === 'fake-paused');
+  admin.socket.send(JSON.stringify({ type: 'listener_pause' }));
+  assert.equal((await result).listener.paused, true);
+  result = nextMessage(display.socket, (m) => m.type === 'bootstrap');
+  display.socket.send(JSON.stringify({ type: 'request_state' }));
+  assert.equal((await result).state.quran.ayahNumber, 3, 'Stop must hold despite late speech results');
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 4);
+  admin.socket.send(JSON.stringify({ type: 'listener_start' }));
+  assert.equal((await result).state.quran.ayahNumber, 4, 'Go resumes the warm listener and continues advancing');
+  await nextMessage(admin.socket, (m) => m.type === 'listener_status' && m.listener.recovering === true);
+  const automaticRecovery = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 2 && m.state.quran.ayahNumber === 255);
+  result = nextMessage(display.socket, (m) => m.type === 'bootstrap');
+  display.socket.send(JSON.stringify({ type: 'request_state' }));
+  assert.equal((await result).state.quran.ayahNumber, 4, 'English and stale audio hold the current slide');
+  assert.equal((await automaticRecovery).state.quran.ayahNumber, 255, 'Arabic resumes at a different position without pressing Go');
+});
+
+function nextMessage(socket, predicate) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => { socket.off('message', handler); reject(new Error('Timed out waiting for presenter message')); }, 4000);
+    function handler(buffer) {
+      const message = JSON.parse(buffer.toString());
+      if (!predicate(message)) return;
+      clearTimeout(timer); socket.off('message', handler); resolve(message);
+    }
+    socket.on('message', handler);
+  });
+}

@@ -1,129 +1,74 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Al Zahraa Centre Admin</title>
-    <link rel="stylesheet" href="/theme.css" />
-    <link rel="stylesheet" href="/admin.css" />
-  </head>
-  <body>
-    <main class="app">
-      <header class="topbar">
-        <div>
-          <p class="brand" id="brandText">Al Zahraa Centre</p>
-          <h1>Presenter Admin</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qur’an Tracker Pro · Admin</title>
+  <link rel="stylesheet" href="/theme.css" />
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="identity"><span class="brand-mark" aria-hidden="true">ق</span><div><p class="brand" id="brandText">Al Zahraa Centre</p><h1>Qur’an Tracker Pro</h1></div></div>
+    <div class="header-actions"><a class="display-link" href="/display" target="_blank" rel="noopener">Open display <span aria-hidden="true">↗</span></a><p id="statusText" class="connection-pill">Connecting</p></div>
+  </header>
+  <section class="workspace">
+    <div class="control-stack">
+      <section class="panel follow-panel" aria-label="Automatic following">
+        <div class="panel-heading"><p class="eyebrow">AUTOMATIC FOLLOWING</p><span id="listenerState" class="connection-pill">Stopped</span></div>
+        <h2>Follow the reciter.</h2>
+        <p class="intro">Listen to the mixer, find the ayah, and keep the display in step.</p>
+        <div class="transport-grid">
+          <button id="listenBtn" type="button" class="go-button"><span aria-hidden="true">▶</span> Go</button>
+          <button id="stopListenBtn" type="button" class="stop-button"><span aria-hidden="true">■</span> Stop</button>
         </div>
-        <p id="statusText" class="connection-pill">Connecting</p>
-      </header>
-
-      <section class="status-grid" aria-label="System status">
-        <div class="status-item">
-          <span>Mode</span>
-          <strong id="modeStatus">Quran</strong>
-        </div>
-        <div class="status-item">
-          <span>Current</span>
-          <strong id="currentStatus">Waiting for session data</strong>
-        </div>
-        <div class="status-item">
-          <span>Display</span>
-          <strong id="displayStatus">Unknown</strong>
-        </div>
-        <div class="status-item">
-          <span>Controller</span>
-          <strong id="controllerStatus">Unknown</strong>
-        </div>
+        <p id="listenerMessage" class="listener-message" aria-live="polite">Press Go to find the reciter’s position.</p>
+        <div class="level-row"><label for="audioLevel">Mixer level</label><meter id="audioLevel" min="0" max="1" value="0" aria-label="Mixer audio level"></meter></div>
+        <p id="audioWarning" class="notice warning" aria-live="polite"></p>
+        <details class="audio-settings">
+          <summary>Audio settings</summary>
+          <div class="settings-content">
+            <label for="audioDevice">Mixer input</label>
+            <div class="inline-action"><select id="audioDevice"><option value="">Windows default input</option></select><button id="refreshAudioBtn" type="button" class="secondary">Find inputs</button></div>
+            <label for="noiseFloor">Input sensitivity</label>
+            <select id="noiseFloor"><option value="0.004">Quiet feed</option><option value="0.008" selected>Normal</option><option value="0.02">Noisy feed</option></select>
+            <p class="hint">Choose the mixer once. Stop following before changing the input.</p>
+            <p id="listenerEngine" class="hint"></p>
+            <details><summary>Recognition details</summary><p id="listenerTranscript" lang="ar" dir="rtl"></p></details>
+          </div>
+        </details>
       </section>
-
-      <section class="workspace">
-        <div class="control-stack">
-          <section class="panel">
-            <div class="panel-heading">
-              <p class="panel-label">Mode</p>
-              <p class="hint">Choose what the display is presenting.</p>
-            </div>
-            <div class="mode-grid">
-              <button type="button" class="mode-btn" data-mode="quran">Quran</button>
-              <button type="button" class="mode-btn" data-mode="dua">Dua</button>
-            </div>
-            <p id="modeNotice" class="notice" aria-live="polite"></p>
-
-            <div id="quranConfig" class="config-row">
-              <label for="adminSurahSelect">Surah</label>
-              <select id="adminSurahSelect"></select>
-            </div>
-
-            <div id="duaConfig" class="config-row hidden">
-              <label for="duaSelect">Dua</label>
-              <div class="inline-action">
-                <select id="duaSelect"></select>
-                <button id="openDuaBtn" type="button" class="secondary">Open</button>
-              </div>
-              <p id="duaNotice" class="notice" aria-live="polite"></p>
-            </div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-heading">
-              <p class="panel-label">Navigation</p>
-              <p id="jumpHint" class="hint"></p>
-            </div>
-            <div class="nav-grid">
-              <button id="prevBtn" type="button">Previous</button>
-              <button id="nextBtn" type="button" class="primary">Next</button>
-            </div>
-
-            <label id="jumpLabel" for="jumpInput">Jump</label>
-            <div class="inline-action">
-              <input id="jumpInput" type="number" min="1" value="1" inputmode="numeric" />
-              <button id="jumpBtn" type="button" class="secondary">Go</button>
-            </div>
-            <p id="controlsNotice" class="notice" aria-live="polite"></p>
-          </section>
-
-          <section class="panel">
-            <div class="panel-heading">
-              <p class="panel-label">Display</p>
-              <p class="hint">Keep these controls for setup and recovery.</p>
-            </div>
-            <div class="tools-grid">
-              <button id="resetBtn" type="button">Reset position</button>
-              <button id="blankBtn" type="button">Blank display</button>
-            </div>
-          </section>
-        </div>
-
-        <aside class="side-stack">
-          <section class="panel qr-panel">
-            <div class="panel-heading">
-              <p class="panel-label">Phone Controller</p>
-              <p class="hint">Scan from a phone on the same network.</p>
-            </div>
-            <img id="qrImage" class="qr-image hidden" alt="Controller QR code" />
-            <p id="controllerUrl" class="url-value"></p>
-          </section>
-
-          <section class="panel urls-panel">
-            <p class="panel-label">Local URLs</p>
-            <div class="url-row">
-              <span>Display</span>
-              <p id="displayUrl" class="url-value"></p>
-            </div>
-            <div class="url-row">
-              <span>Admin</span>
-              <p id="adminUrl" class="url-value"></p>
-            </div>
-          </section>
-
-          <section class="panel logs-panel">
-            <p class="panel-label">Activity</p>
-            <ul id="logsList" class="logs-list"></ul>
-          </section>
-        </aside>
+      <section class="panel now-panel" aria-label="Current slide preview">
+        <div class="panel-heading"><p class="eyebrow">NOW PRESENTING</p><strong id="displayStatus" class="live-label">Live</strong></div>
+        <h2 id="currentStatus">Waiting for session data</h2>
+        <p id="currentArabic" class="current-arabic" lang="ar" dir="rtl"></p>
+        <p id="currentEnglish" class="current-english"></p>
+        <div class="preview-footer"><span>The hall display follows this passage.</span><a href="/display" target="_blank" rel="noopener">View full screen ↗</a></div>
       </section>
-    </main>
-
-    <script src="/admin.js"></script>
-  </body>
+      <details class="panel activity-panel"><summary>Recent activity</summary><ul id="logsList" class="logs-list"></ul></details>
+    </div>
+    <aside class="side-stack">
+      <section class="panel manual-panel">
+        <div class="panel-heading"><p class="eyebrow">MANUAL CONTROLS</p><strong id="modeStatus" class="mode-tag">Quran</strong></div>
+        <p class="hint">Make a correction here. Press Go to return to automatic following.</p>
+        <div class="mode-grid" aria-label="Content mode"><button type="button" class="mode-btn" data-mode="quran">Qur’an</button><button type="button" class="mode-btn" data-mode="dua">Dua</button></div>
+        <p id="modeNotice" class="notice" aria-live="polite"></p>
+        <div id="quranConfig" class="config-row"><label for="adminSurahSelect">Surah</label><select id="adminSurahSelect"></select></div>
+        <div id="duaConfig" class="config-row hidden"><label for="duaSelect">Dua</label><div class="inline-action"><select id="duaSelect"></select><button id="openDuaBtn" type="button" class="secondary">Open</button></div><p id="duaNotice" class="notice" aria-live="polite"></p></div>
+        <div class="section-divider"></div>
+        <div class="nav-grid"><button id="prevBtn" type="button">← Previous</button><button id="nextBtn" type="button">Next →</button></div>
+        <label id="jumpLabel" for="jumpInput">Ayah</label>
+        <div class="inline-action"><input id="jumpInput" type="number" min="1" value="1" inputmode="numeric" /><button id="jumpBtn" type="button" class="secondary">Show ayah</button></div>
+        <p id="jumpHint" class="hint"></p><p id="controlsNotice" class="notice" aria-live="polite"></p>
+        <div class="tools-grid"><button id="blankBtn" type="button">Blank display</button><button id="resetBtn" type="button">Reset position</button></div>
+      </section>
+      <details class="panel qr-panel"><summary>Phone controller <strong id="controllerStatus">Offline</strong></summary><div class="qr-content"><p class="hint">Scan on a phone connected to the centre’s network.</p><img id="qrImage" class="qr-image hidden" alt="Controller QR code" /><p id="controllerUrl" class="url-value"></p></div></details>
+      <details class="panel urls-panel"><summary>Connection details</summary><div class="url-row"><span>Display</span><p id="displayUrl" class="url-value"></p></div><div class="url-row"><span>Admin</span><p id="adminUrl" class="url-value"></p></div></details>
+      <p class="local-note"><span aria-hidden="true">●</span> Audio stays on the centre PC.</p>
+    </aside>
+  </section>
+</main>
+<script src="/admin.js"></script>
+</body>
 </html>
