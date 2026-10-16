@@ -24,11 +24,11 @@ for line in sys.stdin:
     epoch = command['epoch']
     if not command.get('enabled', True):
         for i in range(4):
-            emit({'type': 'transcript', 'epoch': epoch - 1, 'text': 'لم يلد ولم يولد'})
+            emit({'type': 'transcript', 'epoch': epoch - 1, 'text': 'ولم يكن له كفوا احد'})
         emit({'type': 'status', 'state': 'listening', 'engine': 'fake-paused'})
         continue
     emit({'type': 'status', 'state': 'listening', 'message': 'Listening', 'engine': 'fake-speech'})
-    texts = ['قل هو الله احد'] * 3 + ['الله الصمد'] if run == 0 else ['الله الصمد', 'لم يلد ولم يولد']
+    texts = ['قل هو الله احد', 'قل هو الله احد الله الصمد', 'الله الصمد لم يلد ولم يولد'] if run == 0 else ['لم يلد ولم يولد', 'ولم يكن له كفوا احد']
     for text in texts:
         emit({'type': 'transcript', 'epoch': epoch, 'text': text})
     run += 1
@@ -102,18 +102,18 @@ for line in sys.stdin:
   result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.sessionType === 'quran');
   admin.socket.send(JSON.stringify({ type: 'admin_set_mode', sessionType: 'quran' }));
   await result;
-  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 2);
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 3);
   admin.socket.send(JSON.stringify({ type: 'listener_start' }));
-  assert.equal((await result).content.arabic, JSON.parse(fs.readFileSync(path.join(root, 'data/quran.full.json'))).surahs.find((s) => s.number === 112).ayahs.find((a) => a.number === 2).arabic);
+  assert.equal((await result).content.arabic, JSON.parse(fs.readFileSync(path.join(root, 'data/quran.full.json'))).surahs.find((s) => s.number === 112).ayahs.find((a) => a.number === 3).arabic);
   result = nextMessage(admin.socket, (m) => m.type === 'listener_status' && m.listener.engine === 'fake-paused');
   admin.socket.send(JSON.stringify({ type: 'listener_pause' }));
   assert.equal((await result).listener.paused, true);
   result = nextMessage(display.socket, (m) => m.type === 'bootstrap');
   display.socket.send(JSON.stringify({ type: 'request_state' }));
-  assert.equal((await result).state.quran.ayahNumber, 2, 'Stop must hold despite late speech results');
-  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 3);
+  assert.equal((await result).state.quran.ayahNumber, 3, 'Stop must hold despite late speech results');
+  result = nextMessage(display.socket, (m) => m.type === 'state_update' && m.state.quran.surahNumber === 112 && m.state.quran.ayahNumber === 4);
   admin.socket.send(JSON.stringify({ type: 'listener_start' }));
-  assert.equal((await result).state.quran.ayahNumber, 3, 'Go resumes the warm listener and continues advancing');
+  assert.equal((await result).state.quran.ayahNumber, 4, 'Go resumes the warm listener and continues advancing');
 });
 
 function nextMessage(socket, predicate) {

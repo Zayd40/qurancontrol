@@ -113,3 +113,15 @@ test('a distinctive one-word next ayah follows using preceding recitation contex
   const result = matcher.locate(arabic(55, 63) + ' ' + arabic(55, 64), current);
   assert.equal(result.position?.ayahNumber, 64, JSON.stringify(result));
 });
+
+
+test('acquires a moving reciter across short adjacent ayahs without waiting on one verse', () => {
+  const matcher = create();
+  const initial = state();
+  assert.equal(matcher.locate(arabic(112, 1), initial).position, undefined);
+  assert.equal(matcher.locate(arabic(112, 1) + ' ' + arabic(112, 2), initial).position, undefined);
+  const acquired = matcher.locate(arabic(112, 2) + ' ' + arabic(112, 3), initial);
+  assert.equal(acquired.position?.surahNumber, 112, JSON.stringify(acquired));
+  assert.equal(acquired.position?.ayahNumber, 3, JSON.stringify(acquired));
+  assert.equal(matcher.locate(arabic(112, 4), state(112, 3)).position?.ayahNumber, 4);
+});

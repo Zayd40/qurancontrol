@@ -57,7 +57,7 @@ function createFollowMatcher({ quranDataset, duasById }) {
   const duas = new Map();
   function entry(value) {
     const normalized = normalizeArabic(value.arabic);
-    return { ...value, words: normalized.split(' ').filter(Boolean), grams: grams(normalized) };
+    return { ...value, text: ` ${normalized} `, words: normalized.split(' ').filter(Boolean), grams: grams(normalized) };
   }
   for (const [surahNumber, ayahs] of quranDataset.ayahDataBySurah) {
     for (const [ayahNumber, ayah] of ayahs) quran.push(entry({ surahNumber, ayahNumber, arabic: ayah.arabic }));
@@ -68,11 +68,12 @@ function createFollowMatcher({ quranDataset, duasById }) {
   let pending = null;
   let confirmations = 0;
   let locked = false;
+  let acquisition = null;
   function clearPending() { pending = null; confirmations = 0; }
-  function reset() { clearPending(); locked = false; }
+  function reset() { clearPending(); locked = false; acquisition = null; }
   function locate(text, state) {
     const query = normalizeArabic(text).split(' ').filter(Boolean).slice(-12);
-    if (query.length < 2 || query.join('').length < 6) { clearPending(); return { reason: 'Waiting for more words' }; }
+    if (query.length < 2 || new Set(query).size < 2 || query.join('').length < 6) { clearPending(); return { reason: 'Waiting for more words' }; }
     const corpus = state.sessionType === 'dua' ? (duas.get(state.selectedDuaId) || []) : quran;
     const current = corpus.findIndex((value) => state.sessionType === 'dua'
       ? value.lineIndex === state.dua.lineIndex
@@ -80,6 +81,16 @@ function createFollowMatcher({ quranDataset, duasById }) {
     const queryGrams = grams(query.join(' '));
     const shortlist = corpus.map((value, index) => ({ value, index, overlap: overlap(queryGrams, value.grams) }))
       .sort((a, b) => b.overlap - a.overlap).slice(0, 60);
+    // Overlapping audio often includes the previous ayah. Always retrieve
+    // exact newest word pairs too, so its older words cannot hide a short
+    // current ayah behind longer, unrelated verses in the global shortlist.
+    const tail = ` ${query.slice(-2).join(' ')} `;
+    const included = new Set(shortlist.map((item) => item.index));
+    corpus.forEach((value, index) => {
+      if (value.text.includes(tail) && !included.has(index)) {
+        shortlist.push({ value, index }); included.add(index);
+      }
+    });
     // Always compare neighbours, including short verses that rank poorly globally.
     for (let index = Math.max(0, current - 2); index <= Math.min(corpus.length - 1, current + 4); index += 1) {
       if (!shortlist.some((item) => item.index === index)) shortlist.push({ value: corpus[index], index });
@@ -100,19 +111,31 @@ function createFollowMatcher({ quranDataset, duasById }) {
     const margin = useLocal ? localMargin : best.score - (ranked[1]?.score || 0);
     const threshold = nearby ? 0.84 : 0.94;
     const sequential = locked && nearby && best.index === current + 1;
-    const requiredWords = sequential && best.value.words.length === 1 ? 1 : nearby ? 2 : 4;
+    const continuesAcquisition = state.sessionType === 'quran' && acquisition &&
+      Date.now() - acquisition.time < 10000 && best.value.surahNumber === acquisition.surahNumber &&
+      best.index >= acquisition.index && best.index <= acquisition.index + 4;
+    const requiredWords = !nearby && continuesAcquisition ? 2 : sequential && best.value.words.length === 1 ? 1 : nearby ? 2 : 4;
     if (best.score < threshold || margin < 0.08 || Math.min(query.length, best.value.words.length) < requiredWords) {
       clearPending();
       return { reason: 'Uncertain match — holding display', score: best.score };
     }
-    if (best.index === current) { locked = true; clearPending(); return { reason: 'Following current passage', score: best.score }; }
+    if (best.index === current) { locked = true; acquisition = null; clearPending(); return { reason: 'Following current passage', score: best.score }; }
+    if (!nearby && state.sessionType === 'quran') {
+      // The reciter keeps moving while we acquire a position. Corroborate
+      // adjacent ayahs in the same surah, rather than requiring one ayah to
+      // remain the newest recognised text for several inference windows.
+      acquisition = { surahNumber: best.value.surahNumber, index: best.index,
+        count: continuesAcquisition ? acquisition.count + 1 : 1, time: Date.now() };
+      if (acquisition.count < 3) return { reason: 'Confirming passage', score: best.score };
+    }
     const key = `${state.sessionType}:${state.selectedDuaId || ''}:${best.index}`;
     if (pending === key) confirmations += 1;
     else { pending = key; confirmations = 1; }
-    const requiredConfirmations = sequential && best.score >= 0.96 && margin >= 0.10 ? 1 : nearby ? 2 : 3;
+    const requiredConfirmations = !nearby && state.sessionType === 'quran' ? 1 : sequential && best.score >= 0.96 && margin >= 0.10 ? 1 : nearby ? 2 : 3;
     if (confirmations < requiredConfirmations) return { reason: 'Confirming passage', score: best.score };
     clearPending();
     locked = true;
+    acquisition = null;
     const { surahNumber, ayahNumber, lineIndex } = best.value;
     return { reason: 'Following reciter', score: best.score, position: { surahNumber, ayahNumber, lineIndex } };
   }
