@@ -75,3 +75,15 @@ test('follows the selected dua and cannot select a different dua from speech', (
   const other = duasById.get('ziyarat-waritha').lines[1].arabic;
   for (let i = 0; i < 4; i += 1) assert.equal(matcher.locate(other, current).position, undefined);
 });
+
+
+test('follows short two-word ayahs using the selected surah context', () => {
+  const matcher = create();
+  let current = state(112, 1);
+  for (let ayah = 2; ayah <= 4; ayah += 1) {
+    matcher.locate(arabic(112, ayah), current);
+    const result = matcher.locate(arabic(112, ayah), current);
+    assert.equal(result.position?.ayahNumber, ayah, JSON.stringify(result));
+    current = state(112, ayah);
+  }
+});

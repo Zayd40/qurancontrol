@@ -36,7 +36,7 @@ function scoreTokens(query, target) {
   // Match the newest words anywhere inside a verse/line; older audio may belong
   // to the preceding verse. Free target prefixes/suffixes support long ayahs.
   const words = query.slice(-Math.min(12, target.length));
-  if (words.length < 2 || new Set(words).size < 2 || words.join('').length < 10) return 0;
+  if (words.length < 2 || new Set(words).size < 2 || words.join('').length < 6) return 0;
   let row = new Array(target.length + 1).fill(0);
   for (let i = 1; i <= words.length; i += 1) {
     const next = [i];
@@ -69,7 +69,7 @@ function createFollowMatcher({ quranDataset, duasById }) {
   function reset() { pending = null; confirmations = 0; }
   function locate(text, state) {
     const query = normalizeArabic(text).split(' ').filter(Boolean).slice(-12);
-    if (query.length < 2 || query.join('').length < 10) { reset(); return { reason: 'Waiting for more words' }; }
+    if (query.length < 2 || query.join('').length < 6) { reset(); return { reason: 'Waiting for more words' }; }
     const corpus = state.sessionType === 'dua' ? (duas.get(state.selectedDuaId) || []) : quran;
     const current = corpus.findIndex((value) => state.sessionType === 'dua'
       ? value.lineIndex === state.dua.lineIndex
